@@ -1,0 +1,60 @@
+{
+  "lesson_title": "Action Practice",
+  "exercises": [
+    {
+      "id": "eating-01",
+      "type": "look_and_choose",
+      "prompt": "What is happening?",
+      "hint": "Select the action that best describes the picture.",
+      "image": "imagenes/eating.png",
+      "image_credit": "",
+      "options": ["Eating", "Sleeping", "Swimming"],
+      "answer": "Eating",
+      "audio": "audio/eating.mp3"
+    },
+    {
+      "id": "playing-01",
+      "type": "look_and_choose",
+      "prompt": "What is happening?",
+      "hint": "Select the action that best describes the picture.",
+      "image": "imagenes/playing.png",
+      "image_credit": "",
+      "options": ["Cleaning", "Playing", "Sleeping"],
+      "answer": "Playing",
+      "audio": "audio/playing.mp3"
+    },
+    {
+      "id": "reading-01",
+      "type": "look_and_choose",
+      "prompt": "What is happening?",
+      "hint": "Select the action that best describes the picture.",
+      "image": "imagenes/reading.png",
+      "image_credit": "",
+      "options": ["Cooking", "Running", "Reading"],
+      "answer": "Reading",
+      "audio": "audio/reading.mp3"
+    },
+    {
+      "id": "singing-01",
+      "type": "look_and_choose",
+      "prompt": "What is happening?",
+      "hint": "Select the action that best describes the picture.",
+      "image": "imagenes/singing.png",
+      "image_credit": "",
+      "options": ["Singing", "Drawing", "Sleeping"],
+      "answer": "Singing",
+      "audio": "audio/singing.mp3"
+    },
+    {
+      "id": "writing-01",
+      "type": "look_and_choose",
+      "prompt": "What is happening?",
+      "hint": "Select the action that best describes the picture.",
+      "image": "imagenes/writing.png",
+      "image_credit": "",
+      "options": ["Dancing", "Writing", "Eating"],
+      "answer": "Writing",
+      "audio": "audio/writing.mp3"
+    }
+  ]
+}
