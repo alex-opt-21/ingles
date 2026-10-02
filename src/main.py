@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from pathlib import Path
 
 import flet as ft
@@ -46,6 +47,12 @@ def save_progress(progress: dict) -> None:
         print(f"No se pudo guardar el progreso: {err}")
 
 
+def format_time(seconds: float) -> str:
+    total = int(round(seconds))
+    minutes, secs = divmod(total, 60)
+    return f"{minutes:02d}:{secs:02d}"
+
+
 BLUE = "#2F6FED"
 NAVY = "#141B34"
 GREY = "#6B7280"
@@ -65,23 +72,48 @@ def main(page: ft.Page):
     page.padding = 0
     page.theme_mode = ft.ThemeMode.LIGHT
     page.bgcolor = BG_TOP
+    page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH  # el fondo ocupa todo el ancho
+
+    # Al probar en la PC, la ventana imita un celular (en el cel real no hace nada)
+    try:
+        if page.platform in (
+            ft.PagePlatform.WINDOWS,
+            ft.PagePlatform.MACOS,
+            ft.PagePlatform.LINUX,
+        ):
+            page.window.width = 390
+            page.window.height = 844
+    except Exception as err:
+        print(f"No se pudo ajustar la ventana: {err}")
 
     exercises = load_exercises()
     progress = load_progress()
-    state = {"index": 0, "picked": {}}
 
-    audio = None
-    if fta is not None:
-        audio = fta.Audio()
-        page.services.append(audio)
+    # screen: "start" | "quiz" | "end"
+    state = {
+        "screen": "start",
+        "index": 0,
+        "picked": {},       # id -> última opción elegida
+        "errors": 0,        # intentos fallidos en esta ronda
+        "t0": 0.0,          # momento en que se pulsó "Empezar"
+        "elapsed": 0.0,     # tiempo total al terminar
+    }
+
+    # Se crea un Audio nuevo con autoplay en cada reproducción
+    # (evita el timeout de audio.play(), que hace un seek internamente)
+    player = {"ctrl": None}
 
     async def speak(src: str):
-        if audio is None:
+        if fta is None:
             return
         try:
-            audio.src = src
-            audio.update()
-            await audio.play()
+            old = player["ctrl"]
+            if old is not None and old in page.services:
+                page.services.remove(old)
+            new = fta.Audio(src=src, autoplay=True)
+            page.services.append(new)
+            player["ctrl"] = new
+            page.update()
         except Exception as err:
             print(f"No se pudo reproducir {src}: {err}")
 
@@ -96,28 +128,65 @@ def main(page: ft.Page):
             on_click=on_click,
         )
 
+    def primary_button(label: str, on_click) -> ft.Container:
+        return ft.Container(
+            content=ft.Text(label, size=16, weight=ft.FontWeight.BOLD, color=WHITE),
+            alignment=ft.Alignment.CENTER,
+            height=50,
+            border_radius=16,
+            bgcolor=BLUE,
+            shadow=ft.BoxShadow(blur_radius=14, color="#2F6FED55", offset=ft.Offset(0, 5)),
+            on_click=on_click,
+        )
+
     def current() -> dict:
         return exercises[state["index"]]
 
     def is_solved(ex: dict) -> bool:
         return state["picked"].get(ex["id"]) == ex["answer"]
 
-    def choose(option: str):
+    # ---------- acciones ----------
+
+    def start(e=None):
+        state["screen"] = "quiz"
+        state["index"] = 0
+        state["picked"] = {}
+        state["errors"] = 0
+        state["t0"] = time.perf_counter()  # arranca el cronómetro
+        render()
+
+    def finish(e=None):
+        state["elapsed"] = time.perf_counter() - state["t0"]  # detiene el cronómetro
+        state["screen"] = "end"
+        render()
+
+    async def choose(option: str):
         ex = current()
         if is_solved(ex):
             return
         state["picked"][ex["id"]] = option
-        if option == ex["answer"] and ex["id"] not in progress["completed"]:
-            progress["completed"].append(ex["id"])
-            progress["xp"] += XP_PER_EXERCISE
-            save_progress(progress)
-        render()
+        if option == ex["answer"]:
+            if ex["id"] not in progress["completed"]:
+                progress["completed"].append(ex["id"])
+                progress["xp"] += XP_PER_EXERCISE
+                save_progress(progress)
+            render()
+            await speak(ex["audio"])  # acertó: se reproduce el verbo
+        else:
+            state["errors"] += 1
+            render()
 
     def go(step: int):
         new_index = state["index"] + step
-        if 0 <= new_index < len(exercises):
-            state["index"] = new_index
-            render()
+        if not (0 <= new_index < len(exercises)):
+            return
+        # Para avanzar hay que haber acertado el ejercicio actual.
+        if step > 0 and not is_solved(current()):
+            return
+        state["index"] = new_index
+        render()
+
+    # ---------- piezas de UI ----------
 
     def option_tile(ex: dict, option: str) -> ft.Container:
         selected = state["picked"].get(ex["id"]) == option
@@ -148,8 +217,8 @@ def main(page: ft.Page):
         if correct:
             row.append(speaker_button(ex["audio"], GREEN, size=16))
 
-        def handler(e):
-            choose(option)
+        async def handler(e):
+            await choose(option)
 
         return ft.Container(
             content=ft.Row(row, spacing=12, vertical_alignment=ft.CrossAxisAlignment.CENTER),
@@ -190,6 +259,8 @@ def main(page: ft.Page):
         )
 
     def navigation() -> ft.Row:
+        last = state["index"] == len(exercises) - 1
+        solved = is_solved(current())
         dots = ft.Row(
             alignment=ft.MainAxisAlignment.CENTER,
             spacing=6,
@@ -207,6 +278,7 @@ def main(page: ft.Page):
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
+                # Atrás: se habilita desde el 2.º ejercicio
                 ft.IconButton(
                     ft.Icons.CHEVRON_LEFT,
                     icon_color=NAVY,
@@ -214,10 +286,11 @@ def main(page: ft.Page):
                     on_click=lambda e: go(-1),
                 ),
                 dots,
+                # Adelante: solo si ya acertó (y no es el último)
                 ft.IconButton(
                     ft.Icons.CHEVRON_RIGHT,
                     icon_color=NAVY,
-                    disabled=state["index"] == len(exercises) - 1,
+                    disabled=(not solved) or last,
                     on_click=lambda e: go(1),
                 ),
             ],
@@ -248,8 +321,18 @@ def main(page: ft.Page):
             )
         return ft.Text("Not quite. Try again.", size=13, weight=ft.FontWeight.W_600, color=RED)
 
+    # ---------- contenedores ----------
+
     counter = ft.Text()
     card_content = ft.Column(spacing=14)
+
+    counter_pill = ft.Container(
+        content=counter,
+        padding=ft.Padding.symmetric(horizontal=14, vertical=6),
+        border_radius=20,
+        bgcolor=WHITE,
+        border=ft.Border.all(1, LINE),
+    )
 
     header = ft.Row(
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -275,13 +358,7 @@ def main(page: ft.Page):
                     ),
                 ],
             ),
-            ft.Container(
-                content=counter,
-                padding=ft.Padding.symmetric(horizontal=14, vertical=6),
-                border_radius=20,
-                bgcolor=WHITE,
-                border=ft.Border.all(1, LINE),
-            ),
+            counter_pill,
         ],
     )
 
@@ -296,17 +373,41 @@ def main(page: ft.Page):
         content=card_content,
     )
 
-    def render():
-        ex = current()
-        total = len(exercises)
+    # ---------- pantallas ----------
 
-        counter.spans = [
-            ft.TextSpan(str(state["index"] + 1), ft.TextStyle(weight=ft.FontWeight.BOLD, color=NAVY)),
-            ft.TextSpan(f" / {total}", ft.TextStyle(color=GREY)),
+    def build_start() -> list[ft.Control]:
+        return [
+            ft.Container(height=10),
+            ft.Container(
+                width=84,
+                height=84,
+                border_radius=24,
+                bgcolor=BLUE,
+                alignment=ft.Alignment.CENTER,
+                content=ft.Icon(ft.Icons.RECORD_VOICE_OVER, size=44, color=WHITE),
+            ),
+            ft.Text(
+                "Action Practice",
+                size=28,
+                weight=ft.FontWeight.W_800,
+                color=NAVY,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.Text(
+                f"{len(exercises)} verbos para practicar.\nMira la imagen, elige el verbo correcto y escúchalo.",
+                size=14,
+                color=GREY,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.Container(height=6),
+            primary_button("Empezar", start),
+            ft.Container(height=6),
         ]
-        counter.size = 12
 
-        card_content.controls = [
+    def build_quiz() -> list[ft.Control]:
+        ex = current()
+        last = state["index"] == len(exercises) - 1
+        controls: list[ft.Control] = [
             ft.Text(
                 "LOOK & CHOOSE",
                 size=10,
@@ -328,6 +429,72 @@ def main(page: ft.Page):
             *[option_tile(ex, opt) for opt in ex["options"]],
             ft.Container(content=feedback(ex), alignment=ft.Alignment.CENTER, height=32),
         ]
+        # En el último ejercicio, al acertar aparece el botón para terminar
+        if last and is_solved(ex):
+            controls.append(primary_button("Terminar", finish))
+        return controls
+
+    def build_end() -> list[ft.Control]:
+        errors = state["errors"]
+        return [
+            ft.Container(height=6),
+            ft.Container(
+                width=84,
+                height=84,
+                border_radius=42,
+                bgcolor=GREEN_BG,
+                alignment=ft.Alignment.CENTER,
+                content=ft.Icon(ft.Icons.EMOJI_EVENTS, size=44, color=GREEN),
+            ),
+            ft.Text(
+                "¡Terminaste!",
+                size=28,
+                weight=ft.FontWeight.W_800,
+                color=NAVY,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.Text("Tu tiempo total", size=13, color=GREY, text_align=ft.TextAlign.CENTER),
+            ft.Text(
+                format_time(state["elapsed"]),
+                size=48,
+                weight=ft.FontWeight.W_800,
+                color=BLUE,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.Text(
+                "Sin errores, perfecto." if errors == 0 else f"Intentos fallidos: {errors}",
+                size=13,
+                color=GREY,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.Text(f"XP total: {progress['xp']}", size=13, color=GREY, text_align=ft.TextAlign.CENTER),
+            ft.Container(height=6),
+            primary_button("Practicar de nuevo", start),
+            ft.Container(height=6),
+        ]
+
+    def render():
+        screen = state["screen"]
+
+        # El contador solo se ve durante el quiz
+        counter_pill.visible = screen == "quiz"
+        if screen == "quiz":
+            counter.spans = [
+                ft.TextSpan(str(state["index"] + 1), ft.TextStyle(weight=ft.FontWeight.BOLD, color=NAVY)),
+                ft.TextSpan(f" / {len(exercises)}", ft.TextStyle(color=GREY)),
+            ]
+            counter.size = 12
+
+        if screen == "start":
+            card_content.controls = build_start()
+        elif screen == "quiz":
+            card_content.controls = build_quiz()
+        else:
+            card_content.controls = build_end()
+
+        card_content.horizontal_alignment = (
+            ft.CrossAxisAlignment.STRETCH if screen == "quiz" else ft.CrossAxisAlignment.CENTER
+        )
         page.update()
 
     def fit_card(e=None):
@@ -340,6 +507,7 @@ def main(page: ft.Page):
     page.add(
         ft.Container(
             expand=True,
+            alignment=ft.Alignment.TOP_CENTER,  # centra el contenido horizontalmente
             gradient=ft.LinearGradient(
                 begin=ft.Alignment.TOP_CENTER,
                 end=ft.Alignment.BOTTOM_CENTER,
