@@ -1,12 +1,13 @@
 import json
-import os
 import time
 from pathlib import Path
 
 import flet as ft
 
+from autentificacion import auth
 from screens.welcome import welcome_screen
 from screens.login import login_screen
+from screens.register import register_screen
 
 try:
     import flet_audio as fta
@@ -16,9 +17,6 @@ except ImportError:
 BASE_DIR = Path(__file__).parent
 EXERCISES_FILE = BASE_DIR / "data" / "acciones.json"
 ASSETS_DIR = BASE_DIR / "assets"
-
-STORAGE_DIR = Path(os.getenv("FLET_APP_STORAGE_DATA") or BASE_DIR / "storage")
-PROGRESS_FILE = STORAGE_DIR / "progress.json"
 
 XP_PER_EXERCISE = 10
 
@@ -31,23 +29,6 @@ def load_exercises() -> list[dict]:
         if not ruta.exists():
             print(f"[!] No encuentro la imagen: {ruta}")
     return exercises
-
-
-def load_progress() -> dict:
-    try:
-        with open(PROGRESS_FILE, encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {"xp": 0, "completed": []}
-
-
-def save_progress(progress: dict) -> None:
-    try:
-        STORAGE_DIR.mkdir(parents=True, exist_ok=True)
-        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
-            json.dump(progress, f, ensure_ascii=False, indent=2)
-    except OSError as err:
-        print(f"No se pudo guardar el progreso: {err}")
 
 
 def format_time(seconds: float) -> str:
@@ -75,7 +56,7 @@ def main(page: ft.Page):
     page.padding = 0
     page.theme_mode = ft.ThemeMode.LIGHT
     page.bgcolor = BG_TOP
-    page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH  # el fondo ocupa todo el ancho
+    page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
 
     # Al probar en la PC, la ventana imita un celular (en el cel real no hace nada)
     try:
@@ -90,15 +71,16 @@ def main(page: ft.Page):
         print(f"No se pudo ajustar la ventana: {err}")
 
     exercises = load_exercises()
-    progress = load_progress()
+    progress = {"xp": 0, "completed": []}  # se llena al iniciar sesión
 
-    # screen: "start" | "quiz" | "end"
+    # screen: "welcome" | "login" | "register" | "quiz" | "end"
     state = {
         "screen": "welcome",
+        "user": None,
         "index": 0,
         "picked": {},       # id -> última opción elegida
         "errors": 0,        # intentos fallidos en esta ronda
-        "t0": 0.0,          # momento en que se pulsó "Empezar"
+        "t0": 0.0,          # momento en que se empezó la ronda
         "elapsed": 0.0,     # tiempo total al terminar
     }
 
@@ -148,7 +130,102 @@ def main(page: ft.Page):
     def is_solved(ex: dict) -> bool:
         return state["picked"].get(ex["id"]) == ex["answer"]
 
+    # ---------- contenedores (se crean una sola vez) ----------
+
+    counter = ft.Text()
+    card_content = ft.Column(spacing=14)
+
+    counter_pill = ft.Container(
+        content=counter,
+        padding=ft.Padding.symmetric(horizontal=14, vertical=6),
+        border_radius=20,
+        bgcolor=WHITE,
+        border=ft.Border.all(1, LINE),
+    )
+
+    header = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            ft.Row(
+                spacing=10,
+                controls=[
+                    ft.Container(
+                        width=36,
+                        height=36,
+                        border_radius=10,
+                        bgcolor=BLUE,
+                        alignment=ft.Alignment.CENTER,
+                        content=ft.Text("A", size=20, weight=ft.FontWeight.BOLD, color=WHITE),
+                    ),
+                    ft.Text(
+                        spans=[
+                            ft.TextSpan("Action ", ft.TextStyle(color=GREY)),
+                            ft.TextSpan("Practice", ft.TextStyle(color=NAVY, weight=ft.FontWeight.BOLD)),
+                        ],
+                        size=14,
+                    ),
+                ],
+            ),
+            counter_pill,
+        ],
+    )
+
+    header_box = ft.Container(content=header, width=380, padding=ft.Padding.only(top=12))
+
+    card = ft.Container(
+        width=380,
+        padding=20,
+        border_radius=28,
+        bgcolor=WHITE,
+        shadow=ft.BoxShadow(blur_radius=30, color="#1F2A5522", offset=ft.Offset(0, 10)),
+        content=card_content,
+    )
+
+    def fit_card(e=None):
+        if page.width:
+            card.width = header_box.width = min(page.width - 32, 440)
+            page.update()
+
+    def mount_main_layout():
+        """Monta header + tarjeta (necesario porque welcome/login/register hacen page.clean())."""
+        page.clean()
+        page.add(
+            ft.Container(
+                expand=True,
+                alignment=ft.Alignment.TOP_CENTER,
+                gradient=ft.LinearGradient(
+                    begin=ft.Alignment.TOP_CENTER,
+                    end=ft.Alignment.BOTTOM_CENTER,
+                    colors=[BG_TOP, BG_BOTTOM],
+                ),
+                content=ft.SafeArea(
+                    expand=True,
+                    content=ft.Column(
+                        scroll=ft.ScrollMode.AUTO,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=16,
+                        controls=[header_box, card],
+                    ),
+                ),
+            )
+        )
+        fit_card()
+
     # ---------- acciones ----------
+
+    def go_login(e=None):
+        state["screen"] = "login"
+        render()
+
+    def go_register(e=None):
+        state["screen"] = "register"
+        render()
+
+    def set_user(user: dict):
+        state["user"] = user
+        progress["xp"] = user["xp"]
+        progress["completed"] = list(user["completed"])
 
     def start(e=None):
         state["screen"] = "quiz"
@@ -156,9 +233,29 @@ def main(page: ft.Page):
         state["picked"] = {}
         state["errors"] = 0
         state["t0"] = time.perf_counter()  # arranca el cronómetro
+        mount_main_layout()                # vuelve a montar header + card
         render()
 
-    def go_login(e=None):
+    def do_login(email, password):
+        ok, result = auth.login(email, password)
+        if not ok:
+            return result  # la pantalla muestra el error
+        set_user(result)
+        start()
+        return None
+
+    def do_register(name, email, password, confirm):
+        ok, result = auth.register(name, email, password, confirm)
+        if not ok:
+            return result
+        set_user(result)
+        start()
+        return None
+
+    def logout(e=None):
+        state["user"] = None
+        progress["xp"] = 0
+        progress["completed"] = []
         state["screen"] = "login"
         render()
 
@@ -176,7 +273,7 @@ def main(page: ft.Page):
             if ex["id"] not in progress["completed"]:
                 progress["completed"].append(ex["id"])
                 progress["xp"] += XP_PER_EXERCISE
-                save_progress(progress)
+                auth.save_progress(state["user"]["email"], progress)
             render()
             await speak(ex["audio"])  # acertó: se reproduce el verbo
         else:
@@ -328,88 +425,7 @@ def main(page: ft.Page):
             )
         return ft.Text("Not quite. Try again.", size=13, weight=ft.FontWeight.W_600, color=RED)
 
-    # ---------- contenedores ----------
-
-    counter = ft.Text()
-    card_content = ft.Column(spacing=14)
-
-    counter_pill = ft.Container(
-        content=counter,
-        padding=ft.Padding.symmetric(horizontal=14, vertical=6),
-        border_radius=20,
-        bgcolor=WHITE,
-        border=ft.Border.all(1, LINE),
-    )
-
-    header = ft.Row(
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-        controls=[
-            ft.Row(
-                spacing=10,
-                controls=[
-                    ft.Container(
-                        width=36,
-                        height=36,
-                        border_radius=10,
-                        bgcolor=BLUE,
-                        alignment=ft.Alignment.CENTER,
-                        content=ft.Text("A", size=20, weight=ft.FontWeight.BOLD, color=WHITE),
-                    ),
-                    ft.Text(
-                        spans=[
-                            ft.TextSpan("Action ", ft.TextStyle(color=GREY)),
-                            ft.TextSpan("Practice", ft.TextStyle(color=NAVY, weight=ft.FontWeight.BOLD)),
-                        ],
-                        size=14,
-                    ),
-                ],
-            ),
-            counter_pill,
-        ],
-    )
-
-    header_box = ft.Container(content=header, width=380, padding=ft.Padding.only(top=12))
-
-    card = ft.Container(
-        width=380,
-        padding=20,
-        border_radius=28,
-        bgcolor=WHITE,
-        shadow=ft.BoxShadow(blur_radius=30, color="#1F2A5522", offset=ft.Offset(0, 10)),
-        content=card_content,
-    )
-
     # ---------- pantallas ----------
-
-    def build_start() -> list[ft.Control]:
-        return [
-            ft.Container(height=10),
-            ft.Container(
-                width=84,
-                height=84,
-                border_radius=24,
-                bgcolor=BLUE,
-                alignment=ft.Alignment.CENTER,
-                content=ft.Icon(ft.Icons.RECORD_VOICE_OVER, size=44, color=WHITE),
-            ),
-            ft.Text(
-                "Action Practice",
-                size=28,
-                weight=ft.FontWeight.W_800,
-                color=NAVY,
-                text_align=ft.TextAlign.CENTER,
-            ),
-            ft.Text(
-                f"{len(exercises)} verbos para practicar.\nMira la imagen, elige el verbo correcto y escúchalo.",
-                size=14,
-                color=GREY,
-                text_align=ft.TextAlign.CENTER,
-            ),
-            ft.Container(height=6),
-            primary_button("Empezar", start),
-            ft.Container(height=6),
-        ]
 
     def build_quiz() -> list[ft.Control]:
         ex = current()
@@ -474,9 +490,15 @@ def main(page: ft.Page):
                 color=GREY,
                 text_align=ft.TextAlign.CENTER,
             ),
-            ft.Text(f"XP total: {progress['xp']}", size=13, color=GREY, text_align=ft.TextAlign.CENTER),
+            ft.Text(
+                f"{state['user']['name']} · XP total: {progress['xp']}",
+                size=13,
+                color=GREY,
+                text_align=ft.TextAlign.CENTER,
+            ),
             ft.Container(height=6),
             primary_button("Practicar de nuevo", start),
+            ft.TextButton(content=ft.Text("Cerrar sesión"), on_click=logout),
             ft.Container(height=6),
         ]
 
@@ -484,12 +506,15 @@ def main(page: ft.Page):
         screen = state["screen"]
 
         if screen == "welcome":
-          welcome_screen(page, go_login)
-           return
-
+            welcome_screen(page, go_login)
+            return
 
         if screen == "login":
-            login_screen(page, start)
+            login_screen(page, do_login, go_register)
+            return
+
+        if screen == "register":
+            register_screen(page, do_register, go_login)
             return
 
         # El contador solo se ve durante el quiz
@@ -500,10 +525,6 @@ def main(page: ft.Page):
                 ft.TextSpan(f" / {len(exercises)}", ft.TextStyle(color=GREY)),
             ]
             counter.size = 12
-
-        if screen == "start":
-            card_content.controls = build_start()
-        elif screen == "quiz":
             card_content.controls = build_quiz()
         else:
             card_content.controls = build_end()
@@ -513,34 +534,9 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def fit_card(e=None):
-        if page.width:
-            card.width = header_box.width = min(page.width - 32, 440)
-            page.update()
-
     page.on_resize = fit_card
 
-    page.add(
-        ft.Container(
-            expand=True,
-            alignment=ft.Alignment.TOP_CENTER,  # centra el contenido horizontalmente
-            gradient=ft.LinearGradient(
-                begin=ft.Alignment.TOP_CENTER,
-                end=ft.Alignment.BOTTOM_CENTER,
-                colors=[BG_TOP, BG_BOTTOM],
-            ),
-            content=ft.SafeArea(
-                expand=True,
-                content=ft.Column(
-                    scroll=ft.ScrollMode.AUTO,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=16,
-                    controls=[header_box, card],
-                ),
-            ),
-        )
-    )
-    fit_card()
+    # Arranca en la pantalla de bienvenida
     render()
 
 

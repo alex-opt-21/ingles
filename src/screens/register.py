@@ -1,10 +1,11 @@
 import flet as ft
 
 
-def login_screen(page, on_submit, go_register):
+def register_screen(page, on_submit, go_login):
 
     page.clean()
 
+    name = ft.TextField(hint_text="Nombre", width=320, border_radius=25, bgcolor="white")
     email = ft.TextField(
         hint_text="Email",
         width=320,
@@ -12,9 +13,16 @@ def login_screen(page, on_submit, go_register):
         keyboard_type=ft.KeyboardType.EMAIL,
         bgcolor="white",
     )
-
     password = ft.TextField(
-        hint_text="Password",
+        hint_text="Contraseña (mín. 6 caracteres)",
+        password=True,
+        can_reveal_password=True,
+        width=320,
+        border_radius=25,
+        bgcolor="white",
+    )
+    confirm = ft.TextField(
+        hint_text="Repite la contraseña",
         password=True,
         can_reveal_password=True,
         width=320,
@@ -25,12 +33,12 @@ def login_screen(page, on_submit, go_register):
     error = ft.Text("", color="#DC2626", size=13, text_align=ft.TextAlign.CENTER)
 
     def submit(e=None):
-        err = on_submit(email.value, password.value)
+        err = on_submit(name.value, email.value, password.value, confirm.value)
         if err:
             error.value = err
             page.update()
 
-    password.on_submit = submit  # Enter también inicia sesión
+    confirm.on_submit = submit
 
     page.add(
         ft.Container(
@@ -52,16 +60,18 @@ def login_screen(page, on_submit, go_register):
                             spacing=14,
                             controls=[
                                 ft.Text(
-                                    "Welcome Back",
+                                    "Create Account",
                                     size=30,
                                     weight=ft.FontWeight.BOLD,
                                     color="#1E3A70",
                                 ),
+                                name,
                                 email,
                                 password,
+                                confirm,
                                 error,
                                 ft.Button(
-                                    content=ft.Text("Log In", size=16, weight=ft.FontWeight.BOLD),
+                                    content=ft.Text("Register", size=16, weight=ft.FontWeight.BOLD),
                                     width=320,
                                     height=55,
                                     on_click=submit,
@@ -71,11 +81,9 @@ def login_screen(page, on_submit, go_register):
                                         shape=ft.RoundedRectangleBorder(radius=30),
                                     ),
                                 ),
-                                ft.OutlinedButton(
-                                    content=ft.Text("Create an account"),
-                                    width=320,
-                                    height=50,
-                                    on_click=lambda e: go_register(),
+                                ft.TextButton(
+                                    content=ft.Text("¿Ya tienes cuenta? Inicia sesión"),
+                                    on_click=lambda e: go_login(),
                                 ),
                             ],
                         ),

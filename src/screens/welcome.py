@@ -1,9 +1,7 @@
 import flet as ft
 
-from screens.login import login_screen
 
-
-def welcome_screen(page):
+def welcome_screen(page, go_login):
 
     page.clean()
 
@@ -18,7 +16,7 @@ def welcome_screen(page):
                     ft.Image(
                         src="imagenes/welcome.png",
                         expand=True,
-                        fit=ft.ImageFit.COVER
+                        fit=ft.BoxFit.COVER
                     ),
 
                     # Botón encima de la imagen
@@ -32,20 +30,24 @@ def welcome_screen(page):
                                 height=60
                             ),
 
-                            ft.ElevatedButton(
-                                text="Get Started",
+                            ft.Button(
+                                content=ft.Text("Get Started"),
                                 width=280,
                                 height=55,
 
-                                # Ir a pantalla de login
-                                on_click=lambda e: login_screen(page),
+                                # Ir a pantalla de login (lo maneja main.py)
+                                on_click=go_login,
 
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(
                                         radius=30
                                     )
                                 )
-                            )
+                            ),
+
+                            ft.Container(
+                                height=40
+                            ),
                         ]
                     )
                 ]
