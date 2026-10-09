@@ -5,6 +5,9 @@ from pathlib import Path
 
 import flet as ft
 
+from screens.welcome import welcome_screen
+from screens.login import login_screen
+
 try:
     import flet_audio as fta
 except ImportError:
@@ -91,7 +94,7 @@ def main(page: ft.Page):
 
     # screen: "start" | "quiz" | "end"
     state = {
-        "screen": "start",
+        "screen": "welcome",
         "index": 0,
         "picked": {},       # id -> última opción elegida
         "errors": 0,        # intentos fallidos en esta ronda
@@ -475,6 +478,14 @@ def main(page: ft.Page):
 
     def render():
         screen = state["screen"]
+
+         if screen == "welcome":
+        welcome_screen(page)
+        return
+
+        if screen == "login":
+        login_screen(page)
+        return
 
         # El contador solo se ve durante el quiz
         counter_pill.visible = screen == "quiz"
