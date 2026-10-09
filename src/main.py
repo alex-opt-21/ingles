@@ -158,6 +158,10 @@ def main(page: ft.Page):
         state["t0"] = time.perf_counter()  # arranca el cronómetro
         render()
 
+    def go_login(e=None):
+        state["screen"] = "login"
+        render()
+
     def finish(e=None):
         state["elapsed"] = time.perf_counter() - state["t0"]  # detiene el cronómetro
         state["screen"] = "end"
@@ -479,13 +483,14 @@ def main(page: ft.Page):
     def render():
         screen = state["screen"]
 
-         if screen == "welcome":
-        welcome_screen(page)
-        return
+        if screen == "welcome":
+          welcome_screen(page, go_login)
+           return
+
 
         if screen == "login":
-        login_screen(page)
-        return
+            login_screen(page, start)
+            return
 
         # El contador solo se ve durante el quiz
         counter_pill.visible = screen == "quiz"
