@@ -1,5 +1,7 @@
 import flet as ft
 
+from screens.login import login_screen
+
 
 def welcome_screen(page):
 
@@ -34,6 +36,9 @@ def welcome_screen(page):
                                 text="Get Started",
                                 width=280,
                                 height=55,
+
+                                # Ir a pantalla de login
+                                on_click=lambda e: login_screen(page),
 
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(
