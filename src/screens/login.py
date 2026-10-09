@@ -1,7 +1,7 @@
 import flet as ft
 
 
-def login_screen(page):
+def login_screen(page, go_start):
 
     page.clean()
 
@@ -26,7 +26,6 @@ def login_screen(page):
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
 
                         controls=[
-
 
                             ft.Container(
                                 height=150
@@ -71,6 +70,9 @@ def login_screen(page):
                                 text="Log In",
                                 width=320,
                                 height=55,
+
+                                # Ir a la pantalla de ejercicios
+                                on_click=go_start,
 
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(
