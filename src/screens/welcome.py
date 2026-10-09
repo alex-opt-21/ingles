@@ -3,48 +3,47 @@ import flet as ft
 
 def welcome_screen(page):
 
-    page.bgcolor = "#F7F9FF"
+    page.clean()
 
     page.add(
-        ft.Column(
-            [
-                ft.Container(height=60),
+        ft.Container(
+            expand=True,
 
-                ft.Text(
-                    "Bright English",
-                    size=40,
-                    weight=ft.FontWeight.BOLD,
-                    color="#1B2E5B"
-                ),
+            content=ft.Stack(
+                controls=[
 
-                ft.Container(height=10),
+                    # Imagen de fondo pantalla principal
+                    ft.Image(
+                        src="imagenes/welcome.png",
+                        expand=True,
+                        fit=ft.ImageFit.COVER
+                    ),
 
-                ft.Text(
-                    "Learn English. Speak with confidence.",
-                    size=16,
-                    color="#52627A",
-                    text_align=ft.TextAlign.CENTER
-                ),
+                    # Botón encima de la imagen
+                    ft.Column(
+                        alignment=ft.MainAxisAlignment.END,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
 
-                ft.Container(height=50),
+                        controls=[
 
-                ft.ElevatedButton(
-                    text="Get Started",
-                    width=280,
-                    height=55
-                ),
+                            ft.Container(
+                                height=60
+                            ),
 
-                ft.Container(height=15),
+                            ft.ElevatedButton(
+                                text="Get Started",
+                                width=280,
+                                height=55,
 
-                ft.OutlinedButton(
-                    text="Login",
-                    width=280,
-                    height=55
-                ),
-
-            ],
-
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            alignment=ft.MainAxisAlignment.CENTER
+                                style=ft.ButtonStyle(
+                                    shape=ft.RoundedRectangleBorder(
+                                        radius=30
+                                    )
+                                )
+                            )
+                        ]
+                    )
+                ]
+            )
         )
     )
