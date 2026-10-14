@@ -1,0 +1,11 @@
+{
+  "users": {
+    "juan@gmail.com": {
+      "name": "Juan Orozco",
+      "salt": "ae1ea25b18d5dfa1cada7663d5929773",
+      "hash": "8678e62a9067cc7132b97994b9bdfcbad20a8bfe2a57d25d5b7972502a4e08ba",
+      "xp": 0,
+      "completed": []
+    }
+  }
+}
