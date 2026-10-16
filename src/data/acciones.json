@@ -1,3 +1,4 @@
+
 {
   "lesson_title": "Action Practice",
   "exercises": [
@@ -55,6 +56,61 @@
       "options": ["Dance", "Write", "Eat"],
       "answer": "Write",
       "audio": "audio/write.mp3"
+    },
+    {
+      "id": "sleep-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/sleeping.png",
+      "image_credit": "",
+      "options": ["Sing", "Sleep", "Play"],
+      "answer": "Sleep",
+      "audio": "audio/sleep.mp3"
+    },
+    {
+      "id": "run-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/runing.png",
+      "image_credit": "",
+      "options": ["Run", "Sleep", "Read"],
+      "answer": "Run",
+      "audio": "audio/run.mp3"
+    },
+    {
+      "id": "talk-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/talking.png",
+      "image_credit": "",
+      "options": ["Listen", "Eat", "Talk"],
+      "answer": "Talk",
+      "audio": "audio/talk.mp3"
+    },
+    {
+      "id": "dance-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/danceing.png",
+      "image_credit": "",
+      "options": ["Write", "Dance", "Run"],
+      "answer": "Dance",
+      "audio": "audio/dance.mp3"
+    },
+    {
+      "id": "listen-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/listening.png",
+      "image_credit": "",
+      "options": ["Listen", "Sing", "Sleep"],
+      "answer": "Listen",
+      "audio": "audio/listen.mp3"
     }
   ]
 }
