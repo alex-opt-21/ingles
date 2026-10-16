@@ -1,12 +1,9 @@
-"""
-FRONTEND del ejercicio.
-Solo dibuja la interfaz y reenvía los toques a QuizSession (logica/quiz.py).
-"""
 import asyncio
 
 import flet as ft
 
 from services.ejercicios.ejercicio_service import QuizSession, format_time
+from services.ejercicios.pronunciacion_service import listen_and_check
 from ui.theme import (
     APP_NAME, APP_TAGLINE, LOGO, OPTION_ICONS,
     BLUE, BLUE_SOFT, NAVY, GREY, LINE, TRACK, WHITE,
@@ -82,9 +79,11 @@ class QuizView:
         self.page = page
         self.session = session
         self.on_home = on_home
-        self.mode = "quiz"          # "quiz" | "end"
+        self.mode = "quiz" 
         self._tick_id = 0
         self._player = None
+        self.rec_state = "idle"    
+        self.rec_message = None 
         self._build_static()
 
     # ================= construcción de contenedores fijos =================
@@ -268,12 +267,14 @@ class QuizView:
             await self._speak(self.session.current["audio"])
 
     def _on_back(self, e):
+        self.rec_message = None
         if self.session.back():
             self.render()
         else:
-            self._on_home()  # first exercise: go back to Home
+            self._on_home() 
 
     def _on_next(self, e):
+        self.rec_message = None
         result = self.session.advance()
         if result == "finished":
             self.mode = "end"
@@ -292,8 +293,27 @@ class QuizView:
         else:
             self._toast("First choose the correct answer.")
 
-    def _on_mic(self, e):
-        self._toast("Pronunciation practice is coming soon.")
+    async def _on_mic(self, e):
+        ex = self.session.current
+        if not self.session.is_solved(ex):
+            self._toast("First choose the correct answer.")
+            return
+        if self.rec_state != "idle":
+            return
+
+        self.rec_state = "recording"
+        self.rec_message = None
+        self.render()
+        try:
+            self.rec_message = await asyncio.to_thread(
+                listen_and_check, ex["answer"]
+            )
+        except Exception as err:
+            print(f"Mic error: {err}")
+            self._toast("Could not access the microphone.")
+        finally:
+            self.rec_state = "idle"
+            self.render()
 
     def _on_restart(self, e=None):
         self.show()
@@ -414,25 +434,27 @@ class QuizView:
 
     def _feedback(self, ex: dict) -> ft.Control:
         picked = self.session.picked_for(ex)
-        if picked is None:
-            body_ctrl: ft.Control = ft.Text("Tap an option to answer.", size=13, color=GREY)
-        elif picked == ex["answer"]:
-            body_ctrl = ft.Row(
-                spacing=6,
-                wrap=True,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(ft.Icons.CHECK_CIRCLE, size=18, color=GREEN),
-                    ft.Text("Correct!", size=13, weight=ft.FontWeight.BOLD, color=GREEN_DARK),
-                    ft.Text("Listen and repeat:", size=13, color=GREEN_DARK),
-                    ft.Text(
-                        ex["answer"].lower(),
-                        size=13,
-                        weight=ft.FontWeight.BOLD,
-                        color=GREEN_DARK,
-                        style=ft.TextStyle(decoration=ft.TextDecoration.UNDERLINE),
-                    ),
-                ],
+        if self.rec_message is not None and self.session.is_solved(ex):
+            ok, heard = self.rec_message
+            return ft.Container(
+                height=26,
+                alignment=ft.Alignment.CENTER_LEFT,
+                content=ft.Row(
+                    spacing=6,
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE if ok else ft.Icons.CANCEL,
+                            size=18,
+                            color=GREEN if ok else RED,
+                        ),
+                        ft.Text(
+                            "Great pronunciation!" if ok else f'I heard "{heard or "..."}". Try again.',
+                            size=13,
+                            weight=ft.FontWeight.W_600,
+                            color=GREEN_DARK if ok else RED,
+                        ),
+                    ],
+                ),
             )
         else:
             body_ctrl = ft.Row(
@@ -451,6 +473,10 @@ class QuizView:
         return ft.Container(content=body_ctrl, height=26, alignment=ft.Alignment.CENTER_LEFT)
 
     def _mic_button(self) -> ft.Column:
+        listening = self.rec_state == "recording"
+        color = RED if listening else BLUE
+        label = "Listening..." if listening else "Tap to speak"
+
         return ft.Column(
             spacing=4,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -460,28 +486,24 @@ class QuizView:
                     width=84,
                     height=84,
                     border_radius=42,
-                    bgcolor=ft.Colors.with_opacity(0.12, BLUE),
+                    bgcolor=ft.Colors.with_opacity(0.12, color),
                     alignment=ft.Alignment.CENTER,
                     content=ft.Container(
                         width=62,
                         height=62,
                         border_radius=31,
                         alignment=ft.Alignment.CENTER,
-                        gradient=ft.LinearGradient(
-                            begin=ft.Alignment.TOP_CENTER,
-                            end=ft.Alignment.BOTTOM_CENTER,
-                            colors=["#4BA3FF", BLUE],
-                        ),
+                        bgcolor=color,
                         shadow=ft.BoxShadow(
                             blur_radius=16,
-                            color=ft.Colors.with_opacity(0.4, BLUE),
+                            color=ft.Colors.with_opacity(0.4, color),
                             offset=ft.Offset(0, 6),
                         ),
                         content=ft.Icon(ft.Icons.MIC, size=30, color=WHITE),
                         on_click=self._on_mic,
                     ),
                 ),
-                ft.Text("Tap to speak", size=11, color=BLUE),
+                ft.Text(label, size=11, color=color),
             ],
         )
 
