@@ -1,9 +1,12 @@
+
 import flet as ft
 
+# INFORMACION GENERAL
 APP_NAME = "Saylo"
 APP_TAGLINE = "Learn English"
-LOGO = "imagenes/logos/logo.png"  # relativo a la carpeta assets
+LOGO = "imagenes/logos/logo.png"
 
+# COLORES GENERALES
 BLUE = "#007AFF"
 BLUE_SOFT = "#E3EFFF"
 NAVY = "#1C1C1E"
@@ -23,7 +26,16 @@ ICON_IDLE = "#7FA6D6"
 DISABLED_BG = "#DCE6F5"
 DISABLED_TEXT = "#9AB0CE"
 
-# Icono a la derecha de cada opción (según el verbo).
+# COLORES DE ACTION PRACTICE
+EXERCISE_BLUE = "#087CFA"
+EXERCISE_NAVY = "#08256E"
+EXERCISE_SOFT_BLUE = "#6185BD"
+EXERCISE_GREEN = "#129946"
+EXERCISE_RED = "#E84245"
+EXERCISE_WHITE = "#FFFFFF"
+EXERCISE_FONT = "Comic Sans MS"
+
+# ICONOS DE LOS VERBOS
 OPTION_ICONS = {
     "eat": "RESTAURANT",
     "drink": "LOCAL_DRINK",
@@ -41,7 +53,6 @@ OPTION_ICONS = {
     "study": "SCHOOL",
     "drive": "DIRECTIONS_CAR",
 }
-
 
 def glass(opacity: float = 0.85) -> str:
     return ft.Colors.with_opacity(opacity, WHITE)

@@ -1,4 +1,5 @@
 
+
 {
   "lesson_title": "Action Practice",
   "exercises": [
@@ -111,6 +112,72 @@
       "options": ["Listen", "Sing", "Sleep"],
       "answer": "Listen",
       "audio": "audio/listen.mp3"
+    },
+    {
+      "id": "answer-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/answering.png",
+      "image_credit": "",
+      "options": ["Answer", "Ask", "Write"],
+      "answer": "Answer",
+      "audio": "audio/answer.mp3"
+    },
+    {
+      "id": "ask-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/asking.png",
+      "image_credit": "",
+      "options": ["Speak", "Ask", "Listen"],
+      "answer": "Ask",
+      "audio": "audio/ask.mp3"
+    },
+    {
+      "id": "learn-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/learning.png",
+      "image_credit": "",
+      "options": ["Teach", "Read", "Learn"],
+      "answer": "Learn",
+      "audio": "audio/learn.mp3"
+    },
+    {
+      "id": "practice-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/practice.png",
+      "image_credit": "",
+      "options": ["Practice", "Play", "Sleep"],
+      "answer": "Practice",
+      "audio": "audio/practice.mp3"
+    },
+    {
+      "id": "speak-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/speaking.png",
+      "image_credit": "",
+      "options": ["Listen", "Speak", "Write"],
+      "answer": "Speak",
+      "audio": "audio/speak.mp3"
+    },
+    {
+      "id": "teach-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/teaching.png",
+      "image_credit": "",
+      "options": ["Learn", "Ask", "Teach"],
+      "answer": "Teach",
+      "audio": "audio/teach.mp3"
     }
   ]
 }
