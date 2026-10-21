@@ -1,69 +1,32 @@
-import flet as ft
 
-# Adjust this import to where your theme lives (e.g. ui.theme)
+import flet as ft
 from ui.theme import (
-    APP_NAME, APP_TAGLINE, LOGO,
-    BLUE, BLUE_SOFT, NAVY, GREY, LINE, TRACK, WHITE, RED, RED_BG,
-    BG_TOP, BG_BOTTOM,
-    glass,
+    BLUE, BLUE_SOFT, NAVY, GREY, LINE, WHITE,
+    RED, RED_BG, BG_TOP, HOME_SUBTEXT, HOME_NAV_TEXT,
+    HOME_CARD_BORDER, HOME_XP_COLOR, HOME_BUTTON_TEXT,
 )
 
-AMBER = "#FFB800"
+BASE_W, BASE_H = 941, 1672
+FONT = "Comic Sans MS"
 
 
 class HomeView:
     def __init__(self, page: ft.Page, user: dict, total_exercises: int, on_practice, on_logout):
-        self.page = page
-        self.user = user                  # needs: name, email, xp, completed
-        self.total = total_exercises
-        self.on_practice = on_practice    # opens the exercise
-        self.on_logout = on_logout
-        self.tab = "home"                 # "home" | "profile"
+        self.page, self.user, self.total = page, user, total_exercises
+        self.on_practice, self.on_logout = on_practice, on_logout
+        self.tab, self._width, self._height = "home", 440, 844
+        self.shell = ft.Container()
 
-        self.body = ft.Column(
-            spacing=16,
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
-            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
-        )
-        self.nav = ft.Container(padding=ft.Padding.only(left=12, right=12, bottom=10))
-
-        self.shell = ft.Container(
-            width=390,
-            height=844,
-            content=ft.SafeArea(
-                expand=True,
-                content=ft.Column(
-                    expand=True,
-                    spacing=10,
-                    controls=[
-                        self._build_header(),
-                        ft.Container(
-                            content=self.body,
-                            expand=True,
-                            padding=ft.Padding.symmetric(horizontal=16),
-                        ),
-                        self.nav,
-                    ],
-                ),
-            ),
-        )
-
-    # ================= life cycle =================
+    # PANTALLA PRINCIPAL
 
     def show(self):
         self.tab = "home"
         self.page.clean()
         self.page.add(
             ft.Container(
-                expand=True,
+                expand=True, bgcolor=WHITE,
                 alignment=ft.Alignment.TOP_CENTER,
-                gradient=ft.LinearGradient(
-                    begin=ft.Alignment.TOP_CENTER,
-                    end=ft.Alignment.BOTTOM_CENTER,
-                    colors=[BG_TOP, BG_BOTTOM],
-                ),
-                content=self.shell,
+                content=self.shell
             )
         )
         self.page.on_resize = self._fit_card
@@ -74,21 +37,81 @@ class HomeView:
         self.page.on_resize = None
 
     def _fit_card(self, e=None):
-        if self.page.width:
-            self.shell.width = min(self.page.width, 440)
-        if self.page.height:
-            self.shell.height = self.page.height
-        self.page.update()
+        width = min(self.page.width or 440, 540)
+        height = self.page.height or 844
+        if (
+            abs(width - self._width) > 1
+            or abs(height - self._height) > 1
+            or self.shell.content is None
+        ):
+            self._width, self._height = width, height
+            self.render()
 
-    def _toast(self, message: str):
+    # POSICIONES Y TEXTOS
+
+    def _at(self, x, y, w, h, content=None, on_click=None, **extra):
+        sx, sy = self._width / BASE_W, self._height / BASE_H
+        return ft.Container(
+            left=x*sx, top=y*sy, width=w*sx, height=h*sy,
+            alignment=extra.pop("alignment", ft.Alignment.CENTER),
+            content=content, on_click=on_click, **extra
+        )
+
+    def _text(self, value, size, color=NAVY, bold=True, align=ft.TextAlign.LEFT):
+        return ft.Text(
+            str(value), size=size*self._width/BASE_W, color=color,
+            font_family=FONT,
+            weight=ft.FontWeight.BOLD if bold else ft.FontWeight.NORMAL,
+            text_align=align, max_lines=1,
+            overflow=ft.TextOverflow.ELLIPSIS
+        )
+
+    def _label(self, x, y, w, h, value, size, color=NAVY, bold=True, center=False):
+        align = ft.TextAlign.CENTER if center else ft.TextAlign.LEFT
+        box_align = ft.Alignment.CENTER if center else ft.Alignment.CENTER_LEFT
+        return self._at(
+            x, y, w, h,
+            self._text(value, size, color, bold, align),
+            alignment=box_align
+        )
+
+    def _background(self):
+        return ft.Image(
+            src="imagenes/home.png", width=self._width,
+            height=self._height, fit=ft.BoxFit.FILL,
+            left=0, top=0,
+            error_content=ft.Container(
+                bgcolor=BG_TOP, alignment=ft.Alignment.CENTER,
+                content=ft.Text("Falta imagenes/home.png")
+            )
+        )
+
+    def _touch(self, x, y, w, h, action):
+        return self._at(x, y, w, h, on_click=action)
+
+    # DATOS DEL USUARIO
+
+    def _done(self):
+        return min(len(self.user.get("completed", [])), self.total)
+
+    def _xp(self):
+        return self.user.get("xp", 0)
+
+    def _first_name(self):
+        name = (self.user.get("name") or "").strip()
+        return name.split()[0] if name else ""
+
+    # NAVEGACION
+
+    def _toast(self, message):
         try:
-            self.page.show_dialog(ft.SnackBar(content=ft.Text(message)))
-        except Exception as err:
-            print(f"{message} ({err})")
+            self.page.show_dialog(
+                ft.SnackBar(content=ft.Text(message))
+            )
+        except Exception:
+            print(message)
 
-    # ================= handlers =================
-
-    def _on_nav(self, key: str):
+    def _on_nav(self, key):
         if key in ("lessons", "games"):
             self._toast("Coming soon!")
             return
@@ -102,267 +125,255 @@ class HomeView:
         self.close()
         self.on_logout()
 
-    # ================= UI pieces =================
+    def _coming_soon(self, e=None):
+        self._toast("Coming soon!")
 
-    def _done(self) -> int:
-        return min(len(self.user["completed"]), self.total)
+    # MENU HOME
 
-    def _build_header(self) -> ft.Control:
-        xp_chip = ft.Container(
-            content=ft.Row(
-                spacing=6,
-                tight=True,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(ft.Icons.STAR, size=20, color=AMBER),
-                    ft.Text(str(self.user["xp"]), size=15, weight=ft.FontWeight.W_800, color=NAVY),
-                ],
+    def _build_home(self):
+        first = self._first_name()
+        greeting = f"Hello, {first}!" if first else "Hello!"
+        items = [self._background()]
+
+        # Encabezado y puntos XP
+        items.extend([
+            self._label(285, 104, 360, 87, greeting, 50),
+            self._label(302, 183, 347, 53, "Ready to learn today?", 27, HOME_SUBTEXT, False),
+            self._touch(685, 137, 200, 112, lambda e: self._on_nav("profile")),
+            self._at(
+                755, 145, 96, 82,
+                ft.Container(
+                    alignment=ft.Alignment.CENTER,
+                    content=ft.Text(
+                        str(self._xp()), size=17,
+                        weight=ft.FontWeight.BOLD,
+                        color=HOME_XP_COLOR,
+                        font_family=FONT,
+                        text_align=ft.TextAlign.CENTER,
+                        max_lines=1, no_wrap=True
+                    )
+                ),
+                alignment=ft.Alignment.CENTER
             ),
-            padding=ft.Padding.symmetric(horizontal=14, vertical=8),
-            border_radius=20,
-            bgcolor=glass(0.9),
-            border=ft.Border.all(1, LINE),
-        )
-        return ft.Container(
-            padding=ft.Padding.only(left=16, right=16, top=8),
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Row(
-                        spacing=10,
-                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            ft.Image(
-                                src=LOGO,
-                                width=44,
-                                height=44,
-                                fit=ft.BoxFit.CONTAIN,
-                                error_content=ft.Icon(ft.Icons.IMAGE_OUTLINED, size=30, color=GREY),
-                            ),
-                            ft.Column(
-                                spacing=0,
-                                controls=[
-                                    ft.Text(APP_NAME, size=18, weight=ft.FontWeight.BOLD, color=NAVY),
-                                    ft.Text(APP_TAGLINE, size=12, color=GREY),
-                                ],
-                            ),
-                        ],
-                    ),
-                    xp_chip,
-                ],
-            ),
-        )
+        ])
 
-    def _progress_bar(self, done: int) -> ft.Container:
-        rest = self.total - done
-        parts = []
-        if done > 0:
-            parts.append(ft.Container(expand=done, height=6, bgcolor=BLUE))
-        if rest > 0:
-            parts.append(ft.Container(expand=rest, height=6))
-        return ft.Container(
-            height=6,
-            expand=True,
-            border_radius=3,
-            bgcolor=TRACK,
-            clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-            content=ft.Row(spacing=0, controls=parts),
-        )
-
-    def _practice_card(self) -> ft.Container:
-        done = self._done()
-        return ft.Container(
-            padding=18,
-            border_radius=24,
-            gradient=ft.LinearGradient(
-                begin=ft.Alignment.TOP_CENTER,
-                end=ft.Alignment.BOTTOM_CENTER,
-                colors=[WHITE, "#EAF3FF"],
+        # Continue Learning
+        items.extend([
+            self._touch(40, 270, 850, 282, self._on_practice),
+            self._label(100, 294, 630, 93, "Continue Learning", 58),
+            self._label(
+                372, 471, 90, 48,
+                f"{self._done()}/{self.total}",
+                27, NAVY, True, True
             ),
-            border=ft.Border.all(1, LINE),
-            shadow=ft.BoxShadow(
-                blur_radius=18,
-                color=ft.Colors.with_opacity(0.10, "#1F2A55"),
-                offset=ft.Offset(0, 6),
-            ),
-            on_click=self._on_practice,
-            content=ft.Row(
-                spacing=14,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Container(
-                        width=64,
-                        height=64,
-                        border_radius=18,
-                        bgcolor=BLUE_SOFT,
-                        alignment=ft.Alignment.CENTER,
-                        content=ft.Icon(ft.Icons.EDIT_NOTE, size=34, color=BLUE),
-                    ),
-                    ft.Column(
-                        expand=True,
-                        spacing=4,
-                        controls=[
-                            ft.Text("Practice 1", size=20, weight=ft.FontWeight.W_800, color=NAVY),
-                            ft.Text("Look and choose", size=13, color=GREY),
-                            ft.Row(
-                                spacing=8,
-                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                                controls=[
-                                    self._progress_bar(done),
-                                    ft.Text(f"{done}/{self.total}", size=12, color=GREY),
-                                ],
-                            ),
-                        ],
-                    ),
-                    ft.Container(
-                        width=40,
-                        height=40,
-                        border_radius=20,
-                        bgcolor=WHITE,
-                        alignment=ft.Alignment.CENTER,
-                        content=ft.Icon(ft.Icons.CHEVRON_RIGHT, size=24, color=BLUE),
-                    ),
-                ],
-            ),
-        )
+            self._touch(755, 433, 120, 123, self._on_practice),
+        ])
 
-    def _stat(self, label: str, value: str) -> ft.Control:
-        return ft.Column(
-            spacing=0,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                ft.Text(value, size=20, weight=ft.FontWeight.W_800, color=BLUE),
-                ft.Text(label, size=12, color=GREY),
-            ],
-        )
-
-    # ================= tabs =================
-
-    def _build_home(self) -> list[ft.Control]:
-        name = (self.user.get("name") or "").strip()
-        first = name.split()[0] if name else ""
-        return [
-            ft.Column(
-                spacing=2,
-                controls=[
-                    ft.Text(
-                        f"Hello, {first}!" if first else "Hello!",
-                        size=30,
-                        weight=ft.FontWeight.W_800,
-                        color=NAVY,
-                    ),
-                    ft.Text("Ready to learn today?", size=14, color=GREY),
-                ],
-            ),
-            ft.Text("Practice", size=16, weight=ft.FontWeight.W_700, color=NAVY),
-            self._practice_card(),
+        # Tarjetas principales
+        cards = [
+            ("Lessons", "Explore new topics", 40, 568, 72, 780, 53, lambda e: self._on_nav("lessons")),
+            ("Practice", "Build your skills", 477, 568, 500, 780, 53, self._on_practice),
+            ("Mini Games", "Learn while playing", 40, 895, 72, 1080, 50, lambda e: self._on_nav("games")),
+            ("My Progress", "See how far you go", 477, 895, 501, 1080, 49, lambda e: self._on_nav("profile")),
         ]
 
-    def _build_profile(self) -> list[ft.Control]:
-        name = (self.user.get("name") or "").strip()
-        return [
-            ft.Container(height=8),
-            ft.Container(
-                padding=24,
-                border_radius=28,
-                bgcolor=glass(0.9),
-                border=ft.Border.all(1, LINE),
-                content=ft.Column(
-                    spacing=10,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        ft.Container(
-                            width=84,
-                            height=84,
-                            border_radius=42,
-                            bgcolor=BLUE_SOFT,
-                            alignment=ft.Alignment.CENTER,
-                            content=ft.Text(
-                                (name[:1] or "?").upper(),
-                                size=36,
-                                weight=ft.FontWeight.W_800,
-                                color=BLUE,
-                            ),
-                        ),
-                        ft.Text(name, size=22, weight=ft.FontWeight.W_800, color=NAVY),
-                        ft.Text(self.user.get("email", ""), size=13, color=GREY),
-                        ft.Container(height=4),
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
-                            controls=[
-                                self._stat("Total XP", str(self.user["xp"])),
-                                self._stat("Completed", f"{self._done()}/{self.total}"),
-                            ],
-                        ),
-                    ],
+        for title, subtitle, tx, ty, x, y, size, action in cards:
+            height = 315 if ty == 568 else 295
+            items.extend([
+                self._touch(tx, ty, 410, height, action),
+                self._label(x, y, 335, 57, title, size),
+                self._label(
+                    x+1, y+55, 335, 42, subtitle,
+                    25 if title == "My Progress" else 27,
+                    HOME_SUBTEXT, False
                 ),
+            ])
+
+        # Learning Path
+        items.extend([
+            self._label(160, 1210, 450, 63, "Learning Path", 47),
+            self._label(
+                162, 1262, 320, 44,
+                "Your next steps", 26, HOME_SUBTEXT, False
             ),
-            ft.Container(
-                height=52,
-                border_radius=16,
-                bgcolor=RED_BG,
-                alignment=ft.Alignment.CENTER,
-                on_click=self._on_logout,
+        ])
+
+        # View All
+        items.append(self._at(
+            710, 1208, 175, 88,
+            content=ft.Container(
+                expand=True, alignment=ft.Alignment.CENTER,
+                padding=ft.Padding.symmetric(horizontal=5, vertical=2),
+                border_radius=40,
+                bgcolor=ft.Colors.with_opacity(0.92, WHITE),
+                border=ft.Border.all(2, HOME_CARD_BORDER),
                 content=ft.Row(
+                    spacing=0,
                     alignment=ft.MainAxisAlignment.CENTER,
                     vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=8,
                     controls=[
-                        ft.Icon(ft.Icons.LOGOUT, size=20, color=RED),
-                        ft.Text("Log out", size=16, weight=ft.FontWeight.W_600, color=RED),
-                    ],
-                ),
+                        ft.Text(
+                            "View All", size=11,
+                            weight=ft.FontWeight.BOLD,
+                            color=HOME_BUTTON_TEXT,
+                            font_family=FONT, no_wrap=True
+                        ),
+                        ft.Icon(
+                            ft.Icons.CHEVRON_RIGHT,
+                            size=14, color=HOME_BUTTON_TEXT
+                        ),
+                    ]
+                )
             ),
+            on_click=self._coming_soon
+        ))
+
+        # Barra inferior
+        nav = [
+            ("Home", 45, 74, 161, BLUE, "home"),
+            ("Lessons", 251, 291, 151, HOME_NAV_TEXT, "lessons"),
+            ("Games", 470, 514, 129, HOME_NAV_TEXT, "games"),
+            ("Profile", 681, 706, 159, HOME_NAV_TEXT, "profile"),
         ]
 
-    # ================= navbar =================
+        for title, hx, lx, lw, color, tab in nav:
+            items.extend([
+                self._touch(
+                    hx, 1510, 192, 145,
+                    lambda e, target=tab: self._on_nav(target)
+                ),
+                self._label(
+                    lx, 1595, lw, 46, title,
+                    31 if tab == "home" else 30,
+                    color, True, True
+                ),
+            ])
 
-    def _nav_item(self, key: str, icon, label: str) -> ft.Container:
-        active = self.tab == key
-        color = BLUE if active else GREY
-        return ft.Container(
-            expand=True,
-            padding=ft.Padding.symmetric(vertical=8),
-            border_radius=18,
-            bgcolor=BLUE_SOFT if active else None,
-            on_click=lambda e, k=key: self._on_nav(k),
-            content=ft.Column(
-                spacing=2,
-                tight=True,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(icon, size=26, color=color),
-                    ft.Text(label, size=12, weight=ft.FontWeight.W_600, color=color),
-                ],
+        return items
+
+    # PERFIL CON PLANTILLA PROFILE.PNG
+
+    def _build_profile(self):
+        name = self.user.get("name", "") or "Student"
+        email = self.user.get("email", "") or ""
+        initial = name.strip()[:1].upper() or "?"
+
+        items = [
+            ft.Image(
+                src="imagenes/profile.png",
+                width=self._width,
+                height=self._height,
+                fit=ft.BoxFit.FILL,
+                left=0,
+                top=0,
+                error_content=ft.Container(
+                    bgcolor=BG_TOP,
+                    alignment=ft.Alignment.CENTER,
+                    content=ft.Text("Falta imagenes/profile.png")
+                )
+            )
+        ]
+
+        # Encabezado
+        items.extend([
+            self._label(53, 49, 89, 95, "A", 73, WHITE, True, True),
+            self._label(
+                155, 48, 590, 105,
+                "English Adventure", 43, NAVY
             ),
+            self._label(
+                250, 222, 445, 125,
+                "My Profile", 66, NAVY, True, True
+            ),
+            self._label(
+                148, 355, 645, 65,
+                "Here is your learning progress!",
+                33, HOME_SUBTEXT, False, True
+            ),
+        ])
+
+        # Nombre y correo: ambos un poquito más grandes
+        items.extend([
+            self._label(
+                174, 522, 218, 190,
+                initial, 115, WHITE, True, True
+            ),
+            self._label(
+                423, 520, 365, 95,
+                name, 69, NAVY
+            ),
+            self._label(
+                423, 614, 365, 65,
+                email, 33, HOME_SUBTEXT, False
+            ),
+        ])
+
+        # Puntos y ejercicios completados
+        items.extend([
+            self._label(
+                245, 794, 195, 67,
+                "Total XP", 37, NAVY, True, True
+            ),
+            self._label(
+                247, 862, 188, 90,
+                str(self._xp()), 61, NAVY, True, True
+            ),
+            self._label(
+                615, 794, 202, 67,
+                "Completed", 35, NAVY, True, True
+            ),
+            self._label(
+                613, 862, 205, 90,
+                f"{self._done()} / {self.total}",
+                46, NAVY, True, True
+            ),
+        ])
+
+        # Botones
+        items.extend([
+            self._at(
+                258, 1017, 430, 105,
+                self._text("Back to Home", 47, NAVY),
+                alignment=ft.Alignment.CENTER_LEFT,
+                on_click=lambda e: self._on_nav("home")
+            ),
+            self._at(
+                258, 1160, 430, 98,
+                self._text("Log out", 47, NAVY),
+                alignment=ft.Alignment.CENTER_LEFT,
+                on_click=self._on_logout
+            ),
+            self._touch(
+                92, 1001, 760, 131,
+                lambda e: self._on_nav("home")
+            ),
+            self._touch(
+                92, 1144, 760, 125,
+                self._on_logout
+            ),
+        ])
+
+        # Logros
+        items.append(
+            self._label(
+                250, 1300, 440, 90,
+                "My Achievements", 43, NAVY, True, True
+            )
         )
 
-    def _build_nav(self) -> ft.Container:
-        return ft.Container(
-            padding=6,
-            border_radius=26,
-            bgcolor=glass(0.95),
-            border=ft.Border.all(1, LINE),
-            shadow=ft.BoxShadow(
-                blur_radius=16,
-                color=ft.Colors.with_opacity(0.08, "#1F2A55"),
-                offset=ft.Offset(0, 4),
-            ),
-            content=ft.Row(
-                spacing=4,
-                controls=[
-                    self._nav_item("home", ft.Icons.HOME, "Home"),
-                    self._nav_item("lessons", ft.Icons.MENU_BOOK, "Lessons"),
-                    self._nav_item("games", ft.Icons.SPORTS_ESPORTS, "Games"),
-                    self._nav_item("profile", ft.Icons.PERSON_OUTLINE, "Profile"),
-                ],
-            ),
-        )
+        return items
 
-    # ================= render =================
+    # MOSTRAR HOME O PERFIL
 
     def render(self):
-        self.body.controls = self._build_home() if self.tab == "home" else self._build_profile()
-        self.nav.content = self._build_nav()
+        self.shell.width, self.shell.height = self._width, self._height
+        self.shell.content = ft.Stack(
+            width=self._width,
+            height=self._height,
+            controls=(
+                self._build_home()
+                if self.tab == "home"
+                else self._build_profile()
+            )
+        )
         self.page.update()
