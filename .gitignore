@@ -25,3 +25,5 @@ build/
 
 # macOS
 .DS_Store
+src/services/auth/storage/
+src/ingles.egg-info/
