@@ -1,0 +1,74 @@
+{
+  "exercises": [
+    {
+      "id": "q1",
+      "scene": "fiesta",
+      "question": "What is he celebrating?",
+      "answer": "His birthday.",
+      "options": [
+        "His birthday.",
+        "A soccer match.",
+        "A school test."
+      ],
+      "hint": "Look at the cake and balloons.",
+      "image": "imagenes/questions/Fiesta.png",
+      "audio": "audio/questions/his_birthday_c588adfe68.mp3"
+    },
+    {
+      "id": "q2",
+      "scene": "nino",
+      "question": "Where is the boy?",
+      "answer": "He is in the park.",
+      "options": [
+        "He is in the park.",
+        "He is at school.",
+        "He is in the kitchen."
+      ],
+      "hint": "Look at the trees and the bench.",
+      "image": "imagenes/questions/Niño.png",
+      "audio": "audio/questions/he_is_in_the_park_8a475be709.mp3"
+    },
+    {
+      "id": "q3",
+      "scene": "fiesta",
+      "question": "What is on the table?",
+      "answer": "A birthday cake.",
+      "options": [
+        "A soccer ball.",
+        "A birthday cake.",
+        "A school bag."
+      ],
+      "hint": "Look at the candles.",
+      "image": "imagenes/questions/Fiesta.png",
+      "audio": "audio/questions/a_birthday_cake_896faa02cf.mp3"
+    },
+    {
+      "id": "q4",
+      "scene": "nino",
+      "question": "What is he wearing?",
+      "answer": "A blue cap.",
+      "options": [
+        "A blue cap.",
+        "A red helmet.",
+        "A green hat."
+      ],
+      "hint": "Look at the boy’s head.",
+      "image": "imagenes/questions/Niño.png",
+      "audio": "audio/questions/a_blue_cap_6571fa0493.mp3"
+    },
+    {
+      "id": "q5",
+      "scene": "fiesta",
+      "question": "What is beside the cake?",
+      "answer": "A present.",
+      "options": [
+        "A computer.",
+        "A bicycle.",
+        "A present."
+      ],
+      "hint": "Look at the gift box.",
+      "image": "imagenes/questions/Fiesta.png",
+      "audio": "audio/questions/a_present_c074301e5b.mp3"
+    }
+  ]
+}

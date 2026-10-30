@@ -1,13 +1,3 @@
-"""Vista Saylo: controles de Flet + dos fondos decorativos PNG.
-
-Los fondos se sirven desde la carpeta assets configurada en ft.run():
-  imagenes/fondo_nubes.png
-  imagenes/hoja_central.png
-
-La ilustracion de cada ejercicio sigue usando ex["image"].
-Los botones, textos, opciones y demas interacciones son controles reales.
-"""
-
 import asyncio
 import struct
 from pathlib import Path

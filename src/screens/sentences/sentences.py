@@ -1,24 +1,3 @@
-"""Saylo · SentencesView con fondos decorativos y controles reales de Flet.
-
-Reemplaza el contenido de la vista SentencesView por este archivo.
-Los PNG deben estar en src/assets/imagenes/:
-    fondo_nubes.png
-    hoja_central.png
-
-Las imágenes de los ejercicios continúan viniendo de session.current['image'].
-Para completar, escribir `answer` o la oración completa y pronunciar esta última.
-`session.choose(answer)` conserva el progreso y XP del servicio existente.
-Después de pronunciar, marca el ejercicio en `session.mark_pronounced(ex)`
-cuando SentencesSession expone ese método.
-Si los prompts no contienen hueco, cada ejercicio debe incluir `sentence`.
-No se usa la captura de interfaz 'imagenes/sentences/practica.png'.
-
-Importante: para PAUSA con tiempo congelado y FINALIZACION persistida,
-SentencesSession debe implementar pause(), resume() y finish_early(),
-respectivamente. Si alguno no existe, esta vista mantiene las pantallas
-operativas, pero el servicio es responsable del cronómetro y de los datos.
-"""
-
 import asyncio
 import hashlib
 import time

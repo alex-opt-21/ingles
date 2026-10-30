@@ -13,13 +13,16 @@ NAV_TEXT = "#536B96"
 
 class HomeView:
     def __init__(self, page, user, total_exercises, on_practice,
-                 on_logout, on_sentences=None):
+                 on_logout, on_sentences=None, on_questions=None,
+                 on_phrases=None):
         self.page = page
         self.user = user
         self.total = total_exercises
         self.on_practice = on_practice
         self.on_logout = on_logout
         self.on_sentences = on_sentences
+        self.on_questions = on_questions
+        self.on_phrases = on_phrases
         self.tab = "home"
         self._width, self._height = 440, 844
         self.shell = ft.Container()
@@ -124,6 +127,18 @@ class HomeView:
         else:
             self._coming_soon()
 
+    def _on_questions(self, e=None):
+        if self.on_questions:
+            self.on_questions()
+        else:
+            self._coming_soon()
+
+    def _on_phrases(self, e=None):
+        if self.on_phrases:
+            self.on_phrases()
+        else:
+            self._coming_soon()
+
     def _on_continue(self, e=None):
         self.on_practice()
 
@@ -222,8 +237,8 @@ class HomeView:
             self._touch(40, 270, 850, 282, self._on_continue),
             self._touch(40, 568, 410, 315, self._on_flashcards),
             self._touch(477, 568, 410, 315, self._on_sentences),
-            self._touch(40, 895, 410, 100, self._coming_soon),
-            self._touch(477, 895, 410, 100, self._coming_soon),
+            self._touch(40, 895, 410, 100, self._on_questions),
+            self._touch(477, 895, 410, 100, self._on_phrases),
             self._touch(40, 1000, 850, 165, self._coming_soon),
             self._touch(65, 1300, 275, 130,
                         lambda e: self._select_level("Basic")),

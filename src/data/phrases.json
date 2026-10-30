@@ -1,0 +1,28 @@
+{
+  "phrases": [
+    {
+      "id": "phrase_1",
+      "prompt": "Greeting someone",
+      "image": "imagenes/phrases/Escuela.png",
+      "answer": "Good morning!",
+      "options": [
+        "Good morning!",
+        "Thank you!",
+        "See you later!"
+      ],
+      "audio": "audio/phrases/good_morning_33e8886999.mp3"
+    },
+    {
+      "id": "phrase_2",
+      "prompt": "Ordering food",
+      "image": "imagenes/phrases/Chef.png",
+      "answer": "I'd like a sandwich, please.",
+      "options": [
+        "I'd like a sandwich, please.",
+        "My name is Juan.",
+        "Good night!"
+      ],
+      "audio": "audio/phrases/i_d_like_a_sandwich_please_1ed8bfbc8a.mp3"
+    }
+  ]
+}
