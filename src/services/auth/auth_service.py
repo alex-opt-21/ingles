@@ -6,8 +6,8 @@ import re
 import secrets
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
-STORAGE_DIR = Path(os.getenv("FLET_APP_STORAGE_DATA") or BASE_DIR / "storage")
+BASE_DIR = Path(__file__).resolve().parent
+STORAGE_DIR = BASE_DIR / "storage"
 USERS_FILE = STORAGE_DIR / "users.json"
 
 ITERATIONS = 200_000
