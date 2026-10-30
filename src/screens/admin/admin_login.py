@@ -2,6 +2,7 @@
 import flet as ft
 
 from services.admin import admin_service
+from services.auth import auth_service as auth
 
 
 def admin_login_screen(page, on_success, on_back):
@@ -9,7 +10,6 @@ def admin_login_screen(page, on_success, on_back):
 
     azul = "#1E3A70"
     azul_oscuro = "#172D55"
-    celeste = "#80ADEB"
     blanco = "#FFFFFF"
 
     email = ft.TextField(
@@ -17,7 +17,7 @@ def admin_login_screen(page, on_success, on_back):
         width=320,
         keyboard_type=ft.KeyboardType.EMAIL,
         prefix_icon=ft.Icons.MAIL_OUTLINE,
-        border_radius=14,
+        border=ft.OutlineInputBorder(border_radius=14),
         autofocus=True,
     )
 
@@ -27,7 +27,7 @@ def admin_login_screen(page, on_success, on_back):
         password=True,
         can_reveal_password=True,
         prefix_icon=ft.Icons.LOCK_OUTLINE,
-        border_radius=14,
+        border=ft.OutlineInputBorder(border_radius=14),
     )
 
     mensaje = ft.Text(
@@ -37,6 +37,64 @@ def admin_login_screen(page, on_success, on_back):
         text_align=ft.TextAlign.CENTER,
     )
 
+    def ingresar(e=None):
+        boton_ingresar.disabled = True
+        mensaje.value = ""
+        page.update()
+
+        try:
+            correo = (email.value or "").strip().lower()
+            contrasena = password.value or ""
+
+            print("INICIO DEL EVENTO DE INGRESO", flush=True)
+            print("CORREO RECIBIDO:", correo, flush=True)
+            print("CONTRASEÑA RECIBIDA:", bool(contrasena), flush=True)
+
+            if not correo or not contrasena:
+                mensaje.value = "Completa el correo y la contraseña."
+                return
+
+            print("INICIANDO VALIDACION", flush=True)
+            print("ARCHIVO DE USUARIOS:", auth.USERS_FILE, flush=True)
+
+            usuarios = auth._load()["users"]
+            usuario = usuarios.get(correo)
+
+            print("CUENTA ENCONTRADA:", usuario is not None, flush=True)
+
+            if usuario:
+                print("ROL:", usuario.get("role"), flush=True)
+                print("ACTIVA:", usuario.get("active"), flush=True)
+
+            ok, resultado = admin_service.admin_login(
+                correo,
+                contrasena,
+            )
+
+            print("VALIDACION FINALIZADA:", ok, flush=True)
+            print("DETALLE DEL RESULTADO:", resultado, flush=True)
+
+            if not ok:
+                mensaje.value = resultado
+                password.value = ""
+                return
+
+            mensaje.value = ""
+            print("ACCESO ADMINISTRATIVO CORRECTO", flush=True)
+            on_success(resultado)
+
+        except Exception as error:
+            import traceback
+
+            traceback.print_exc()
+            mensaje.value = (
+                f"No se pudo iniciar sesión: {type(error).__name__}"
+            )
+
+        finally:
+            boton_ingresar.disabled = False
+            page.update()
+
     boton_ingresar = ft.Button(
         content=ft.Text(
             "Ingresar al panel",
@@ -45,6 +103,7 @@ def admin_login_screen(page, on_success, on_back):
         ),
         width=320,
         height=48,
+        on_click=ingresar,
         style=ft.ButtonStyle(
             bgcolor=azul_oscuro,
             color=blanco,
@@ -52,39 +111,6 @@ def admin_login_screen(page, on_success, on_back):
         ),
     )
 
-    def ingresar(e=None):
-        boton_ingresar.disabled = True
-        mensaje.value = ""
-        page.update()
-
-        try:
-            ok, resultado = admin_service.admin_login(
-                email.value,
-                password.value,
-            )
-
-            if not ok:
-                mensaje.value = resultado
-                password.value = ""
-                return
-
-            on_success(resultado)
-
-        except Exception as error:
-            import traceback
-            print("\n=== ERROR EN ADMINISTRACION ===")
-            traceback.print_exc()
-
-            mensaje.value = (
-                f"Error al abrir el panel: {type(error).__name__}. "
-                "Revisa la terminal."
-            )
-
-        finally:
-            boton_ingresar.disabled = False
-            page.update()
-
-    boton_ingresar.on_click = ingresar
     password.on_submit = ingresar
 
     tarjeta = ft.Container(
