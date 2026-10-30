@@ -3,7 +3,6 @@ import re
 
 import speech_recognition as sr
 
-# Palabras que suenan igual o muy parecido al verbo esperado
 SOUND_ALIKES = {
     "eat": {"it", "eight", "eats", "eating", "heat", "meet", "e", "ate"},
     "read": {"red", "reed", "reid", "ready", "rid", "reads", "reading"},
@@ -37,7 +36,7 @@ def _matches(heard_words: list[str], target: str, threshold: float) -> bool:
 def listen_and_check(expected: str, threshold: float = 0.75):
     """Escucha el micrófono y devuelve (ok, lo_que_se_entendio)."""
     r = sr.Recognizer()
-    r.pause_threshold = 0.6          # corta rápido tras una palabra corta
+    r.pause_threshold = 0.6          
     r.non_speaking_duration = 0.4
 
     try:
