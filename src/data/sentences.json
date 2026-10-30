@@ -46,6 +46,105 @@
       "image": "imagenes/sentences/sleep.png",
       "options": ["sleeping", "sleep", "sleeps"],
       "answer": "sleep"
+    },
+    {
+      "id": "sentence-06",
+      "type": "complete_sentence",
+      "prompt": "I ______ soccer.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/playing.png",
+      "options": ["plays", "play", "playing"],
+      "answer": "play"
+    },
+    {
+      "id": "sentence-07",
+      "type": "complete_sentence",
+      "prompt": "I ______ a song.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/singing.png",
+      "options": ["singing", "sings", "sing"],
+      "answer": "sing"
+    },
+    {
+      "id": "sentence-08",
+      "type": "complete_sentence",
+      "prompt": "I ______ a letter.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/writing.png",
+      "options": ["write", "writes", "writing"],
+      "answer": "write"
+    },
+    {
+      "id": "sentence-09",
+      "type": "complete_sentence",
+      "prompt": "I ______ with my friends.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/talking.png",
+      "options": ["talks", "talk", "talking"],
+      "answer": "talk"
+    },
+    {
+      "id": "sentence-10",
+      "type": "complete_sentence",
+      "prompt": "I ______ at parties.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/dancing.png",
+      "options": ["dancing", "dance", "dances"],
+      "answer": "dance"
+    },
+    {
+      "id": "sentence-11",
+      "type": "complete_sentence",
+      "prompt": "I ______ English.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/speaking.png",
+      "options": ["speaks", "speaking", "speak"],
+      "answer": "speak"
+    },
+    {
+      "id": "sentence-12",
+      "type": "complete_sentence",
+      "prompt": "I ______ a question.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/asking.png",
+      "options": ["ask", "asks", "asking"],
+      "answer": "ask"
+    },
+    {
+      "id": "sentence-13",
+      "type": "complete_sentence",
+      "prompt": "I ______ the question.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/answering.png",
+      "options": ["answering", "answer", "answers"],
+      "answer": "answer"
+    },
+    {
+      "id": "sentence-14",
+      "type": "complete_sentence",
+      "prompt": "I ______ new words.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/learning.png",
+      "options": ["learn", "learns", "learning"],
+      "answer": "learn"
+    },
+    {
+      "id": "sentence-15",
+      "type": "complete_sentence",
+      "prompt": "I ______ English.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/teaching.png",
+      "options": ["teaching", "teaches", "teach"],
+      "answer": "teach"
+    },
+    {
+      "id": "sentence-16",
+      "type": "complete_sentence",
+      "prompt": "I ______ English every day.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/practice.png",
+      "options": ["practicing", "practice", "practices"],
+      "answer": "practice"
     }
   ]
 }
