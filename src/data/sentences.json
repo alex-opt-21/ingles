@@ -1,0 +1,51 @@
+
+{
+  "lesson_title": "Sentences Basic",
+  "exercises": [
+    {
+      "id": "sentence-01",
+      "type": "complete_sentence",
+      "prompt": "I ______ an apple.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/sentences/eat.png",
+      "options": ["eat", "eats", "eating"],
+      "answer": "eat"
+    },
+    {
+      "id": "sentence-02",
+      "type": "complete_sentence",
+      "prompt": "I ______ to music.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/sentences/listen.png",
+      "options": ["listens", "listen", "listening"],
+      "answer": "listen"
+    },
+    {
+      "id": "sentence-03",
+      "type": "complete_sentence",
+      "prompt": "I ______ a book.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/sentences/read.png",
+      "options": ["reading", "reads", "read"],
+      "answer": "read"
+    },
+    {
+      "id": "sentence-04",
+      "type": "complete_sentence",
+      "prompt": "I ______ in the park.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/sentences/run.png",
+      "options": ["run", "running", "runs"],
+      "answer": "run"
+    },
+    {
+      "id": "sentence-05",
+      "type": "complete_sentence",
+      "prompt": "I ______ at night.",
+      "hint": "Choose the correct verb.",
+      "image": "imagenes/sentences/sleep.png",
+      "options": ["sleeping", "sleep", "sleeps"],
+      "answer": "sleep"
+    }
+  ]
+}
