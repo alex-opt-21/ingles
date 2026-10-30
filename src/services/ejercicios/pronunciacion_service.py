@@ -1,65 +1,94 @@
 import difflib
 import re
+import threading
+import warnings
 
-import speech_recognition as sr
+import numpy as np
+import sounddevice as sd
+
+# Oculta la advertencia de sounddevice con NumPy 2.5 (no afecta el funcionamiento)
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="sounddevice")
+
+SAMPLE_RATE = 16000
+RECORD_SECONDS = 3
+MIN_VOLUME = 300
+MODEL_SIZE = "base.en"      # "tiny.en" = más rápido, "small.en" = más preciso
+FUZZY_THRESHOLD = 0.80
 
 SOUND_ALIKES = {
-    "eat": {"it", "eight", "eats", "eating", "heat", "meet", "e", "ate"},
-    "read": {"red", "reed", "reid", "ready", "rid", "reads", "reading"},
-    "write": {"right", "rite", "white", "wright", "writes", "writing", "ride"},
-    "play": {"plays", "plea", "clay", "pray", "played"},
-    "sing": {"sink", "sin", "thing", "singh", "sings"},
-    "sleep": {"slip", "sleeps", "asleep", "sleeping"},
-    "swim": {"swimming", "swims", "swam", "some"},
-    "clean": {"cleans", "clean", "client"},
-    "cook": {"cooks", "cooking", "book", "look"},
-    "run": {"ron", "runs", "ran", "one"},
-    "draw": {"drawn", "drew", "drawing", "draws", "drop"},
-    "dance": {"dances", "dancing", "dunce", "dants"},
+    "read": {"red", "reed"},
+    "write": {"right", "rite"},
+    "eat": {"eats", "eating", "ate"},
+    "teach": {"teaches", "teaching", "taught"},
+    "listen": {"listens", "listening"},
+    "speak": {"speaks", "speaking"},
+    "learn": {"learns", "learning", "learned"},
+    "practice": {"practise", "practices", "practicing"},
 }
 
+_model = None
+_model_lock = threading.Lock()
 
-def _normalize(text: str) -> str:
+
+def _get_model():
+    """Carga el modelo local una sola vez (la primera vez lo descarga)."""
+    global _model
+    with _model_lock:
+        if _model is None:
+            from faster_whisper import WhisperModel
+            _model = WhisperModel(MODEL_SIZE, device="cpu", compute_type="int8")
+    return _model
+
+
+def preload():
+    """Llama esto al abrir la pantalla para que el modelo ya esté listo."""
+    threading.Thread(target=_get_model, daemon=True).start()
+
+
+def _normalize(text):
     return re.sub(r"[^a-z\s]", "", text.lower()).strip()
 
 
-def _matches(heard_words: list[str], target: str, threshold: float) -> bool:
+def _record():
+    audio = sd.rec(
+        int(RECORD_SECONDS * SAMPLE_RATE),
+        samplerate=SAMPLE_RATE,
+        channels=1,
+        dtype="int16",
+    )
+    sd.wait()
+    return audio
+
+
+def _matches(heard, target):
     aliases = SOUND_ALIKES.get(target, set())
-    for w in heard_words:
+    for w in heard.split():
         if w == target or w in aliases:
             return True
-        if difflib.SequenceMatcher(None, w, target).ratio() >= threshold:
+        if difflib.SequenceMatcher(None, w, target).ratio() >= FUZZY_THRESHOLD:
             return True
     return False
 
 
-def listen_and_check(expected: str, threshold: float = 0.75):
-    """Escucha el micrófono y devuelve (ok, lo_que_se_entendio)."""
-    r = sr.Recognizer()
-    r.pause_threshold = 0.6          
-    r.non_speaking_duration = 0.4
+def listen_and_check(expected):
+    """Graba, transcribe en local (gratis) y compara. Devuelve (ok, heard)."""
+    audio = _record()
 
-    try:
-        with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source, duration=0.3)
-            audio = r.listen(source, timeout=5, phrase_time_limit=3)
-        result = r.recognize_google(audio, language="en-US", show_all=True)
-    except (sr.WaitTimeoutError, sr.UnknownValueError):
+    # Si no se habló, no se transcribe: evita que Whisper invente texto
+    # ("Thank you.") a partir del silencio.
+    if np.abs(audio).max() < MIN_VOLUME:
         return False, ""
 
-    if not result or "alternative" not in result:
+    audio_f32 = audio.flatten().astype(np.float32) / 32768.0
+    segments, _ = _get_model().transcribe(
+        audio_f32,
+        language="en",
+        beam_size=1,
+        vad_filter=True,
+        condition_on_previous_text=False,
+    )
+    heard = _normalize(" ".join(s.text for s in segments))
+    if not heard:
         return False, ""
 
-    transcripts = [
-        _normalize(alt.get("transcript", ""))
-        for alt in result["alternative"]
-    ]
-    transcripts = [t for t in transcripts if t]
-    if not transcripts:
-        return False, ""
-
-    target = _normalize(expected)
-    all_words = [w for t in transcripts for w in t.split()]
-
-    ok = _matches(all_words, target, threshold)
-    return ok, transcripts[0]
+    return _matches(heard, _normalize(expected)), heard

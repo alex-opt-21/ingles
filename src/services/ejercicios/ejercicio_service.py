@@ -1,5 +1,5 @@
-
 import json
+import random
 import time
 from pathlib import Path
 from typing import Callable, Optional
@@ -24,24 +24,32 @@ def format_time(seconds: float) -> str:
 
 
 class QuizSession:
-    """Control de ejercicios, Skip, XP y resultados."""
+    """Control de ejercicios, Skip, Pausa, XP y resultados."""
 
     def __init__(
         self,
         exercises: list[dict],
         user: dict,
         save_progress: Optional[Callable[[str, dict], None]] = None,
+        session_size: Optional[int] = None,   # ej. 20 => 20 verbos al azar por sesión
     ):
         self.exercises = exercises
         self.user = user
         self._save_progress = save_progress
+        self.session_size = session_size
         self.xp = user["xp"]
         self.completed = list(user["completed"])
+        self.started = False
+        self.finished = False
         self.reset()
 
     def reset(self) -> None:
+        n = len(self.exercises)
+        if self.session_size and self.session_size < n:
+            self.order = random.sample(range(n), self.session_size)
+        else:
+            self.order = list(range(n))
         self.index = 0
-        self.order = list(range(len(self.exercises)))
         self.picked = {}
         self.hint_used = {}
         self.errors = 0
@@ -50,22 +58,51 @@ class QuizSession:
         self.skips_by_verb = {}
         self.solved_in_round = set()
         self.first_try = set()
+        self.pronounced = set()          # verbos pronunciados correctamente
         self._xp_start = self.xp
         self.elapsed = 0.0
+        self.started = False
+        self.finished = False
         self.t0 = time.perf_counter()
+        self._paused_at = None
+        self._paused_total = 0.0
 
+    # ---------- ciclo de vida ----------
     def start(self) -> None:
         self.reset()
-
-    def finish(self) -> None:
-        self.elapsed = self.time_now()
-
-    def time_now(self) -> float:
-        return time.perf_counter() - self.t0
+        self.started = True
 
     @property
+    def has_progress(self) -> bool:
+        return self.started and not self.finished
+
+    def pause(self) -> None:
+        if self._paused_at is None:
+            self._paused_at = time.perf_counter()
+
+    def resume(self) -> None:
+        if self._paused_at is not None:
+            self._paused_total += time.perf_counter() - self._paused_at
+            self._paused_at = None
+
+    def finish(self) -> None:
+        if self.finished:
+            return
+        self.elapsed = self.time_now()
+        self.finished = True
+
+    def finish_early(self) -> None:
+        """Termina la práctica con lo que lleva (botón 'Finish now')."""
+        self.finish()
+
+    def time_now(self) -> float:
+        end = self._paused_at if self._paused_at is not None else time.perf_counter()
+        return max(0.0, end - self.t0 - self._paused_total)
+
+    # ---------- propiedades ----------
+    @property
     def total(self) -> int:
-        return len(self.exercises)
+        return len(self.order)
 
     @property
     def number(self) -> int:
@@ -117,6 +154,20 @@ class QuizSession:
         ex = ex or self.current
         return not self.is_solved(ex) and ex["id"] not in self.hint_used
 
+    def is_pronounced(self, ex: Optional[dict] = None) -> bool:
+        ex = ex or self.current
+        return ex["id"] in self.pronounced
+
+    def mark_pronounced(self, ex: Optional[dict] = None) -> None:
+        ex = ex or self.current
+        self.pronounced.add(ex["id"])
+
+    def can_continue(self, ex: Optional[dict] = None) -> bool:
+        """Continue solo se habilita si acertó Y pronunció bien."""
+        ex = ex or self.current
+        return self.is_solved(ex) and self.is_pronounced(ex)
+
+    # ---------- acciones ----------
     def choose(self, option: str) -> str:
         ex = self.current
         ex_id = ex["id"]
@@ -160,17 +211,21 @@ class QuizSession:
         return True
 
     def skip(self) -> str:
-        """Deja el verbo pendiente y lo mueve al final."""
-        if self.is_solved() or self.is_last:
-            return "blocked"
-
+        """Salta a la siguiente card y marca el verbo como error.
+        Si ya estaba resuelto, solo avanza sin penalizar.
+        En el último ejercicio, termina la práctica."""
         ex_id = self.current["id"]
-        self.skips += 1
-        self.skips_by_verb[ex_id] = self.skips_by_verb.get(ex_id, 0) + 1
-        self.picked.pop(ex_id, None)
+        if not self.is_solved():
+            self.skips += 1
+            self.skips_by_verb[ex_id] = self.skips_by_verb.get(ex_id, 0) + 1
+            self.errors += 1                                   # cuenta como error
+            self.errors_by_verb[ex_id] = self.errors_by_verb.get(ex_id, 0) + 1
+            self.picked.pop(ex_id, None)                       # limpia intento previo
 
-        position = self.order.pop(self.index)
-        self.order.append(position)
+        if self.is_last:
+            self.finish()
+            return "finished"
+        self.index += 1
         return "next"
 
     def back(self) -> bool:
@@ -180,27 +235,27 @@ class QuizSession:
         return True
 
     def advance(self) -> str:
-        """Solo termina cuando los 16 verbos están correctos."""
-        if not self.is_solved():
+        """Continue: requiere verbo resuelto y bien pronunciado.
+        En el último, termina."""
+        if not self.can_continue():
             return "blocked"
         if self.is_last:
-            if self.correct_count != self.total:
-                return "blocked"
             self.finish()
             return "finished"
         self.index += 1
         return "next"
 
+    # ---------- resumen ----------
     def verb_results(self) -> list[dict]:
         return [
             {
-                "verb": ex["answer"],
-                "correct": ex["id"] in self.solved_in_round,
-                "errors": self.errors_by_verb.get(ex["id"], 0),
-                "skips": self.skips_by_verb.get(ex["id"], 0),
-                "first_try": ex["id"] in self.first_try,
+                "verb": self.exercises[i]["answer"],
+                "correct": self.exercises[i]["id"] in self.solved_in_round,
+                "errors": self.errors_by_verb.get(self.exercises[i]["id"], 0),
+                "skips": self.skips_by_verb.get(self.exercises[i]["id"], 0),
+                "first_try": self.exercises[i]["id"] in self.first_try,
             }
-            for ex in self.exercises
+            for i in self.order
         ]
 
     def summary(self) -> dict:

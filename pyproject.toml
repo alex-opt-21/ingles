@@ -8,10 +8,15 @@ authors = [
     { name = "Flet developer", email = "you@example.com" }
 ]
 dependencies = [
+    "faster-whisper>=1.2.1",
     "flet>=1.0.1",
     "flet-audio>=1.0.1",
     "gtts>=2.5.4",
+    "numpy>=2.2.6",
+    "openai>=3.41.0",
     "pyaudio>=0.2.14",
+    "python-dotenv>=1.2.3",
+    "sounddevice>=0.5.6",
     "speechrecognition>=3.17.0",
 ]
 

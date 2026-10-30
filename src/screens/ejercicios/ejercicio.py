@@ -1,13 +1,28 @@
+"""Vista Saylo: controles de Flet + dos fondos decorativos PNG.
+
+Los fondos se sirven desde la carpeta assets configurada en ft.run():
+  imagenes/fondo_nubes.png
+  imagenes/hoja_central.png
+
+La ilustracion de cada ejercicio sigue usando ex["image"].
+Los botones, textos, opciones y demas interacciones son controles reales.
+"""
 
 import asyncio
+import struct
+from pathlib import Path
 import flet as ft
+
 from services.ejercicios.ejercicio_service import QuizSession, format_time
 from services.ejercicios.pronunciacion_service import listen_and_check
 from ui.theme import (
-    EXERCISE_BLUE as BLUE, EXERCISE_NAVY as NAVY,
-    EXERCISE_SOFT_BLUE as SOFT_BLUE, EXERCISE_GREEN as GREEN,
-    EXERCISE_RED as RED, EXERCISE_WHITE as WHITE,
-    EXERCISE_FONT as FONT, BG_TOP, BG_BOTTOM,
+    EXERCISE_BLUE as BLUE,
+    EXERCISE_NAVY as NAVY,
+    EXERCISE_SOFT_BLUE as SOFT_BLUE,
+    EXERCISE_GREEN as GREEN,
+    EXERCISE_RED as RED,
+    EXERCISE_WHITE as WHITE,
+    EXERCISE_FONT as FONT,
 )
 
 try:
@@ -15,16 +30,54 @@ try:
 except ImportError:
     fta = None
 
-BASE_W = 941
-BASE_H = 1672
+# Paleta adicional (ajustable). Los colores principales vienen de ui.theme.
+CREAM = "#FFFCF7"
+PAPER = "#FFFFFF"
+PALE_BLUE = "#EAF4FF"
+BORDER_BLUE = "#A6CFFF"
+PALE_BORDER = "#E9E5DF"
+LOCKED_BG = "#D5DCE8"
+LOCKED_FG = "#8A97B0"
+SILVER = "#E9EDF4"
+
+# Rutas RELATIVAS a src/assets/ (no incluir src/assets/ en src).
+FONDO_NUBES = "imagenes/fondo_nubes.png"
+HOJA_CENTRAL = "imagenes/hoja_central.png"
+
+# Plantilla de diseño para colocar controles SOBRE la imagen de la hoja.
+# Plantilla de posiciones para una hoja responsiva, sin scroll.
+HOJA_BASE_W = 420
+HOJA_BASE_H = 870
+# Permite aprovechar mas alto de la pantalla sin ocultar el boton Continue.
+# Puedes subirlo a 870 si la ventana es muy alta, o bajarlo a 820.
+ALTURA_MAX_HOJA = 850
+# Se deja sitio para el encabezado, los margenes y el area segura.
+RESERVA_VERTICAL = 96
+# Ajustes opcionales para alinear el diseño con un PNG diferente.
+AJUSTE_X = 0
+AJUSTE_Y = 0
+
+# Proporcion de reserva cuando la hoja aun no se encuentra en disco.
+# Se sustituye automaticamente por el ancho/alto REAL del PNG local.
+HOJA_PROPORCION_RESERVA = 0.48
+
+
+def _shadow(opacity=0.09, blur=12, y=3):
+    return ft.BoxShadow(
+        color=ft.Colors.with_opacity(opacity, "#153C81"),
+        blur_radius=blur,
+        offset=ft.Offset(0, y),
+    )
 
 
 class QuizView:
+    """Vista reemplazable; sigue usando la misma interfaz publica que la original."""
+
     def __init__(self, page: ft.Page, session: QuizSession, on_home):
         self.page = page
         self.session = session
         self.on_home = on_home
-        self.mode = "quiz"
+        self.mode = "quiz"       # quiz | paused | end | closed
         self._tick_id = 0
         self._player = None
         self.rec_state = "idle"
@@ -35,16 +88,19 @@ class QuizView:
         self.counter = ft.Text("1 / 16")
         self.shell = ft.Container()
 
-    # Ciclo de vida de la pantalla
-    def show(self):
+    # ---------- Ciclo de vida ----------
+
+    def show(self, resume=False):
         self.mode = "quiz"
-        self.session.start()
-        self.timer_text.value = "00:00"
+        self._tick_id += 1
+        if resume and self.session.has_progress:
+            self.session.resume()
+        else:
+            self.session.start()
         self.rec_state = "idle"
         self.rec_message = None
+        self.timer_text.value = format_time(self.session.time_now())
         self._mount()
-        self.render()
-        self._tick_id += 1
         self.page.run_task(self._tick, self._tick_id)
 
     def close(self):
@@ -57,19 +113,20 @@ class QuizView:
         self.page.add(
             ft.Container(
                 expand=True,
-                bgcolor=WHITE,
+                bgcolor=PALE_BLUE,
                 alignment=ft.Alignment.TOP_CENTER,
                 content=self.shell,
             )
         )
         self.page.on_resize = self._fit_card
-        self._fit_card()
+        self._fit_card(force=True)
 
-    def _fit_card(self, e=None):
-        width = min(self.page.width or 440, 540)
-        height = self.page.height or 844
+    def _fit_card(self, e=None, force=False):
+        width = max(270, min(self.page.width or 440, 520))
+        height = max(360, self.page.height or 844)
         if (
-            abs(width - self._width) > 1
+            force
+            or abs(width - self._width) > 1
             or abs(height - self._height) > 1
             or self.shell.content is None
         ):
@@ -86,18 +143,18 @@ class QuizView:
                 pass
             await asyncio.sleep(1)
 
-    # Audio y avisos
+    # ---------- Audio, mensajes y acciones de QuizSession ----------
+
     async def _speak(self, src):
-        if fta is None:
+        if fta is None or not src:
             return
         try:
-            page = self.page
-            if self._player is not None and self._player in page.services:
-                page.services.remove(self._player)
+            if self._player is not None and self._player in self.page.services:
+                self.page.services.remove(self._player)
             new = fta.Audio(src=src, autoplay=True)
-            page.services.append(new)
+            self.page.services.append(new)
             self._player = new
-            page.update()
+            self.page.update()
         except Exception as err:
             print(f"No se pudo reproducir {src}: {err}")
 
@@ -107,51 +164,55 @@ class QuizView:
         except Exception as err:
             print(f"{message} ({err})")
 
-    # Respuestas, pista, microfono y navegacion
     async def _choose(self, option):
         result = self.session.choose(option)
         if result == "ignored":
             return
         self.render()
         if result == "correct":
-            await self._speak(self.session.current["audio"])
+            await self._speak(self.session.current.get("audio"))
 
-    def _on_back(self, e):
+    def _on_back(self, e=None):
         self.rec_message = None
         if self.session.back():
             self.render()
         else:
             self._on_home()
 
-    def _on_next(self, e):
-        self.rec_message = None
+    def _on_next(self, e=None):
         result = self.session.advance()
+        if result == "blocked":
+            if self.session.is_solved():
+                self._toast("Say the word correctly to continue.")
+            else:
+                self._toast("First choose the correct answer.")
+            return
+        self.rec_message = None
         if result == "finished":
             self.mode = "end"
-            self.render()
-        elif result == "next":
-            self.render()
+            self._tick_id += 1
+        self.render()
 
-    def _on_hint(self, e):
+    def _on_hint(self, e=None):
         if self.session.use_hint():
             self.render()
 
-    def _on_skip(self, e):
+    def _on_skip(self, e=None):
+        self.rec_message = None
         result = self.session.skip()
-        if result == "next":
-            self.rec_message = None
-            self.render()
-        elif result == "blocked":
-            self._toast("Answer this verb to continue.")
+        if result == "finished":
+            self.mode = "end"
+            self._tick_id += 1
+        self.render()
 
-    async def _on_listen(self, e):
+    async def _on_listen(self, e=None):
         ex = self.session.current
         if self.session.is_solved(ex):
-            await self._speak(ex["audio"])
+            await self._speak(ex.get("audio"))
         else:
             self._toast("First choose the correct answer.")
 
-    async def _on_mic(self, e):
+    async def _on_mic(self, e=None):
         ex = self.session.current
         if not self.session.is_solved(ex):
             self._toast("First choose the correct answer.")
@@ -162,15 +223,45 @@ class QuizView:
         self.rec_message = None
         self.render()
         try:
-            self.rec_message = await asyncio.to_thread(
-                listen_and_check, ex["answer"]
-            )
+            result = await asyncio.to_thread(listen_and_check, ex["answer"])
+            self.rec_message = result
+            if result[0]:
+                self.session.mark_pronounced(ex)
         except Exception as err:
             print(f"Mic error: {err}")
             self._toast("Could not access the microphone.")
         finally:
             self.rec_state = "idle"
-            self.render()
+            if self.mode == "quiz":
+                self.render()
+
+    # ---------- Pausa y navegacion ----------
+
+    def _on_pause(self, e=None):
+        if self.mode != "quiz" or self.rec_state != "idle":
+            return
+        self.session.pause()
+        self.mode = "paused"
+        self._tick_id += 1
+        self.render()
+
+    def _on_resume(self, e=None):
+        self.session.resume()
+        self.mode = "quiz"
+        self.render()
+        self._tick_id += 1
+        self.page.run_task(self._tick, self._tick_id)
+
+    def _on_finish_now(self, e=None):
+        self.session.finish_early()
+        self._tick_id += 1
+        self.mode = "end"
+        self.render()
+
+    def _on_save_exit(self, e=None):
+        self.session.pause()
+        self.close()
+        self.on_home()
 
     def _on_restart(self, e=None):
         self.show()
@@ -179,461 +270,578 @@ class QuizView:
         self.close()
         self.on_home()
 
-    # Sistema de posiciones
-    def _at(self, x, y, w, h, content=None, on_click=None, **extra):
-        sx = self._width / BASE_W
-        sy = self._height / BASE_H
-        return ft.Container(
-            left=x * sx,
-            top=y * sy,
-            width=w * sx,
-            height=h * sy,
-            alignment=extra.pop("alignment", ft.Alignment.CENTER),
-            content=content,
-            on_click=on_click,
-            **extra,
-        )
+    # ---------- Componentes visuales reutilizables ----------
 
-    def _text(
-        self, value, size, color=NAVY, bold=True,
-        italic=False, align=ft.TextAlign.CENTER,
-    ):
-        sx = self._width / BASE_W
+    def _text(self, text, size=16, color=NAVY, bold=False, italic=False,
+              align=ft.TextAlign.CENTER, max_lines=None):
         return ft.Text(
-            value,
-            size=size * sx,
-            color=color,
+            str(text),
+            size=size,
             weight=ft.FontWeight.BOLD if bold else ft.FontWeight.NORMAL,
+            color=color,
             italic=italic,
             font_family=FONT,
             text_align=align,
-            max_lines=1,
+            max_lines=max_lines,
         )
 
-    def _background(self):
-        return ft.Image(
-            src="imagenes/action_practice.png",
-            width=self._width,
-            height=self._height,
-            fit=ft.BoxFit.FILL,
-            left=0,
-            top=0,
-            error_content=ft.Container(
-                bgcolor=BG_TOP,
-                alignment=ft.Alignment.CENTER,
-                content=ft.Text("Falta imagenes/action_practice.png"),
+    def _surface(self, content, padding=12, radius=22, color=PAPER,
+                 border_color=PALE_BORDER):
+        return ft.Container(
+            bgcolor=color,
+            padding=padding,
+            border=ft.Border.all(1, border_color),
+            border_radius=radius,
+            shadow=_shadow(0.06, 10, 3),
+            content=content,
+        )
+
+    def _letter_badge(self, scale=1.0):
+        return ft.Container(
+            width=46 * scale,
+            height=48 * scale,
+            bgcolor=BLUE,
+            border_radius=15 * scale,
+            border=ft.Border.all(max(1, 2 * scale), WHITE),
+            shadow=_shadow(0.2, 7 * scale, 3 * scale),
+            alignment=ft.Alignment.CENTER,
+            content=self._text("A", 29 * scale, WHITE, bold=True, italic=True),
+        )
+
+    def _time_pill(self, scale=1.0):
+        self.timer_text.size = 15 * scale
+        self.timer_text.color = NAVY
+        self.timer_text.weight = ft.FontWeight.BOLD
+        self.timer_text.font_family = FONT
+        return ft.Container(
+            height=40 * scale,
+            bgcolor=WHITE,
+            border=ft.Border.all(max(1, 2 * scale), PALE_BLUE),
+            border_radius=22 * scale,
+            padding=ft.Padding.symmetric(horizontal=8 * scale),
+            shadow=_shadow(0.09, 5 * scale, 2 * scale),
+            ink=True,
+            on_click=self._on_pause,
+            tooltip="Pause practice",
+            content=ft.Row(
+                tight=True,
+                spacing=3 * scale,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Icon(ft.Icons.PAUSE_CIRCLE_OUTLINE, size=16 * scale, color=BLUE),
+                    self.timer_text,
+                ],
             ),
         )
 
-    # Opciones sobre los cuadros originales
-    def _option_overlay(self, option, index):
-        ex = self.session.current
+    def _counter_pill(self, scale=1.0):
+        self.counter.value = f"{self.session.number} / {self.session.total}"
+        self.counter.size = 15 * scale
+        self.counter.weight = ft.FontWeight.BOLD
+        self.counter.color = NAVY
+        self.counter.font_family = FONT
+        return ft.Container(
+            height=40 * scale,
+            bgcolor=WHITE,
+            border_radius=22 * scale,
+            padding=ft.Padding.symmetric(horizontal=10 * scale),
+            border=ft.Border.all(max(1, 2 * scale), PALE_BLUE),
+            shadow=_shadow(0.09, 5 * scale, 2 * scale),
+            alignment=ft.Alignment.CENTER,
+            content=self.counter,
+        )
+
+    def _header(self):
+        """Una sola fila: logo/titulo a la izquierda, tiempo/progreso a la derecha."""
+        scale = min(1.0, (self._width - 24) / 440)
+        brand = ft.Row(
+            tight=True,
+            spacing=7 * scale,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                self._letter_badge(scale),
+                self._text("Action Practice", 17 * scale, bold=True, italic=True),
+            ],
+        )
+        pills = ft.Row(
+            tight=True,
+            spacing=5 * scale,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[self._time_pill(scale), self._counter_pill(scale)],
+        )
+        return ft.Container(
+            height=53 * scale,
+            alignment=ft.Alignment.CENTER,
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                spacing=5 * scale,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[brand, pills],
+            ),
+        )
+
+    def _section_heading(self, scale=1.0):
+        return ft.Container(
+            height=36 * scale,
+            bgcolor="#B3D7FF",
+            padding=ft.Padding.symmetric(horizontal=12 * scale),
+            border_radius=12 * scale,
+            alignment=ft.Alignment.CENTER,
+            content=self._text("LOOK & CHOOSE", 18 * scale, bold=True, italic=True),
+        )
+
+    def _illustration(self, src, scale=1.0):
+        """Ilustracion real del ejercicio; borde y sombra dibujados por Flet."""
+        return ft.Container(
+            width=274 * scale,
+            height=274 * scale,
+            padding=9 * scale,
+            border_radius=34 * scale,
+            bgcolor="#FFFDF8",
+            border=ft.Border.all(max(1, 2 * scale), "#F0E9E0"),
+            shadow=_shadow(0.07, 9 * scale, 3 * scale),
+            content=ft.Container(
+                border_radius=25 * scale,
+                bgcolor=PALE_BLUE,
+                alignment=ft.Alignment.CENTER,
+                content=ft.Image(
+                    src=src,
+                    width=254 * scale,
+                    height=254 * scale,
+                    fit=ft.BoxFit.CONTAIN,
+                    error_content=self._text("Image not available", 14 * scale, SOFT_BLUE),
+                ),
+            ),
+        )
+
+    def _option_button(self, ex, option, scale=1.0):
         s = self.session
         picked = s.picked_for(ex)
         selected = picked == option
         correct = selected and option == ex["answer"]
         wrong = selected and not correct
         eliminated = s.hint_for(ex) == option and not selected
-        centers_y = [1060, 1160, 1260]
-        cy = centers_y[index]
-        sx = self._width / BASE_W
-        color = GREEN if correct else RED if wrong else NAVY
+        solved = s.is_solved(ex)
+        color = GREEN if correct else RED if wrong else SILVER if eliminated else BORDER_BLUE
+        bg = "#E9F8ED" if correct else "#FFF0F0" if wrong else "#F4F5F8" if eliminated else WHITE
+        fg = GREEN if correct else RED if wrong else LOCKED_FG if eliminated else NAVY
 
         async def choose(e):
             await self._choose(option)
 
-        controls = [
-            self._at(
-                288, cy - 39, 420, 78,
-                self._text(
-                    option, 45, color=color, italic=True,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-        ]
-        if selected:
-            controls.append(
-                self._at(
-                    207, cy - 25, 48, 50,
-                    ft.Icon(
-                        ft.Icons.CHECK if correct else ft.Icons.CLOSE,
-                        color=color,
-                        size=31 * sx,
+        return ft.Container(
+            height=49 * scale,
+            bgcolor=bg,
+            border=ft.Border.all(max(1, 2 * scale), color),
+            border_radius=17 * scale,
+            padding=ft.Padding.symmetric(horizontal=12 * scale),
+            shadow=_shadow(0.06, 6 * scale, 2 * scale),
+            ink=not (eliminated or solved),
+            on_click=None if eliminated or solved else choose,
+            content=ft.Row(
+                spacing=12 * scale,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        width=25 * scale,
+                        height=25 * scale,
+                        border_radius=13 * scale,
+                        alignment=ft.Alignment.CENTER,
+                        border=ft.Border.all(max(1, 2 * scale), GREEN if correct else RED if wrong else "#9EADD0"),
+                        bgcolor=GREEN if correct else RED if wrong else WHITE,
+                        content=(
+                            ft.Icon(ft.Icons.CHECK if correct else ft.Icons.CLOSE,
+                                    size=17 * scale, color=WHITE)
+                            if correct or wrong else None
+                        ),
                     ),
-                )
-            )
-        controls.append(
-            self._at(
-                165, cy - 43, 615, 86,
-                on_click=None if eliminated or s.is_solved(ex) else choose,
-            )
+                    ft.Container(
+                        expand=True,
+                        alignment=ft.Alignment.CENTER_LEFT,
+                        content=self._text(option, 20 * scale, fg, bold=True,
+                                           italic=True, align=ft.TextAlign.LEFT, max_lines=1),
+                    ),
+                ],
+            ),
         )
-        return controls
 
-    def _feedback(self):
+    def _small_button(self, label, icon, scale=1.0, on_click=None, enabled=True):
+        color = BLUE if enabled else LOCKED_FG
+        return ft.Container(
+            width=104 * scale,
+            height=50 * scale,
+            bgcolor=WHITE if enabled else "#F4F6FA",
+            border_radius=25 * scale,
+            border=ft.Border.all(max(1, 1.5 * scale), BORDER_BLUE if enabled else SILVER),
+            shadow=_shadow(0.08, 7 * scale, 3 * scale),
+            ink=enabled,
+            on_click=on_click if enabled else None,
+            alignment=ft.Alignment.CENTER,
+            content=ft.Row(
+                tight=True,
+                spacing=5 * scale,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Icon(icon, size=17 * scale, color=color),
+                    self._text(label, 17 * scale, color, bold=True),
+                ],
+            ),
+        )
+
+    def _mic_button(self, scale=1.0):
+        recording = self.rec_state == "recording"
+        color = RED if recording else BLUE
+        return ft.Container(
+            width=66 * scale,
+            height=66 * scale,
+            border_radius=34 * scale,
+            bgcolor=color,
+            border=ft.Border.all(max(2, 5 * scale), "#CFE6FF"),
+            shadow=_shadow(0.2, 13 * scale, 4 * scale),
+            alignment=ft.Alignment.CENTER,
+            ink=not recording,
+            on_click=None if recording else self._on_mic,
+            tooltip="Speak the answer",
+            content=ft.Icon(
+                ft.Icons.MIC if not recording else ft.Icons.GRAPHIC_EQ,
+                color=WHITE,
+                size=32 * scale,
+            ),
+        )
+
+    def _continue_button(self, scale=1.0):
+        enabled = self.session.can_continue()
+        label = "Finish" if self.session.is_last else "Continue"
+        return ft.Container(
+            height=52 * scale,
+            width=222 * scale,
+            border_radius=28 * scale,
+            bgcolor=GREEN if enabled else LOCKED_BG,
+            border=ft.Border.all(max(1, 2 * scale), GREEN),
+            shadow=_shadow(0.1, 9 * scale, 3 * scale),
+            ink=enabled,
+            on_click=self._on_next,  # explica el bloqueo si no se puede avanzar
+            alignment=ft.Alignment.CENTER,
+            content=ft.Row(
+                tight=True,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=5 * scale,
+                controls=[
+                    self._text(label, 20 * scale, WHITE if enabled else LOCKED_FG, bold=True),
+                    ft.Icon(ft.Icons.CHEVRON_RIGHT,
+                            color=WHITE if enabled else LOCKED_FG, size=21 * scale),
+                ],
+            ),
+        )
+
+    def _feedback(self, scale=1.0):
         ex = self.session.current
         picked = self.session.picked_for(ex)
         if self.rec_message is not None and self.session.is_solved(ex):
             ok, heard = self.rec_message
-            msg = (
-                "Great pronunciation!"
-                if ok else f'I heard "{heard or "..."}". Try again.'
-            )
+            msg = "Great pronunciation!" if ok else f'I heard "{heard or "..."}". Try again.'
             color = GREEN if ok else RED
         elif self.session.is_solved(ex):
-            msg, color = "Correct!", GREEN
+            msg, color = ("Correct!", GREEN) if self.session.is_pronounced(ex) else ("Correct! Now say it aloud.", GREEN)
         elif picked:
             msg, color = "Wrong. Try again.", RED
         else:
             return None
-        return self._at(250, 982, 445, 38, self._text(msg, 21, color))
+        return self._text(msg, 12 * scale, color, bold=True, max_lines=1)
 
-    # Pantalla de ejercicios: posiciones originales
+    # ---------- Hoja con controles pegados a ella, SIN scroll ----------
+
+    def _proporcion_hoja(self):
+        """Lee el aspecto real del PNG para que la hoja nunca se deforme."""
+        archivo = Path(__file__).resolve()
+        for carpeta in archivo.parents:
+            ruta = carpeta / "assets" / HOJA_CENTRAL
+            if not ruta.is_file():
+                continue
+            try:
+                with ruta.open("rb") as f:
+                    header = f.read(24)
+                if header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR":
+                    ancho, alto = struct.unpack(">II", header[16:24])
+                    if ancho > 0 and alto > 0:
+                        return ancho / alto
+            except (OSError, ValueError, struct.error):
+                pass
+        return HOJA_PROPORCION_RESERVA
+
     def _build_quiz(self):
+        """Hoja grande y fija, con controles de Flet pegados al fondo de papel.
+
+        La hoja aprovecha mas altura sin recortar sus bordes. La imagen
+        decorativa se ajusta ligeramente al rectangulo visible, mientras
+        los controles reales permanecen fijos en sus posiciones relativas.
+        """
         s = self.session
         ex = s.current
-        sx = self._width / BASE_W
-        sy = self._height / BASE_H
-        items = [self._background()]
-        items.extend([
-            self._at(
-                77, 48, 96, 93,
-                self._text("A", 70, WHITE),
-            ),
-            self._at(
-                175, 55, 310, 87,
-                self._text("Action Practice", 36, NAVY, italic=True),
-            ),
-            self._at(
-                525, 73, 35, 57,
-                ft.Icon(ft.Icons.ALARM, color=BLUE, size=27 * sx),
-            ),
-            self._at(
-                559, 73, 100, 57,
-                self.timer_text,
-            ),
-            self._at(
-                718, 69, 153, 65,
-                self.counter,
-            ),
-            self._at(
-                314, 212, 306, 70,
-                self._text("LOOK & CHOOSE", 31),
-            ),
-            self._at(
-                106, 290, 730, 100,
-                self._text(ex["prompt"], 56),
-            ),
-            self._at(
-                105, 404, 733, 60,
-                self._text(ex["hint"], 25, SOFT_BLUE, bold=False),
-            ),
-            self._at(
-                214, 480, 515, 455,
-                ft.Image(
-                    src=ex["image"],
-                    fit=ft.BoxFit.CONTAIN,
-                    width=515 * sx,
-                    height=455 * sy,
-                ),
-            ),
-        ])
-        for i, option in enumerate(ex["options"]):
-            items.extend(self._option_overlay(option, i))
 
-        items.extend([
-            # Hint
-            self._at(
-                112, 1351, 222, 91,
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=4,
-                    controls=[
-                        ft.Icon(
-                            ft.Icons.LIGHTBULB_OUTLINE,
-                            color=BLUE,
-                            size=34 * sx,
-                        ),
-                        self._text("Hint", 38, BLUE),
-                    ],
-                ),
-                on_click=self._on_hint if s.hint_available(ex) else None,
-            ),
-            # Microfono
-            self._at(
-                392, 1335, 155, 130,
-                ft.Icon(ft.Icons.MIC, color=WHITE, size=69 * sx),
-                on_click=self._on_mic,
-            ),
-            # Tap to speak
-            self._at(
-                345, 1460, 250, 35,
-                self._text(
-                    "Listening..." if self.rec_state == "recording"
-                    else "Tap to speak",
-                    22, SOFT_BLUE,
-                ),
-            ),
-            # Skip funcional
-            self._at(
-                610, 1351, 225, 91,
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=4,
-                    controls=[
-                        ft.Icon(
-                            ft.Icons.FAST_FORWARD,
-                            color=BLUE,
-                            size=32 * sx,
-                        ),
-                        self._text("Skip", 38, BLUE),
-                    ],
-                ),
-                on_click=self._on_skip,
-            ),
-            # Continue
-            self._at(
-                270, 1510, 410, 88,
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=7,
-                    controls=[
-                        self._text(
-                            "Finish" if s.is_last else "Continue",
-                            39, WHITE,
-                        ),
-                        ft.Icon(
-                            ft.Icons.CHEVRON_RIGHT,
-                            color=WHITE,
-                            size=38 * sx,
-                        ),
-                    ],
-                ),
-                on_click=self._on_next if s.is_solved(ex) else None,
-            ),
-        ])
-        feedback = self._feedback()
-        if feedback:
-            items.append(feedback)
-        return items
+        # El contenedor exterior usa padding vertical 10 + SafeArea.
+        # Evitamos que el encabezado + hoja superen la ventana.
+        header_scale = min(1.0, (self._width - 24) / 440)
+        header_h = 53 * header_scale
+        espacio_para_hoja = self._height - 20 - header_h - 5 - 12
+        paper_h = max(220, min(ALTURA_MAX_HOJA, espacio_para_hoja))
+        paper_w = min(self._width - 24, 480)
 
-    # Pantalla final sin lista de verbos
-    def _build_end(self):
-        stats = self.session.summary()
-        sx = self._width / BASE_W
-        sy = self._height / BASE_H
+        # Las posiciones X e Y se adaptan por separado. De esta forma la
+        # hoja ocupa el ancho disponible y todo el contenido crece con ella.
+        sx = paper_w / HOJA_BASE_W
+        sy = paper_h / HOJA_BASE_H
+        scale = min(sx, sy)
 
-        def icon_circle(icon, color):
+        def place(x, y, width, height, control, align=ft.Alignment.CENTER):
             return ft.Container(
-                width=90 * sx,
-                height=90 * sy,
-                border_radius=100,
-                bgcolor=ft.Colors.with_opacity(0.13, color),
-                alignment=ft.Alignment.CENTER,
-                content=ft.Icon(icon, color=color, size=54 * sx),
+                left=(x + AJUSTE_X) * sx,
+                top=(y + AJUSTE_Y) * sy,
+                width=width * sx,
+                height=height * sy,
+                alignment=align,
+                content=control,
             )
 
-        def stat(x, y, icon, value, caption, color):
-            return self._at(
-                x, y, 335, 215,
-                ft.Column(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=4,
-                    controls=[
-                        icon_circle(icon, color),
-                        self._text(value, 49, NAVY),
-                        self._text(caption, 28, SOFT_BLUE, bold=False),
-                    ],
+        controls = [
+            # Imagen decorativa SIN botones incluidos. FILL mantiene visibles
+            # todos los bordes de papel, incluso si se amplia un poco en alto.
+            ft.Image(
+                src=HOJA_CENTRAL,
+                left=0,
+                top=0,
+                width=paper_w,
+                height=paper_h,
+                fit=ft.BoxFit.FILL,
+                error_content=self._text(
+                    "No se encontro hoja_central.png", 13 * scale, RED
                 ),
+            ),
+            place(36, 80, 348, 38, self._section_heading(scale)),
+            place(23, 129, 374, 52,
+                  self._text(ex["prompt"], 29 * scale, NAVY,
+                             bold=True, max_lines=2)),
+            place(39, 187, 342, 42,
+                  self._text(ex["hint"], 14 * scale, SOFT_BLUE,
+                             max_lines=2)),
+            place(73, 237, 274, 274,
+                  self._illustration(ex["image"], scale)),
+        ]
+
+        for i, option in enumerate(ex["options"][:3]):
+            controls.append(
+                place(40, 525 + i * 57, 340, 49,
+                      self._option_button(ex, option, scale))
             )
 
-        # Fondo limpio, sin dibujos de botones de ejercicios
-        items = [
-            self._at(
-                0, 0, BASE_W, BASE_H,
-                ft.Container(bgcolor=BG_TOP),
-            ),
-            self._at(
-                -145, -125, 450, 405,
+        feedback = self._feedback(scale)
+        if feedback is not None:
+            controls.append(place(30, 691, 360, 17, feedback))
+
+        controls.extend([
+            place(38, 718, 104, 50,
+                  self._small_button("Hint", ft.Icons.LIGHTBULB_OUTLINE,
+                                     scale, on_click=self._on_hint,
+                                     enabled=s.hint_available(ex))),
+            place(177, 710, 66, 66, self._mic_button(scale)),
+            place(278, 718, 104, 50,
+                  self._small_button("Skip", ft.Icons.FAST_FORWARD,
+                                     scale, on_click=self._on_skip)),
+            place(110, 779, 200, 17,
+                  self._text("Listening..." if self.rec_state == "recording"
+                             else "Tap to speak", 12 * scale, SOFT_BLUE,
+                             bold=True)),
+            place(99, 800, 222, 52, self._continue_button(scale)),
+        ])
+
+        quiz_card = ft.Stack(
+            width=paper_w,
+            height=paper_h,
+            controls=controls,
+        )
+        return ft.Column(
+            expand=True,
+            spacing=5,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[self._header(), quiz_card],
+        )
+
+    # ---------- Pantalla de pausa: botones reales ----------
+
+    def _menu_button(self, text, on_click, primary=False):
+        return ft.Container(
+            bgcolor=BLUE if primary else WHITE,
+            border=ft.Border.all(2, BLUE if primary else BORDER_BLUE),
+            border_radius=24,
+            height=55,
+            alignment=ft.Alignment.CENTER,
+            ink=True,
+            on_click=on_click,
+            shadow=_shadow(0.07, 8, 3),
+            content=self._text(text, 18, WHITE if primary else BLUE, bold=True),
+        )
+
+    def _build_paused(self):
+        s = self.session
+        return ft.Column(
+            expand=True,
+            spacing=14,
+            scroll=ft.ScrollMode.AUTO,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
+            controls=[
                 ft.Container(
-                    bgcolor=ft.Colors.with_opacity(0.15, BLUE),
-                    border_radius=200 * sx,
-                ),
-            ),
-            self._at(
-                685, -130, 430, 415,
-                ft.Container(
-                    bgcolor=ft.Colors.with_opacity(0.15, BLUE),
-                    border_radius=200 * sx,
-                ),
-            ),
-            # Tarjeta blanca
-            self._at(
-                58, 245, 825, 1370,
-                ft.Container(
-                    bgcolor=WHITE,
-                    border_radius=50 * sx,
-                ),
-            ),
-            # Trofeo
-            self._at(
-                387, 285, 165, 130,
-                ft.Icon(
-                    ft.Icons.EMOJI_EVENTS,
-                    color=GREEN,
-                    size=94 * sx,
-                ),
-            ),
-            # Titulo
-            self._at(
-                98, 408, 745, 95,
-                self._text("Practice Completed!", 58),
-            ),
-            self._at(
-                92, 510, 755, 60,
-                self._text(
-                    "Great job! You finished your practice.",
-                    28, NAVY, bold=False,
-                ),
-            ),
-            # Estadisticas principales
-            stat(
-                115, 610, ft.Icons.ACCESS_TIME,
-                stats["time"], "Total Time", BLUE,
-            ),
-            stat(
-                490, 610, ft.Icons.CHECK_CIRCLE_OUTLINE,
-                f'{stats["completed"]} / {stats["total"]}',
-                "Completed", GREEN,
-            ),
-            stat(
-                115, 834, ft.Icons.CANCEL_OUTLINED,
-                str(stats["errors"]), "Wrong Answers", RED,
-            ),
-            stat(
-                490, 834, ft.Icons.SKIP_NEXT,
-                str(stats["skips"]), "Skips Used", SOFT_BLUE,
-            ),
-            # Separador
-            self._at(
-                123, 1082, 695, 3,
-                ft.Container(
-                    bgcolor=ft.Colors.with_opacity(0.25, BLUE),
-                ),
-            ),
-            # Primer intento
-            self._at(
-                132, 1105, 680, 52,
-                self._text(
-                    "Correct on First Try",
-                    39,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-            self._at(
-                132, 1159, 680, 58,
-                self._text(
-                    f'{stats["first_try"]} / {stats["total"]}',
-                    40,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-            # XP obtenidos
-            self._at(
-                132, 1243, 420, 61,
-                self._text(
-                    "XP Earned", 39,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-            self._at(
-                550, 1243, 250, 61,
-                self._text(
-                    f'+{stats["xp_earned"]} XP',
-                    39, GREEN,
-                    align=ft.TextAlign.RIGHT,
-                ),
-                alignment=ft.Alignment.CENTER_RIGHT,
-            ),
-            # XP acumulados
-            self._at(
-                132, 1315, 680, 60,
-                self._text(
-                    "Total XP", 39,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-            self._at(
-                132, 1370, 680, 55,
-                self._text(
-                    f'{stats["xp_total"]} XP',
-                    40,
-                    align=ft.TextAlign.LEFT,
-                ),
-                alignment=ft.Alignment.CENTER_LEFT,
-            ),
-            self._at(
-                123, 1440, 695, 3,
-                ft.Container(
-                    bgcolor=ft.Colors.with_opacity(0.25, BLUE),
-                ),
-            ),
-            # Practice Again
-            self._at(
-                123, 1470, 695, 100,
-                ft.Container(
-                    bgcolor=BLUE,
-                    border_radius=65 * sx,
-                    alignment=ft.Alignment.CENTER,
-                    content=self._text(
-                        "Practice Again", 44, WHITE,
+                    bgcolor=CREAM,
+                    padding=26,
+                    border_radius=30,
+                    shadow=_shadow(0.09, 15, 3),
+                    content=ft.Column(
+                        spacing=18,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Icon(ft.Icons.PAUSE_CIRCLE_FILLED, color=BLUE, size=82),
+                            self._text("Paused", 32, bold=True),
+                            self._text(f"Question {s.number} / {s.total}", 18, SOFT_BLUE),
+                            self._text(f"Time {format_time(s.time_now())}", 18, SOFT_BLUE),
+                            self._menu_button("Resume", self._on_resume, primary=True),
+                            self._menu_button("Finish now", self._on_finish_now),
+                            self._menu_button("Save & exit", self._on_save_exit),
+                        ],
                     ),
                 ),
-                on_click=self._on_restart,
+            ],
+        )
+
+    # ---------- Pantalla final: estadisticas como controles ----------
+
+    def _stat(self, icon, label, value, color):
+        return ft.Container(
+            expand=True,
+            bgcolor=WHITE,
+            border=ft.Border.all(1, PALE_BLUE),
+            border_radius=18,
+            padding=12,
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=6,
+                controls=[
+                    ft.Icon(icon, color=color, size=29),
+                    self._text(value, 23, NAVY, bold=True),
+                    self._text(label, 12, SOFT_BLUE),
+                ],
             ),
-            # Regresar al inicio
-            self._at(
-                330, 1570, 280, 43,
-                self._text("Back to Home", 24, SOFT_BLUE),
-                on_click=self._on_home,
-            ),
-        ]
-        return items
+        )
+
+    def _summary_line(self, label, value, color=NAVY):
+        return ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            controls=[
+                self._text(label, 16, NAVY, bold=True),
+                self._text(value, 16, color, bold=True),
+            ],
+        )
+
+    def _build_end(self):
+        stats = self.session.summary()
+        return ft.Column(
+            expand=True,
+            scroll=ft.ScrollMode.AUTO,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+            controls=[
+                ft.Container(
+                    bgcolor=CREAM,
+                    padding=18,
+                    border_radius=30,
+                    shadow=_shadow(0.09, 14, 4),
+                    content=ft.Column(
+                        spacing=18,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Icon(ft.Icons.EMOJI_EVENTS, color=GREEN, size=72),
+                            self._text("Practice Completed!", 27, bold=True),
+                            self._text("Great job! You finished your practice.",
+                                       15, SOFT_BLUE, max_lines=2),
+                            ft.Row(spacing=10, controls=[
+                                self._stat(ft.Icons.ACCESS_TIME, "Total Time",
+                                           stats["time"], BLUE),
+                                self._stat(ft.Icons.CHECK_CIRCLE_OUTLINE, "Completed",
+                                           f'{stats["completed"]} / {stats["total"]}', GREEN),
+                            ]),
+                            ft.Row(spacing=10, controls=[
+                                self._stat(ft.Icons.CANCEL_OUTLINED, "Wrong Answers",
+                                           str(stats["errors"]), RED),
+                                self._stat(ft.Icons.SKIP_NEXT, "Skips Used",
+                                           str(stats["skips"]), SOFT_BLUE),
+                            ]),
+                            ft.Container(
+                                padding=15,
+                                bgcolor=WHITE,
+                                border_radius=18,
+                                content=ft.Column(spacing=13, controls=[
+                                    self._summary_line("Correct on First Try",
+                                                       f'{stats["first_try"]} / {stats["total"]}'),
+                                    self._summary_line("XP Earned",
+                                                       f'+{stats["xp_earned"]} XP', GREEN),
+                                    self._summary_line("Total XP",
+                                                       f'{stats["xp_total"]} XP'),
+                                ]),
+                            ),
+                            self._menu_button("Practice Again", self._on_restart,
+                                              primary=True),
+                            ft.Container(
+                                padding=8,
+                                ink=True,
+                                on_click=self._on_home,
+                                content=self._text("Back to Home", 16, SOFT_BLUE,
+                                                   bold=True),
+                            ),
+                        ],
+                    ),
+                ),
+            ],
+        )
+
+    # ---------- Fondo exterior: imagen de nubes ----------
 
     def render(self):
         if self.mode == "closed":
             return
+        self.timer_text.value = format_time(self.session.time_now())
+        self.counter.value = f"{self.session.number} / {self.session.total}"
 
-        s = self.session
-        self.counter.value = f"{s.number} / {s.total}"
-        sx = self._width / BASE_W
-
-        self.counter.size = 36 * sx
-        self.counter.weight = ft.FontWeight.BOLD
-        self.counter.color = NAVY
-
-        self.timer_text.size = 35 * sx
-        self.timer_text.weight = ft.FontWeight.BOLD
-        self.timer_text.color = NAVY
-
+        builders = {
+            "quiz": self._build_quiz,
+            "paused": self._build_paused,
+            "end": self._build_end,
+        }
+        content = builders[self.mode]()
         self.shell.width = self._width
         self.shell.height = self._height
         self.shell.content = ft.Stack(
             width=self._width,
             height=self._height,
-            controls=(
-                self._build_quiz()
-                if self.mode == "quiz"
-                else self._build_end()
-            ),
+            controls=[
+                # Primera capa: fondo de nubes, detras de toda la vista.
+                ft.Image(
+                    src=FONDO_NUBES,
+                    left=0,
+                    top=0,
+                    width=self._width,
+                    height=self._height,
+                    fit=ft.BoxFit.COVER,
+                ),
+                # Segunda capa: encabezado, hoja y controles interactivos.
+                ft.Container(
+                    left=0,
+                    top=0,
+                    width=self._width,
+                    height=self._height,
+                    padding=ft.Padding.symmetric(horizontal=12, vertical=10),
+                    content=ft.SafeArea(content=content),
+                ),
+            ],
         )
         self.page.update()
