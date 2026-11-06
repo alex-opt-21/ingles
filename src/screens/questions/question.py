@@ -1,7 +1,6 @@
 import asyncio
 import struct
 from pathlib import Path
-
 import flet as ft
 
 from services.ejercicios.questions_service import format_time
@@ -364,10 +363,10 @@ class QuestionsView:
         if scene == "fiesta":
             ratio = 1448 / 1086
             # Centro horizontal, centro vertical y ancho/alto seguro del globo.
-            cx, cy, tw, th = 0.765, 0.392, 0.305, 0.27
+            cx, cy, tw, th = 0.70, 0.34, 0.36, 0.28
         else:
             ratio = 1403 / 1121
-            cx, cy, tw, th = 0.708, 0.470, 0.285, 0.265
+            cx, cy, tw, th = 0.68, 0.39, 0.34, 0.25
 
         # Área disponible dentro del papel: 344×253 unidades, sin deformar.
         max_w, max_h = 344 * s, 253 * s
