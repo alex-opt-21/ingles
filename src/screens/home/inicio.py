@@ -1,4 +1,12 @@
+"""Pantalla Home de Saylo: interfaz creada con controles Flet reales.
+
+Copia las imágenes del paquete a src/assets/imagenes/home/.
+Esta vista espera que Flet sirva src/assets como carpeta de assets,
+igual que el código original que utiliza imagenes/profile.png.
+"""
+
 import flet as ft
+from screens.ranking import mostrar_ranking
 from ui.theme import (
     BLUE, BLUE_SOFT, NAVY, GREY, LINE,
     WHITE, RED, RED_BG, BG_TOP
@@ -120,9 +128,14 @@ class HomeView:
             print(message)
 
     def _on_nav(self, key):
-        if key in ("home", "ranking", "profile"):
+        if key in ("home", "profile"):
             self.tab = key
             self.render()
+        elif key == "ranking":
+            # Abre el ranking existente de screens/ranking.py.
+            # Al regresar, mostrar_ranking llamará self.show().
+            self.close()
+            mostrar_ranking(self.page, self.show)
 
     def _on_practice(self, e=None):
         self.on_practice()
@@ -443,56 +456,10 @@ class HomeView:
         ])
         return items
 
-    def _build_ranking(self):
-        """Pantalla base sin inventar posiciones ni datos de otros usuarios.
-
-        Cuando se conecte un ranking real, se puede reemplazar su contenido.
-        """
-        sx = self._width / BASE_W
-        items = [self._background()]
-        items.extend([
-            self._at(
-                36, 15, 234, 210,
-                ft.Image(src=ASSET_HOME + "logo.png", fit=ft.BoxFit.CONTAIN),
-            ),
-            self._label(300, 63, 520, 88, "Ranking", 67),
-            self._label(303, 148, 525, 48,
-                        "Follow your progress", 29, SUBTEXT, False),
-            self._at(
-                70, 316, 800, 850,
-                ft.Column(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=32 * sx,
-                    controls=[
-                        ft.Icon(ft.Icons.EMOJI_EVENTS_ROUNDED,
-                                size=155 * sx, color="#F5B940"),
-                        self._text("Leaderboard coming soon", 43),
-                        self._text("Your experience points", 29, SUBTEXT, False),
-                        self._text(f"{self._xp()} XP", 76, BLUE),
-                        self._text("Other students' rankings are not available yet.",
-                                   25, SUBTEXT, False, ft.TextAlign.CENTER),
-                    ],
-                ),
-                bgcolor="#F6FCFF",
-                border=ft.Border.all(3 * sx, WHITE),
-                border_radius=50 * sx,
-                shadow=ft.BoxShadow(
-                    blur_radius=15 * sx,
-                    offset=ft.Offset(0, 4 * sx),
-                    color="#230F85C3",
-                ),
-            ),
-            self._bottom_navigation(),
-        ])
-        return items
-
     def render(self):
         self.shell.width = self._width
         self.shell.height = self._height
-        if self.tab == "ranking":
-            controls = self._build_ranking()
-        elif self.tab == "profile":
+        if self.tab == "profile":
             controls = self._build_profile()
         else:
             controls = self._build_home()
