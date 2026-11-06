@@ -321,10 +321,10 @@ class PhrasesView:
         return ft.Text(msg, size=12 * sx, color=color, font_family=FONT, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
 
     def _image_card(self, ex, sx, sy):
-        img = ft.Image(src=ex["image"], fit=ft.BoxFit.CONTAIN, width=290 * sx, height=175 * sy)
+        img = ft.Image(src=ex["image"], fit=ft.BoxFit.CONTAIN, width=340 * sx, height=230 * sy)
         return ft.Container(
-            width=320 * sx,
-            height=188 * sy,
+            width=370 * sx,
+            height=245 * sy,
             padding=ft.Padding.all(8 * sx),
             alignment=ft.Alignment.CENTER,
             content=img,
@@ -475,9 +475,10 @@ class PhrasesView:
             ],
         )
 
+        # ÚNICO CAMBIO: se amplía el tamaño de la hoja central.
         paper = ft.Container(
-            width=min(self._width - 26 * sx, 390 * sx),
-            height=min(self._height - 96 * sy, 700 * sy),
+            width=min(self._width - 24 * sx, 480 * sx),
+            height=min(self._height - 96 * sy, 850 * sy),
             image=ft.DecorationImage(src=HOJA_CENTRAL, fit=ft.BoxFit.FILL),
             padding=ft.Padding.only(left=18 * sx, right=18 * sx, top=18 * sy, bottom=18 * sy),
             content=card_content,
