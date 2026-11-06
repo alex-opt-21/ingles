@@ -39,6 +39,10 @@ QUESTIONS_FILE = BASE_DIR / "data" / "preguntas.json"
 PHRASES_FILE = BASE_DIR / "data" / "phrases.json"
 ASSETS_DIR = BASE_DIR / "assets"
 
+# Identificador estable: debe mantenerse igual entre ejecuciones para que
+# QuizSession pueda reconocer y restaurar esta misma práctica.
+ACTION_LESSON_ID = "action_practice"
+
 
 def main(page: ft.Page):
     # ---------- CONFIGURATION ----------
@@ -69,6 +73,7 @@ def main(page: ft.Page):
     def close_current():
         view = state["view"]
         if view is not None:
+            # QuizView.close() conserva la sesión pendiente si sigue activa.
             view.close()
             state["view"] = None
 
@@ -101,26 +106,86 @@ def main(page: ft.Page):
         state["view"] = view
         view.show()
 
-    # ---------- ACTION PRACTICE ----------
-    def start_quiz(e=None):
+    # ---------- ACTION PRACTICE: SAVE / RESTORE ----------
+    def start_quiz(e=None, force_new=False):
+        """Abre Action Practice, restaurando la sesión pendiente si existe.
+
+        El botón actual on_practice de HomeView puede seguir llamando a esta
+        función sin cambios. Si hay una sesión guardada, se retoma; si no,
+        comienza una práctica nueva.
+
+        force_new=True permite iniciar desde cero explícitamente, descartando
+        la sesión pendiente anterior.
+        """
         close_current()
         user = state["user"]
-        session = QuizSession(exercises, user, save_progress=auth.save_progress)
+
+        if not user or not user.get("email"):
+            print("[!] No se puede iniciar Action Practice sin un usuario autenticado.")
+            go_login()
+            return
+
+        session = QuizSession(
+            exercises=exercises,
+            user=user,
+            save_progress=auth.save_progress,
+            save_session=auth.save_active_session,
+            clear_session=auth.clear_active_session,
+            session_size=None,  # Recorre los 80 ejercicios en una sola práctica.
+            lesson_id=ACTION_LESSON_ID,
+        )
+
+        restored = False
+        saved_state = None
+
+        if not force_new:
+            # Leer del archivo para evitar depender de una copia antigua del
+            # usuario que quedó en memoria después del login.
+            saved_state = auth.get_active_session(user["email"])
+
+        if saved_state:
+            restored = session.restore_state(saved_state)
+
+            if restored:
+                print(
+                    "[+] Sesión recuperada: "
+                    f"ejercicio {session.number}/{session.total} "
+                    f"({session.current['id']})."
+                )
+            else:
+                print(
+                    "[!] La sesión guardada no coincide con el JSON actual. "
+                    "Se eliminará y comenzará una práctica nueva."
+                )
+                auth.clear_active_session(user["email"])
+
+        elif force_new:
+            # No dejar que una sesión anterior vuelva a aparecer en el próximo
+            # inicio. La sesión nueva se guardará al ejecutar view.show().
+            auth.clear_active_session(user["email"])
 
         def back_to_home():
             user["xp"] = session.xp
             user["completed"] = list(session.completed)
+            user["active_session"] = auth.get_active_session(user["email"])
             go_home()
 
         view = QuizView(page, session, on_home=back_to_home)
         state["view"] = view
-        view.show()
+
+        # Fundamental: resume=True evita que show() llame a session.start()
+        # y borre el índice/orden restaurados.
+        view.show(resume=restored)
 
     # ---------- SENTENCES ----------
     def start_sentences(e=None):
         close_current()
         user = state["user"]
-        session = SentencesSession(sentences, user, save_progress=auth.save_progress)
+        session = SentencesSession(
+            sentences,
+            user,
+            save_progress=auth.save_progress,
+        )
 
         def back_to_home():
             user["xp"] = session.xp
@@ -205,6 +270,7 @@ def main(page: ft.Page):
 
     # ---------- LOGOUT ----------
     def logout(e=None):
+        # close_current() preserva automáticamente una práctica activa.
         close_current()
         state["user"] = None
         go_login()

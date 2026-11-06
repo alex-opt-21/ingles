@@ -1,12 +1,4 @@
-"""Pantalla Home de Saylo: interfaz creada con controles Flet reales.
-
-Copia las imágenes del paquete a src/assets/imagenes/home/.
-Esta vista espera que Flet sirva src/assets como carpeta de assets,
-igual que el código original que utiliza imagenes/profile.png.
-"""
-
 import flet as ft
-from screens.ranking import mostrar_ranking
 from ui.theme import (
     BLUE, BLUE_SOFT, NAVY, GREY, LINE,
     WHITE, RED, RED_BG, BG_TOP
@@ -128,14 +120,9 @@ class HomeView:
             print(message)
 
     def _on_nav(self, key):
-        if key in ("home", "profile"):
+        if key in ("home", "ranking", "profile"):
             self.tab = key
             self.render()
-        elif key == "ranking":
-            self.close()
-            mostrar_ranking(self.page, self.show)
-        elif key in ("lessons", "games"):
-            self._coming_soon()
 
     def _on_practice(self, e=None):
         self.on_practice()
@@ -166,10 +153,6 @@ class HomeView:
 
     def _coming_soon(self, e=None):
         self._toast("This section is coming soon!")
-
-    def _select_level(self, level):
-        # La lógica del filtrado por nivel todavía no existe en el código original.
-        self._toast(f"{level} level coming soon!")
 
     def _on_logout(self, e=None):
         self.close()
@@ -209,8 +192,7 @@ class HomeView:
                 expand=True,
                 controls=[
                     self._nav_item("Home", ft.Icons.HOME_ROUNDED, "home"),
-                    self._nav_item("Ranking", ft.Icons.EMOJI_EVENTS, "ranking"),
-                    self._nav_item("Games", ft.Icons.SPORTS_ESPORTS, "games"),
+                    self._nav_item("Ranking", ft.Icons.EMOJI_EVENTS_ROUNDED, "ranking"),
                     self._nav_item("Profile", ft.Icons.PERSON_OUTLINE, "profile"),
                 ],
             ),
@@ -333,10 +315,10 @@ class HomeView:
         sx, sy = self._width / BASE_W, self._height / BASE_H
         w, h = 877, 182
         children = [
-            self._card_image("musica.png", 12, 7, 253, 167),
+            self._card_image("musica .png", 12, 7, 253, 167),
             self._card_text(266, 43, 290, 55, "Songs", 45),
             self._card_text(268, 96, 315, 42, "Learn with music", 24, SUBTEXT, False),
-            self._card_image("musica_logo.png", 550, 10, 215, 151),
+            self._card_image("musica logo.png", 550, 10, 215, 151),
             self._arrow(778, 62, 65),
         ]
         return self._at(
@@ -350,18 +332,6 @@ class HomeView:
             ),
             on_click=self._coming_soon,
             ink=True,
-        )
-
-    def _level_button(self, x, label, level, selected=False):
-        sx = self._width / BASE_W
-        return self._at(
-            x, 1448, 274, 57,
-            self._text(label, 27, BLUE if selected else NAVY),
-            bgcolor="#E7F7FF" if selected else "#FFFFFF",
-            border=ft.Border.all(2 * sx, "#A3DDFD"),
-            border_radius=27 * sx,
-            ink=True,
-            on_click=lambda e, val=level: self._select_level(val),
         )
 
     def _build_home(self):
@@ -395,24 +365,21 @@ class HomeView:
             self._hero_card(),
             self._exercise_card(
                 32, 592, "Flashcards", "Learn vocabulary",
-                "tarjetas.png", "#EAF9FF", self._on_flashcards,
+                "tarjetas .png", "#EAF9FF", self._on_flashcards,
             ),
             self._exercise_card(
                 488, 592, "Sentences", "Build sentences",
-                "oraciones.png", "#EFFDF4", self._on_sentences,
+                "oraciones .png", "#EFFDF4", self._on_sentences,
             ),
             self._exercise_card(
                 32, 913, "Questions", "Ask and answer",
-                "preguntas.png", "#F2EEFF", self._on_questions,
+                "preguntas .png", "#F2EEFF", self._on_questions,
             ),
             self._exercise_card(
                 488, 913, "Phrases", "Common expressions",
                 "frases.png", "#FFF8DB", self._on_phrases,
             ),
             self._music_card(),
-            self._level_button(32, "Basic", "Basic"),
-            self._level_button(333, "Intermediate", "Intermediate"),
-            self._level_button(635, "Advanced", "Advanced"),
             self._bottom_navigation(),
         ])
         return items
@@ -472,13 +439,63 @@ class HomeView:
             self._touch(92, 1144, 760, 125, self._on_logout),
             self._label(250, 1300, 440, 90,
                         "My Achievements", 43, NAVY, True, True),
+            self._bottom_navigation(),
+        ])
+        return items
+
+    def _build_ranking(self):
+        """Pantalla base sin inventar posiciones ni datos de otros usuarios.
+
+        Cuando se conecte un ranking real, se puede reemplazar su contenido.
+        """
+        sx = self._width / BASE_W
+        items = [self._background()]
+        items.extend([
+            self._at(
+                36, 15, 234, 210,
+                ft.Image(src=ASSET_HOME + "logo.png", fit=ft.BoxFit.CONTAIN),
+            ),
+            self._label(300, 63, 520, 88, "Ranking", 67),
+            self._label(303, 148, 525, 48,
+                        "Follow your progress", 29, SUBTEXT, False),
+            self._at(
+                70, 316, 800, 850,
+                ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=32 * sx,
+                    controls=[
+                        ft.Icon(ft.Icons.EMOJI_EVENTS_ROUNDED,
+                                size=155 * sx, color="#F5B940"),
+                        self._text("Leaderboard coming soon", 43),
+                        self._text("Your experience points", 29, SUBTEXT, False),
+                        self._text(f"{self._xp()} XP", 76, BLUE),
+                        self._text("Other students' rankings are not available yet.",
+                                   25, SUBTEXT, False, ft.TextAlign.CENTER),
+                    ],
+                ),
+                bgcolor="#F6FCFF",
+                border=ft.Border.all(3 * sx, WHITE),
+                border_radius=50 * sx,
+                shadow=ft.BoxShadow(
+                    blur_radius=15 * sx,
+                    offset=ft.Offset(0, 4 * sx),
+                    color="#230F85C3",
+                ),
+            ),
+            self._bottom_navigation(),
         ])
         return items
 
     def render(self):
         self.shell.width = self._width
         self.shell.height = self._height
-        controls = self._build_home() if self.tab == "home" else self._build_profile()
+        if self.tab == "ranking":
+            controls = self._build_ranking()
+        elif self.tab == "profile":
+            controls = self._build_profile()
+        else:
+            controls = self._build_home()
         self.shell.content = ft.Stack(
             width=self._width,
             height=self._height,
