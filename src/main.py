@@ -27,20 +27,19 @@ from screens.ejercicios.ejercicio import QuizView
 from screens.sentences.sentences import SentencesView
 from screens.questions.question import QuestionsView
 from screens.phrases.phrases import PhrasesView
+from screens.songs.songs_view import SongsView, load_songs
 
 from ui.theme import APP_NAME, BG_TOP
 
 # ---------- PATHS ----------
-# Este archivo va en src/main.py.
 BASE_DIR = Path(__file__).resolve().parent
 EXERCISES_FILE = BASE_DIR / "data" / "acciones.json"
 SENTENCES_FILE = BASE_DIR / "data" / "sentences.json"
 QUESTIONS_FILE = BASE_DIR / "data" / "preguntas.json"
 PHRASES_FILE = BASE_DIR / "data" / "phrases.json"
+SONGS_FILE = BASE_DIR / "data" / "songs.json"
 ASSETS_DIR = BASE_DIR / "assets"
 
-# Identificador estable: debe mantenerse igual entre ejecuciones para que
-# QuizSession pueda reconocer y restaurar esta misma práctica.
 ACTION_LESSON_ID = "action_practice"
 
 
@@ -73,7 +72,6 @@ def main(page: ft.Page):
     def close_current():
         view = state["view"]
         if view is not None:
-            # QuizView.close() conserva la sesión pendiente si sigue activa.
             view.close()
             state["view"] = None
 
@@ -101,6 +99,7 @@ def main(page: ft.Page):
             on_sentences=start_sentences,
             on_questions=start_questions,
             on_phrases=start_phrases,
+            on_songs=start_songs,
             on_logout=logout,
         )
         state["view"] = view
@@ -108,15 +107,6 @@ def main(page: ft.Page):
 
     # ---------- ACTION PRACTICE: SAVE / RESTORE ----------
     def start_quiz(e=None, force_new=False):
-        """Abre Action Practice, restaurando la sesión pendiente si existe.
-
-        El botón actual on_practice de HomeView puede seguir llamando a esta
-        función sin cambios. Si hay una sesión guardada, se retoma; si no,
-        comienza una práctica nueva.
-
-        force_new=True permite iniciar desde cero explícitamente, descartando
-        la sesión pendiente anterior.
-        """
         close_current()
         user = state["user"]
 
@@ -131,7 +121,7 @@ def main(page: ft.Page):
             save_progress=auth.save_progress,
             save_session=auth.save_active_session,
             clear_session=auth.clear_active_session,
-            session_size=None,  # Recorre los 80 ejercicios en una sola práctica.
+            session_size=None,
             lesson_id=ACTION_LESSON_ID,
         )
 
@@ -139,13 +129,10 @@ def main(page: ft.Page):
         saved_state = None
 
         if not force_new:
-            # Leer del archivo para evitar depender de una copia antigua del
-            # usuario que quedó en memoria después del login.
             saved_state = auth.get_active_session(user["email"])
 
         if saved_state:
             restored = session.restore_state(saved_state)
-
             if restored:
                 print(
                     "[+] Sesión recuperada: "
@@ -160,8 +147,6 @@ def main(page: ft.Page):
                 auth.clear_active_session(user["email"])
 
         elif force_new:
-            # No dejar que una sesión anterior vuelva a aparecer en el próximo
-            # inicio. La sesión nueva se guardará al ejecutar view.show().
             auth.clear_active_session(user["email"])
 
         def back_to_home():
@@ -172,9 +157,6 @@ def main(page: ft.Page):
 
         view = QuizView(page, session, on_home=back_to_home)
         state["view"] = view
-
-        # Fundamental: resume=True evita que show() llame a session.start()
-        # y borre el índice/orden restaurados.
         view.show(resume=restored)
 
     # ---------- SENTENCES ----------
@@ -205,8 +187,6 @@ def main(page: ft.Page):
             go_home()
             return
 
-        # El servicio de Questions almacena progreso local. Separar por
-        # usuario evita que uno reanude el avance de otro.
         user = state["user"] or {}
         identity = str(
             user.get("id") or user.get("_id") or user.get("email") or "local"
@@ -242,8 +222,6 @@ def main(page: ft.Page):
             return
 
         user = state["user"] or {}
-
-        # Mantener la partida guardada de cada usuario por separado.
         identity = str(
             user.get("id") or user.get("_id") or user.get("email") or "local"
         )
@@ -268,9 +246,16 @@ def main(page: ft.Page):
         state["view"] = view
         view.show(resume=session.has_progress)
 
+    # ---------- SONGS: KARAOKE SPEAKING ----------
+    def start_songs(e=None):
+        close_current()
+        songs = load_songs(SONGS_FILE)
+        view = SongsView(page, songs=songs, on_home=go_home)
+        state["view"] = view
+        view.show()
+
     # ---------- LOGOUT ----------
     def logout(e=None):
-        # close_current() preserva automáticamente una práctica activa.
         close_current()
         state["user"] = None
         go_login()

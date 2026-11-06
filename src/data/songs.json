@@ -1,0 +1,294 @@
+{
+  "songs": [
+    {
+      "id": "one_direction_history",
+      "title": "History",
+      "artist": "One Direction",
+      "audio": "audio/music/One-Direction-History.mp3",
+      "duration_ms": 195264,
+      "cue_accuracy": "estimated — adjust starts and ends to the exact MP3; not verified by speech alignment",
+      "lines": [
+        {
+          "text": "You gotta help me, I'm losing my mind",
+          "start_ms": 7300,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 12480
+        },
+        {
+          "text": "Keep getting the feeling you wanna leave this all behind",
+          "start_ms": 12600,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 18480
+        },
+        {
+          "text": "Thought we were going strong, I thought we were holding on",
+          "start_ms": 18600,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 24380
+        },
+        {
+          "text": "Aren't we?",
+          "start_ms": 24500,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 26380
+        },
+        {
+          "text": "No, they don't teach you this in school",
+          "start_ms": 26500,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 31380
+        },
+        {
+          "text": "Now my heart's breaking and I don't know what to do",
+          "start_ms": 31500,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 37880
+        },
+        {
+          "text": "Thought we were going strong, thought we were holding on",
+          "start_ms": 38000,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 42980
+        },
+        {
+          "text": "Aren't we?",
+          "start_ms": 43100,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 44880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 45000,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 49580
+        },
+        {
+          "text": "We could be the greatest team that the world has ever seen",
+          "start_ms": 49700,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 54880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 55000,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 59880
+        },
+        {
+          "text": "So don't let it go, we can make some more, we can live forever",
+          "start_ms": 60000,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 66880
+        },
+        {
+          "text": "All of the rumours, all of the fights",
+          "start_ms": 67000,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 71880
+        },
+        {
+          "text": "But we always find a way to make it out alive",
+          "start_ms": 72000,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 77380
+        },
+        {
+          "text": "Thought we were going strong, thought we were holding on",
+          "start_ms": 77500,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 83480
+        },
+        {
+          "text": "Aren't we?",
+          "start_ms": 83600,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 86380
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 86500,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 91080
+        },
+        {
+          "text": "We could be the greatest team that the world has ever seen",
+          "start_ms": 91200,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 96380
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 96500,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 101380
+        },
+        {
+          "text": "So don't let it go, we can make some more, we can live forever",
+          "start_ms": 101500,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 108380
+        },
+        {
+          "text": "Minibars, expensive cars",
+          "start_ms": 108500,
+          "group": "Bridge 1",
+          "timing_reviewed": false,
+          "end_ms": 111180
+        },
+        {
+          "text": "Hotel rooms, and new tattoos",
+          "start_ms": 111300,
+          "group": "Bridge 1",
+          "timing_reviewed": false,
+          "end_ms": 113880
+        },
+        {
+          "text": "The good champagne, and private planes",
+          "start_ms": 114000,
+          "group": "Bridge 1",
+          "timing_reviewed": false,
+          "end_ms": 116880
+        },
+        {
+          "text": "But they don't mean anything",
+          "start_ms": 117000,
+          "group": "Bridge 1",
+          "timing_reviewed": false,
+          "end_ms": 119380
+        },
+        {
+          "text": "'Cause the truth is I, I realize",
+          "start_ms": 119500,
+          "group": "Bridge 2",
+          "timing_reviewed": false,
+          "end_ms": 122280
+        },
+        {
+          "text": "That without you here life is just a lie",
+          "start_ms": 122400,
+          "group": "Bridge 2",
+          "timing_reviewed": false,
+          "end_ms": 125080
+        },
+        {
+          "text": "This is not the end, this is not the end",
+          "start_ms": 125200,
+          "group": "Bridge 2",
+          "timing_reviewed": false,
+          "end_ms": 127980
+        },
+        {
+          "text": "We can make it, you know it, you know",
+          "start_ms": 128100,
+          "group": "Bridge 2",
+          "timing_reviewed": false,
+          "end_ms": 130880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 131000,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 135580
+        },
+        {
+          "text": "We could be the greatest team that the world has ever seen",
+          "start_ms": 135700,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 140880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 141000,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 145880
+        },
+        {
+          "text": "So don't let it go, we can make some more, we can live forever",
+          "start_ms": 146000,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 152880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 153000,
+          "group": "Chorus 4",
+          "timing_reviewed": false,
+          "end_ms": 157580
+        },
+        {
+          "text": "We could be the greatest team the world has ever seen",
+          "start_ms": 157700,
+          "group": "Chorus 4",
+          "timing_reviewed": false,
+          "end_ms": 162880
+        },
+        {
+          "text": "You and me got a whole lot of history (oh)",
+          "start_ms": 163000,
+          "group": "Chorus 4",
+          "timing_reviewed": false,
+          "end_ms": 167880
+        },
+        {
+          "text": "So don't let it go, we can make some more, we can live forever",
+          "start_ms": 168000,
+          "group": "Chorus 4",
+          "timing_reviewed": false,
+          "end_ms": 174880
+        },
+        {
+          "text": "So don't let me go, so don't let me go",
+          "start_ms": 175000,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 177480
+        },
+        {
+          "text": "We can live forever",
+          "start_ms": 177600,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 179880
+        },
+        {
+          "text": "Baby, don't you know, baby, don't you know?",
+          "start_ms": 180000,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 182080
+        },
+        {
+          "text": "We can live forever",
+          "start_ms": 182200,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 184880
+        }
+      ]
+    }
+  ]
+}
