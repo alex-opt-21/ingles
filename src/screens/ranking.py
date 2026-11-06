@@ -5,290 +5,473 @@ from services.admin import admin_service
 
 def construir_ranking(page, width, height):
 
-    AZUL = "#1677E8"
-    AZUL_OSCURO = "#183568"
-    FONDO = "#F1F6FD"
-    BLANCO = "#FFFFFF"
-    GRIS = "#64748B"
+    BLUE = "#168BFF"
+    NAVY = "#183568"
+    GRAY = "#58739F"
+    BG = "#EFF7FF"
+    WHITE = "#FFFFFF"
 
-    def nombre_corto(nombre):
-        return (nombre or "Student").strip().split()[0]
+    GOLD_DARK = "#A96D00"
+    GOLD_BG = "#FFF1BE"
+    SILVER_BG = "#E9F0FA"
+    SILVER = "#8198B8"
+    BRONZE_BG = "#F8E5D8"
+    BRONZE = "#B9794C"
 
-    def obtener_xp(alumno):
+    # Espacio disponible para el contenido.
+    area_height = max(height - 85, 300)
+    card_width = max(width - 38, 220)
+
+    lista = ft.Column(spacing=10)
+
+    def short_name(name):
+        name = (name or "Student").strip()
+        return name.split()[0] if name else "Student"
+
+    def get_xp(student):
         try:
-            return int(alumno.get("xp", 0) or 0)
+            return int(student.get("xp", 0) or 0)
         except (ValueError, TypeError):
             return 0
 
-    lista = ft.Column(spacing=12)
+    def soft_shadow():
+        return ft.BoxShadow(
+            blur_radius=10,
+            color="#2584BCE0",
+            offset=ft.Offset(0, 3),
+        )
 
-    def tarjeta_podio(alumno, puesto):
-        colores = {
-            1: ("#FFF1BD", "#D99A00", "🥇", "FIRST PLACE"),
-            2: ("#E8EDF5", "#8293A9", "🥈", "SECOND PLACE"),
-            3: ("#F8E2D2", "#B97849", "🥉", "THIRD PLACE"),
-        }
-
-        fondo, color, medalla, titulo = colores[puesto]
-
+    # XP
+    def xp_badge(value, size=20, gold=False):
         return ft.Container(
-            expand=True,
-            padding=15,
-            border_radius=22,
-            bgcolor=fondo,
-            content=ft.Column(
-                [
-                    ft.Text(medalla, size=38),
-                    ft.Text(
-                        titulo,
-                        size=10,
-                        color=color,
-                        weight=ft.FontWeight.BOLD,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                    ft.Text(
-                        nombre_corto(alumno.get("name")),
-                        size=17,
-                        color=AZUL_OSCURO,
-                        weight=ft.FontWeight.BOLD,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                    ft.Text(
-                        f'{obtener_xp(alumno)} XP',
-                        size=20,
-                        color=AZUL,
-                        weight=ft.FontWeight.BOLD,
-                    ),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=7,
+            padding=8,
+            bgcolor=WHITE,
+            border_radius=30,
+            border=ft.Border.all(
+                2,
+                "#FFD36D" if gold else "#B9DFFF",
+            ),
+            content=ft.Text(
+                f"{value} XP",
+                size=size,
+                color=BLUE,
+                weight=ft.FontWeight.BOLD,
+                text_align=ft.TextAlign.CENTER,
             ),
         )
 
-    def fila_estudiante(alumno, puesto):
+    # ENCABEZADO
+    def build_header():
+        return ft.Row(
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                ft.Text("🏆", size=32),
+                ft.Text(
+                    "Leaderboard",
+                    size=26,
+                    color=NAVY,
+                    weight=ft.FontWeight.BOLD,
+                    font_family="Comic Sans MS",
+                ),
+                ft.Container(expand=True),
+                ft.Container(
+                    width=40,
+                    height=40,
+                    border_radius=30,
+                    bgcolor=WHITE,
+                    alignment=ft.Alignment.CENTER,
+                    shadow=soft_shadow(),
+                    content=ft.IconButton(
+                        icon=ft.Icons.REFRESH_ROUNDED,
+                        icon_color=BLUE,
+                        icon_size=23,
+                        tooltip="Refresh leaderboard",
+                        on_click=load_ranking,
+                    ),
+                ),
+            ],
+        )
+
+    # PRESENTACIÓN
+    def build_intro():
         return ft.Container(
-            padding=14,
-            border_radius=17,
-            bgcolor=BLANCO,
+            padding=12,
+            bgcolor="#EFFAFF",
+            border_radius=25,
+            border=ft.Border.all(3, WHITE),
+            shadow=soft_shadow(),
             content=ft.Row(
-                [
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Column(
+                        expand=True,
+                        spacing=4,
+                        controls=[
+                            ft.Row(
+                                spacing=7,
+                                controls=[
+                                    ft.Text("🏆", size=23),
+                                    ft.Text(
+                                        "Top Students",
+                                        size=21,
+                                        color=NAVY,
+                                        weight=ft.FontWeight.BOLD,
+                                        font_family="Comic Sans MS",
+                                    ),
+                                ],
+                            ),
+                            ft.Text(
+                                "Learn, practice and reach the top!",
+                                size=12,
+                                color=GRAY,
+                                font_family="Comic Sans MS",
+                            ),
+                        ],
+                    ),
+                    ft.Text("🎓", size=34),
+                ],
+            ),
+        )
+
+    # DECORACIÓN DEL CAMPEÓN
+    def champion_decoration():
+        return ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=2,
+            controls=[
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=12,
+                    controls=[
+                        ft.Text("⭐", size=18),
+                        ft.Text("🏆", size=49),
+                        ft.Text("⭐", size=18),
+                    ],
+                ),
+                ft.Container(
+                    padding=7,
+                    bgcolor="#F47A24",
+                    border_radius=12,
+                    content=ft.Text(
+                        "#1 CHAMPION",
+                        size=14,
+                        color=WHITE,
+                        weight=ft.FontWeight.BOLD,
+                    ),
+                ),
+            ],
+        )
+
+    # PRIMER PUESTO
+    def champion_card(student):
+        return ft.Container(
+            width=card_width,
+            padding=8,
+            bgcolor=GOLD_BG,
+            border_radius=29,
+            border=ft.Border.all(3, WHITE),
+            shadow=soft_shadow(),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=5,
+                controls=[
+                    champion_decoration(),
+
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=6,
+                        controls=[
+                            ft.Text("👑", size=16),
+                            ft.Text(
+                                "LEADERBOARD CHAMPION",
+                                size=11,
+                                color=GOLD_DARK,
+                                weight=ft.FontWeight.BOLD,
+                                font_family="Comic Sans MS",
+                            ),
+                            ft.Text("👑", size=16),
+                        ],
+                    ),
+
+                    ft.Text(
+                        short_name(student.get("name")),
+                        size=29,
+                        color=NAVY,
+                        weight=ft.FontWeight.BOLD,
+                        font_family="Comic Sans MS",
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+
+                    xp_badge(get_xp(student), 21, True),
+
+                    ft.Text(
+                        "✨  Keep being number one!  ✨",
+                        size=11,
+                        color=GOLD_DARK,
+                        font_family="Comic Sans MS",
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                ],
+            ),
+        )
+
+    # SEGUNDO Y TERCER PUESTO
+    def podium_card(student, place):
+
+        if place == 2:
+            medal = "🥈"
+            title = "SECOND PLACE"
+            background = SILVER_BG
+            accent = SILVER
+            decoration = "⭐"
+        else:
+            medal = "🥉"
+            title = "THIRD PLACE"
+            background = BRONZE_BG
+            accent = BRONZE
+            decoration = "✨"
+
+        return ft.Container(
+            width=card_width,
+            padding=9,
+            bgcolor=background,
+            border_radius=25,
+            border=ft.Border.all(3, WHITE),
+            shadow=soft_shadow(),
+            content=ft.Row(
+                spacing=7,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
                     ft.Container(
-                        width=38,
-                        height=38,
+                        width=60,
+                        alignment=ft.Alignment.CENTER,
+                        content=ft.Column(
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=0,
+                            controls=[
+                                ft.Text(medal, size=39),
+                                ft.Text(
+                                    f"#{place}",
+                                    size=11,
+                                    color=accent,
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                            ],
+                        ),
+                    ),
+
+                    ft.Container(
+                        width=2,
+                        height=72,
+                        bgcolor="#CAD9EE",
+                    ),
+
+                    ft.Column(
+                        expand=True,
+                        spacing=3,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Text(
+                                title,
+                                size=11,
+                                color=accent,
+                                weight=ft.FontWeight.BOLD,
+                            ),
+                            ft.Text(
+                                short_name(student.get("name")),
+                                size=19,
+                                color=NAVY,
+                                weight=ft.FontWeight.BOLD,
+                                font_family="Comic Sans MS",
+                                text_align=ft.TextAlign.CENTER,
+                            ),
+                            xp_badge(get_xp(student), 16),
+                        ],
+                    ),
+
+                    ft.Text(decoration, size=19),
+                ],
+            ),
+        )
+
+    # RESTO DE ESTUDIANTES
+    def student_row(student, place):
+        return ft.Container(
+            padding=11,
+            bgcolor=WHITE,
+            border_radius=18,
+            border=ft.Border.all(2, "#DCEBFA"),
+            shadow=soft_shadow(),
+            content=ft.Row(
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        width=35,
+                        height=35,
                         border_radius=12,
-                        bgcolor="#EAF2FF",
+                        bgcolor="#EAF3FF",
                         alignment=ft.Alignment.CENTER,
                         content=ft.Text(
-                            str(puesto),
-                            color=AZUL,
+                            str(place),
+                            color=BLUE,
+                            size=15,
                             weight=ft.FontWeight.BOLD,
-                            size=16,
                         ),
                     ),
                     ft.Column(
-                        [
+                        expand=True,
+                        spacing=2,
+                        controls=[
                             ft.Text(
-                                nombre_corto(alumno.get("name")),
-                                color=AZUL_OSCURO,
+                                short_name(student.get("name")),
+                                color=NAVY,
+                                size=14,
                                 weight=ft.FontWeight.BOLD,
-                                size=15,
                             ),
                             ft.Text(
                                 "Bright English Student",
-                                color=GRIS,
-                                size=11,
+                                color=GRAY,
+                                size=10,
                             ),
                         ],
-                        spacing=2,
-                        expand=True,
                     ),
                     ft.Text(
-                        f'{obtener_xp(alumno)} XP',
-                        color=AZUL,
+                        f"{get_xp(student)} XP",
+                        color=BLUE,
+                        size=14,
                         weight=ft.FontWeight.BOLD,
-                        size=15,
                     ),
                 ],
             ),
         )
 
-    def cargar_ranking(e=None):
+    # RANKING VACÍO
+    def empty_card():
+        return ft.Container(
+            padding=22,
+            bgcolor=WHITE,
+            border_radius=25,
+            border=ft.Border.all(2, "#DCEBFA"),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=8,
+                controls=[
+                    ft.Text("🏆", size=42),
+                    ft.Text(
+                        "The leaderboard is waiting!",
+                        color=NAVY,
+                        size=17,
+                        weight=ft.FontWeight.BOLD,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Text(
+                        "Complete exercises to appear here.",
+                        color=GRAY,
+                        size=12,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                ],
+            ),
+        )
+
+    # ACTUALIZAR RANKING
+    def load_ranking(e=None):
         lista.controls.clear()
 
         try:
-            estudiantes = admin_service.get_student_ranking() or []
+            students = admin_service.get_student_ranking() or []
 
-            estudiantes = sorted(
-                estudiantes,
-                key=obtener_xp,
+            students = sorted(
+                students,
+                key=get_xp,
                 reverse=True,
             )[:10]
 
         except Exception as error:
-            print("Error loading leaderboard:", error)
-            estudiantes = []
+            print("Leaderboard error:", error)
+            students = []
 
-        if not estudiantes:
-            lista.controls.append(
-                ft.Container(
-                    padding=30,
-                    bgcolor=BLANCO,
-                    border_radius=20,
-                    content=ft.Column(
-                        [
-                            ft.Text("🏆", size=45),
-                            ft.Text(
-                                "The leaderboard is waiting!",
-                                color=AZUL_OSCURO,
-                                weight=ft.FontWeight.BOLD,
-                                size=17,
-                            ),
-                            ft.Text(
-                                "Complete exercises to appear here.",
-                                color=GRIS,
-                                text_align=ft.TextAlign.CENTER,
-                            ),
-                        ],
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    ),
-                )
-            )
-            page.update()
-            return
+        if not students:
+            lista.controls.append(empty_card())
 
-        primero = estudiantes[0]
+        else:
+            lista.controls.append(champion_card(students[0]))
 
-        lista.controls.append(
-            ft.Container(
-                padding=18,
-                border_radius=22,
-                bgcolor="#FFF1BD",
-                content=ft.Column(
-                    [
-                        ft.Text("🏆", size=42),
-                        ft.Text(
-                            "LEADERBOARD CHAMPION",
-                            color="#A66D00",
-                            size=12,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                        ft.Text(
-                            nombre_corto(primero.get("name")),
-                            color=AZUL_OSCURO,
-                            size=25,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                        ft.Text(
-                            f'{obtener_xp(primero)} XP',
-                            color=AZUL,
-                            size=26,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                        ft.Text(
-                            "Keep being number one!",
-                            color="#8A6B24",
-                            size=12,
-                        ),
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=5,
-                ),
-            )
-        )
-
-        if len(estudiantes) > 1:
-            podio = []
-
-            for puesto in (2, 3):
-                if len(estudiantes) >= puesto:
-                    podio.append(
-                        tarjeta_podio(estudiantes[puesto - 1], puesto)
-                    )
-
-            lista.controls.append(
-                ft.Row(
-                    controls=podio,
-                    spacing=10,
-                    vertical_alignment=ft.CrossAxisAlignment.START,
-                )
-            )
-
-        if len(estudiantes) > 3:
-            lista.controls.append(
-                ft.Text(
-                    "OVERALL LEADERBOARD",
-                    color=AZUL_OSCURO,
-                    size=15,
-                    weight=ft.FontWeight.BOLD,
-                )
-            )
-
-            for puesto, alumno in enumerate(estudiantes[3:], start=4):
+            if len(students) >= 2:
                 lista.controls.append(
-                    fila_estudiante(alumno, puesto)
+                    podium_card(students[1], 2)
                 )
+
+            if len(students) >= 3:
+                lista.controls.append(
+                    podium_card(students[2], 3)
+                )
+
+            if len(students) > 3:
+                lista.controls.append(
+                    ft.Text(
+                        "MORE STUDENTS",
+                        size=15,
+                        color=NAVY,
+                        weight=ft.FontWeight.BOLD,
+                        font_family="Comic Sans MS",
+                    )
+                )
+
+                for place, student in enumerate(students[3:], start=4):
+                    lista.controls.append(
+                        student_row(student, place)
+                    )
 
         page.update()
 
-    encabezado = ft.Row(
-        [
-            ft.Text(
-                "Leaderboard",
-                size=27,
-                color=AZUL_OSCURO,
-                weight=ft.FontWeight.BOLD,
-            ),
-            ft.Container(expand=True),
-            ft.IconButton(
-                icon=ft.Icons.REFRESH_ROUNDED,
-                icon_color=AZUL,
-                tooltip="Refresh leaderboard",
-                on_click=cargar_ranking,
-            ),
-        ],
-    )
-
+    # CONTENIDO DESPLAZABLE
     contenido = ft.Column(
-        [
-            encabezado,
-            ft.Container(
-                padding=15,
-                border_radius=20,
-                bgcolor=BLANCO,
-                content=ft.Column(
-                    [
-                        ft.Text(
-                            "🏆 Top Students",
-                            size=19,
-                            color=AZUL_OSCURO,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                        ft.Text(
-                            "Learn, practice and reach the top!",
-                            color=GRIS,
-                            size=12,
-                        ),
-                    ],
-                    spacing=6,
-                ),
-            ),
-            lista,
-        ],
-        spacing=16,
-        scroll=ft.ScrollMode.AUTO,
+        spacing=8,
         expand=True,
+        scroll=ft.ScrollMode.AUTO,
+        controls=[
+            build_header(),
+            build_intro(),
+            lista,
+            ft.Container(height=15),
+        ],
     )
 
+    # FONDO: AHORA CUBRE TODA LA PANTALLA
+    # El contenido termina antes para dejar espacio a la navegación.
     contenedor = ft.Container(
         left=0,
         top=0,
         width=width,
-        height=height - 145,
-        padding=16,
-        bgcolor=FONDO,
-        content=contenido,
+        height=height,
+        bgcolor=BG,
+        content=ft.Stack(
+            width=width,
+            height=height,
+            controls=[
+                ft.Image(
+                    src="imagenes/home/fondo.png",
+                    width=width,
+                    height=height,
+                    fit=ft.BoxFit.FILL,
+                    error_content=ft.Container(
+                        bgcolor=BG,
+                    ),
+                ),
+
+                ft.Container(
+                    left=0,
+                    top=0,
+                    width=width,
+                    height=area_height,
+                    padding=12,
+                    content=contenido,
+                ),
+            ],
+        ),
     )
 
-    cargar_ranking()
+    load_ranking()
 
     return contenedor
