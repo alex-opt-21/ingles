@@ -151,7 +151,7 @@
       "type": "look_and_choose",
       "prompt": "What is the action?",
       "hint": "Select the verb that best describes the picture.",
-      "image": "imagenes/practice.png",
+      "image": "imagenes/practiceing.png",
       "image_credit": "",
       "options": ["Practice", "Play", "Sleep"],
       "answer": "Practice",

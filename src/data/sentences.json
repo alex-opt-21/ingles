@@ -52,7 +52,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ soccer.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/playing.png",
+      "image": "imagenes/sentences/play.png",
       "options": ["plays", "play", "playing"],
       "answer": "play"
     },
@@ -61,7 +61,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ a song.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/singing.png",
+      "image": "imagenes/sentences/sing.png",
       "options": ["singing", "sings", "sing"],
       "answer": "sing"
     },
@@ -70,7 +70,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ a letter.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/writing.png",
+      "image": "imagenes/sentences/write.png",
       "options": ["write", "writes", "writing"],
       "answer": "write"
     },
@@ -79,7 +79,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ with my friends.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/talking.png",
+      "image": "imagenes/sentences/talk.png",
       "options": ["talks", "talk", "talking"],
       "answer": "talk"
     },
@@ -88,7 +88,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ at parties.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/dancing.png",
+      "image": "imagenes/sentences/dance.png",
       "options": ["dancing", "dance", "dances"],
       "answer": "dance"
     },
@@ -97,7 +97,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ English.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/speaking.png",
+      "image": "imagenes/sentences/speak.png",
       "options": ["speaks", "speaking", "speak"],
       "answer": "speak"
     },
@@ -106,7 +106,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ a question.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/asking.png",
+      "image": "imagenes/sentences/ask.png",
       "options": ["ask", "asks", "asking"],
       "answer": "ask"
     },
@@ -115,7 +115,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ the question.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/answering.png",
+      "image": "imagenes/sentences/answer.png",
       "options": ["answering", "answer", "answers"],
       "answer": "answer"
     },
@@ -124,7 +124,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ new words.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/learning.png",
+      "image": "imagenes/sentences/learn.png",
       "options": ["learn", "learns", "learning"],
       "answer": "learn"
     },
@@ -133,7 +133,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ English.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/teaching.png",
+      "image": "imagenes/sentences/teach.png",
       "options": ["teaching", "teaches", "teach"],
       "answer": "teach"
     },
@@ -142,7 +142,7 @@
       "type": "complete_sentence",
       "prompt": "I ______ English every day.",
       "hint": "Choose the correct verb.",
-      "image": "imagenes/practice.png",
+      "image": "imagenes/sentences/practice.png",
       "options": ["practicing", "practice", "practices"],
       "answer": "practice"
     }
