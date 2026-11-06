@@ -13,7 +13,9 @@ def admin_dashboard(page, admin_user, on_logout):
     blanco = "#FFFFFF"
 
     tabla = ft.Column(spacing=10)
+    ranking = ft.Column(spacing=8)
     mensaje = ft.Text("", size=13)
+
     busqueda = ft.TextField(
         hint_text="Buscar por nombre o correo",
         prefix_icon=ft.Icons.SEARCH,
@@ -21,13 +23,36 @@ def admin_dashboard(page, admin_user, on_logout):
         expand=True,
     )
 
-    total_texto = ft.Text("0", size=25, weight=ft.FontWeight.BOLD, color=azul)
-    activos_texto = ft.Text("0", size=25, weight=ft.FontWeight.BOLD, color=azul)
-    inactivos_texto = ft.Text("0", size=25, weight=ft.FontWeight.BOLD, color=azul)
+    total_texto = ft.Text(
+        "0", size=25, weight=ft.FontWeight.BOLD, color=azul
+    )
+
+    activos_texto = ft.Text(
+        "0", size=25, weight=ft.FontWeight.BOLD, color=azul
+    )
+
+    inactivos_texto = ft.Text(
+        "0", size=25, weight=ft.FontWeight.BOLD, color=azul
+    )
+
+    # ---------------- MENSAJES ----------------
 
     def aviso(texto):
         mensaje.value = texto
         page.update()
+
+    # ---------------- CONTAR EJERCICIOS ----------------
+
+    def contar_ejercicios(completed):
+        if isinstance(completed, (list, tuple, set)):
+            return len(completed)
+
+        try:
+            return int(completed or 0)
+        except (ValueError, TypeError):
+            return 0
+
+    # ---------------- TARJETAS ----------------
 
     def tarjeta(titulo, valor):
         return ft.Container(
@@ -37,19 +62,105 @@ def admin_dashboard(page, admin_user, on_logout):
             bgcolor=blanco,
             content=ft.Column(
                 [
-                    ft.Text(titulo, size=12, color="#64748B"),
+                    ft.Text(
+                        titulo,
+                        size=12,
+                        color="#64748B",
+                    ),
                     valor,
                 ],
                 spacing=5,
             ),
         )
 
+    # ---------------- RANKING ----------------
+
+    def actualizar_ranking():
+        ranking.controls.clear()
+
+        mejores = admin_service.get_student_ranking()
+
+        for puesto, estudiante in enumerate(mejores, start=1):
+
+            medalla = {
+                1: "🥇",
+                2: "🥈",
+                3: "🥉",
+            }.get(puesto, f"{puesto}.")
+
+            ejercicios = contar_ejercicios(
+                estudiante.get("completed", 0)
+            )
+
+            ranking.controls.append(
+                ft.Container(
+                    padding=12,
+                    border_radius=12,
+                    bgcolor=blanco,
+                    content=ft.Row(
+                        [
+                            ft.Text(
+                                medalla,
+                                size=22,
+                            ),
+
+                            ft.Column(
+                                [
+                                    ft.Text(
+                                        estudiante.get(
+                                            "name",
+                                            "Estudiante",
+                                        ),
+                                        size=14,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=azul_oscuro,
+                                    ),
+
+                                    ft.Text(
+                                        f"{ejercicios} ejercicios completados",
+                                        size=11,
+                                        color="#64748B",
+                                    ),
+                                ],
+                                expand=True,
+                                spacing=3,
+                            ),
+
+                            ft.Text(
+                                f'{int(estudiante.get("xp", 0) or 0)} XP',
+                                size=15,
+                                weight=ft.FontWeight.BOLD,
+                                color=azul,
+                            ),
+                        ],
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                )
+            )
+
+        if not mejores:
+            ranking.controls.append(
+                ft.Text(
+                    "Todavía no hay estudiantes en el ranking.",
+                    color="#64748B",
+                )
+            )
+
+    # ---------------- ACTUALIZAR USUARIOS ----------------
+
     def actualizar(e=None):
         usuarios = admin_service.list_users()
+
+        actualizar_ranking()
+
         termino = (busqueda.value or "").strip().lower()
 
         total = len(usuarios)
-        activos = sum(1 for u in usuarios if u["active"])
+
+        activos = sum(
+            1 for u in usuarios if u["active"]
+        )
+
         inactivos = total - activos
 
         total_texto.value = str(total)
@@ -65,23 +176,41 @@ def admin_dashboard(page, admin_user, on_logout):
         ]
 
         for usuario in filtrados:
+
             email = usuario["email"]
             es_admin = usuario["role"] == "admin"
             activo = usuario["active"]
 
-            def cambiar_estado(e, correo=email, estado=activo):
+            def cambiar_estado(
+                e,
+                correo=email,
+                estado=activo,
+            ):
                 ok, resultado = admin_service.set_user_active(
                     correo,
                     not estado,
                 )
+
                 aviso(resultado)
                 actualizar()
 
-            def editar(e, correo=email, nombre=usuario["name"]):
+            def editar(
+                e,
+                correo=email,
+                nombre=usuario["name"],
+            ):
                 abrir_edicion(correo, nombre)
 
-            def eliminar(e, correo=email, nombre=usuario["name"]):
+            def eliminar(
+                e,
+                correo=email,
+                nombre=usuario["name"],
+            ):
                 confirmar_eliminacion(correo, nombre)
+
+            ejercicios = contar_ejercicios(
+                usuario.get("completed", 0)
+            )
 
             controles = [
                 ft.Text(
@@ -90,13 +219,21 @@ def admin_dashboard(page, admin_user, on_logout):
                     weight=ft.FontWeight.BOLD,
                     color=azul_oscuro,
                 ),
-                ft.Text(email, size=12, color="#64748B"),
+
                 ft.Text(
-                    f'Rol: {usuario["role"]} | XP: {usuario["xp"]} | '
-                    f'Ejercicios: {len(usuario["completed"])}',
+                    email,
+                    size=12,
+                    color="#64748B",
+                ),
+
+                ft.Text(
+                    f'Rol: {usuario["role"]} | '
+                    f'XP: {usuario["xp"]} | '
+                    f'Ejercicios: {ejercicios}',
                     size=11,
                     color="#64748B",
                 ),
+
                 ft.Text(
                     "Activo" if activo else "Desactivado",
                     color="#15803D" if activo else "#DC2626",
@@ -110,12 +247,18 @@ def admin_dashboard(page, admin_user, on_logout):
                     tooltip="Editar nombre",
                     on_click=editar,
                 ),
+
                 ft.IconButton(
-                    icon=ft.Icons.BLOCK if activo else ft.Icons.CHECK_CIRCLE,
+                    icon=(
+                        ft.Icons.BLOCK
+                        if activo
+                        else ft.Icons.CHECK_CIRCLE
+                    ),
                     tooltip="Desactivar o activar",
                     disabled=es_admin,
                     on_click=cambiar_estado,
                 ),
+
                 ft.IconButton(
                     icon=ft.Icons.DELETE_OUTLINE,
                     tooltip="Eliminar usuario",
@@ -136,7 +279,11 @@ def admin_dashboard(page, admin_user, on_logout):
                                 spacing=4,
                                 expand=True,
                             ),
-                            ft.Row(acciones, spacing=0),
+
+                            ft.Row(
+                                acciones,
+                                spacing=0,
+                            ),
                         ],
                         vertical_alignment=ft.CrossAxisAlignment.CENTER,
                     ),
@@ -145,25 +292,40 @@ def admin_dashboard(page, admin_user, on_logout):
 
         if not filtrados:
             tabla.controls.append(
-                ft.Text("No se encontraron usuarios.", color="#64748B")
+                ft.Text(
+                    "No se encontraron usuarios.",
+                    color="#64748B",
+                )
             )
 
         page.update()
 
+    # ---------------- CREAR USUARIO ----------------
+
     def abrir_crear(e=None):
-        nombre = ft.TextField(label="Nombre completo")
+
+        nombre = ft.TextField(
+            label="Nombre completo"
+        )
+
         correo = ft.TextField(
             label="Correo electrónico",
             keyboard_type=ft.KeyboardType.EMAIL,
         )
+
         clave = ft.TextField(
             label="Contraseña inicial",
             password=True,
             can_reveal_password=True,
         )
-        error = ft.Text("", color="#DC2626")
+
+        error = ft.Text(
+            "",
+            color="#DC2626",
+        )
 
         def guardar(ev):
+
             ok, resultado = admin_service.create_user(
                 nombre.value,
                 correo.value,
@@ -176,6 +338,7 @@ def admin_dashboard(page, admin_user, on_logout):
                 return
 
             page.pop_dialog()
+
             aviso("Usuario creado correctamente.")
             actualizar()
 
@@ -183,30 +346,52 @@ def admin_dashboard(page, admin_user, on_logout):
             ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Crear usuario"),
+
                 content=ft.Column(
-                    [nombre, correo, clave, error],
+                    [
+                        nombre,
+                        correo,
+                        clave,
+                        error,
+                    ],
                     tight=True,
                     width=320,
                 ),
+
                 actions=[
                     ft.TextButton(
                         "Cancelar",
                         on_click=lambda ev: page.pop_dialog(),
                     ),
-                    ft.Button("Guardar", on_click=guardar),
+
+                    ft.Button(
+                        "Guardar",
+                        on_click=guardar,
+                    ),
                 ],
             )
         )
 
+    # ---------------- EDITAR USUARIO ----------------
+
     def abrir_edicion(email, nombre_actual):
+
         nombre = ft.TextField(
             label="Nombre completo",
             value=nombre_actual,
         )
-        error = ft.Text("", color="#DC2626")
+
+        error = ft.Text(
+            "",
+            color="#DC2626",
+        )
 
         def guardar(ev):
-            ok, resultado = admin_service.update_user(email, nombre.value)
+
+            ok, resultado = admin_service.update_user(
+                email,
+                nombre.value,
+            )
 
             if not ok:
                 error.value = resultado
@@ -214,6 +399,7 @@ def admin_dashboard(page, admin_user, on_logout):
                 return
 
             page.pop_dialog()
+
             aviso(resultado)
             actualizar()
 
@@ -221,6 +407,7 @@ def admin_dashboard(page, admin_user, on_logout):
             ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Editar usuario"),
+
                 content=ft.Column(
                     [
                         ft.Text(email, size=12),
@@ -230,20 +417,31 @@ def admin_dashboard(page, admin_user, on_logout):
                     tight=True,
                     width=320,
                 ),
+
                 actions=[
                     ft.TextButton(
                         "Cancelar",
                         on_click=lambda ev: page.pop_dialog(),
                     ),
-                    ft.Button("Guardar cambios", on_click=guardar),
+
+                    ft.Button(
+                        "Guardar cambios",
+                        on_click=guardar,
+                    ),
                 ],
             )
         )
 
+    # ---------------- ELIMINAR USUARIO ----------------
+
     def confirmar_eliminacion(email, nombre):
+
         def eliminar_confirmado(e):
+
             ok, resultado = admin_service.delete_user(email)
+
             page.pop_dialog()
+
             aviso(resultado)
             actualizar()
 
@@ -251,15 +449,18 @@ def admin_dashboard(page, admin_user, on_logout):
             ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Eliminar usuario"),
+
                 content=ft.Text(
-                    f"¿Quieres eliminar la cuenta de {nombre} ({email})? "
-                    "Esta operación no se puede deshacer."
+                    f"¿Quieres eliminar la cuenta de {nombre} "
+                    f"({email})? Esta operación no se puede deshacer."
                 ),
+
                 actions=[
                     ft.TextButton(
                         "Cancelar",
                         on_click=lambda e: page.pop_dialog(),
                     ),
+
                     ft.Button(
                         "Eliminar definitivamente",
                         on_click=eliminar_confirmado,
@@ -272,6 +473,8 @@ def admin_dashboard(page, admin_user, on_logout):
             )
         )
 
+    # ---------------- ENCABEZADO ----------------
+
     encabezado = ft.Row(
         [
             ft.Column(
@@ -282,6 +485,7 @@ def admin_dashboard(page, admin_user, on_logout):
                         weight=ft.FontWeight.BOLD,
                         color=azul_oscuro,
                     ),
+
                     ft.Text(
                         f'Bienvenida, {admin_user.get("name", "Administradora")}',
                         color="#64748B",
@@ -290,6 +494,7 @@ def admin_dashboard(page, admin_user, on_logout):
                 spacing=4,
                 expand=True,
             ),
+
             ft.IconButton(
                 icon=ft.Icons.LOGOUT,
                 tooltip="Cerrar sesión",
@@ -299,12 +504,25 @@ def admin_dashboard(page, admin_user, on_logout):
         vertical_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
+    # ---------------- CONTENIDO ----------------
+
     contenido = ft.Column(
         expand=True,
         scroll=ft.ScrollMode.AUTO,
         spacing=16,
+
         controls=[
             encabezado,
+
+            ft.Text(
+                "🏆 Ranking de estudiantes",
+                size=20,
+                weight=ft.FontWeight.BOLD,
+                color=azul_oscuro,
+            ),
+
+            ranking,
+
             ft.Row(
                 [
                     tarjeta("Total", total_texto),
@@ -313,9 +531,11 @@ def admin_dashboard(page, admin_user, on_logout):
                 ],
                 spacing=8,
             ),
+
             ft.Row(
                 [
                     busqueda,
+
                     ft.IconButton(
                         icon=ft.Icons.SEARCH,
                         tooltip="Buscar",
@@ -323,6 +543,7 @@ def admin_dashboard(page, admin_user, on_logout):
                     ),
                 ]
             ),
+
             ft.Row(
                 [
                     ft.Text(
@@ -331,6 +552,7 @@ def admin_dashboard(page, admin_user, on_logout):
                         weight=ft.FontWeight.BOLD,
                         color=azul_oscuro,
                     ),
+
                     ft.Button(
                         "Crear usuario",
                         icon=ft.Icons.PERSON_ADD,
@@ -339,6 +561,7 @@ def admin_dashboard(page, admin_user, on_logout):
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
+
             mensaje,
             tabla,
         ],
