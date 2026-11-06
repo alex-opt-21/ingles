@@ -165,3 +165,7 @@ def delete_user(email):
         return False, "No se pudo eliminar el usuario."
 
     return True, "Usuario eliminado correctamente."
+
+def get_student_ranking():
+    """Obtiene el ranking de estudiantes."""
+    return auth.get_ranking()

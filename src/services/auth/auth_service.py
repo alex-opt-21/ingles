@@ -108,3 +108,33 @@ def save_progress(email: str, progress: dict) -> None:
         _save(data)
     except OSError as err:
         print(f"No se pudo guardar el progreso: {err}")
+def get_ranking(limit=None):
+    """Devuelve el ranking de estudiantes ordenado por XP."""
+
+    usuarios = _load().get("users", {})
+
+    estudiantes = []
+
+    for email, user in usuarios.items():
+
+        if user.get("role", "user") != "user":
+            continue
+
+        if not user.get("active", True):
+            continue
+
+        estudiantes.append({
+            "name": user.get("name", "Estudiante"),
+            "email": email,
+            "xp": user.get("xp", 0),
+            "completed": len(user.get("completed", [])),
+        })
+
+    estudiantes.sort(
+        key=lambda u: (-u["xp"], u["name"].lower())
+    )
+
+    if limit is not None:
+        estudiantes = estudiantes[:limit]
+
+    return estudiantes
