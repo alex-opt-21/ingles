@@ -3,7 +3,7 @@ import flet as ft
 from services.admin import admin_service
 
 
-def mostrar_ranking(page, volver):
+def construir_ranking(page, width, height):
 
     AZUL = "#1677E8"
     AZUL_OSCURO = "#183568"
@@ -11,11 +11,8 @@ def mostrar_ranking(page, volver):
     BLANCO = "#FFFFFF"
     GRIS = "#64748B"
 
-    page.clean()
-
     def nombre_corto(nombre):
-        nombre = (nombre or "Estudiante").strip()
-        return nombre.split()[0]
+        return (nombre or "Student").strip().split()[0]
 
     def obtener_xp(alumno):
         try:
@@ -27,9 +24,9 @@ def mostrar_ranking(page, volver):
 
     def tarjeta_podio(alumno, puesto):
         colores = {
-            1: ("#FFF1BD", "#D99A00", "🥇", "PRIMER LUGAR"),
-            2: ("#E8EDF5", "#8293A9", "🥈", "SEGUNDO LUGAR"),
-            3: ("#F8E2D2", "#B97849", "🥉", "TERCER LUGAR"),
+            1: ("#FFF1BD", "#D99A00", "🥇", "FIRST PLACE"),
+            2: ("#E8EDF5", "#8293A9", "🥈", "SECOND PLACE"),
+            3: ("#F8E2D2", "#B97849", "🥉", "THIRD PLACE"),
         }
 
         fondo, color, medalla, titulo = colores[puesto]
@@ -50,7 +47,7 @@ def mostrar_ranking(page, volver):
                         text_align=ft.TextAlign.CENTER,
                     ),
                     ft.Text(
-                        nombre_corto(alumno["name"]),
+                        nombre_corto(alumno.get("name")),
                         size=17,
                         color=AZUL_OSCURO,
                         weight=ft.FontWeight.BOLD,
@@ -91,13 +88,13 @@ def mostrar_ranking(page, volver):
                     ft.Column(
                         [
                             ft.Text(
-                                nombre_corto(alumno["name"]),
+                                nombre_corto(alumno.get("name")),
                                 color=AZUL_OSCURO,
                                 weight=ft.FontWeight.BOLD,
                                 size=15,
                             ),
                             ft.Text(
-                                "Estudiante Bright English",
+                                "Bright English Student",
                                 color=GRIS,
                                 size=11,
                             ),
@@ -119,17 +116,16 @@ def mostrar_ranking(page, volver):
         lista.controls.clear()
 
         try:
-            estudiantes = admin_service.get_student_ranking()
-            estudiantes = estudiantes or []
+            estudiantes = admin_service.get_student_ranking() or []
 
             estudiantes = sorted(
                 estudiantes,
-                key=lambda alumno: obtener_xp(alumno),
+                key=obtener_xp,
                 reverse=True,
             )[:10]
 
         except Exception as error:
-            print("Error al cargar ranking:", error)
+            print("Error loading leaderboard:", error)
             estudiantes = []
 
         if not estudiantes:
@@ -142,13 +138,13 @@ def mostrar_ranking(page, volver):
                         [
                             ft.Text("🏆", size=45),
                             ft.Text(
-                                "¡El ranking está esperando!",
+                                "The leaderboard is waiting!",
                                 color=AZUL_OSCURO,
                                 weight=ft.FontWeight.BOLD,
                                 size=17,
                             ),
                             ft.Text(
-                                "Completa ejercicios para aparecer aquí.",
+                                "Complete exercises to appear here.",
                                 color=GRIS,
                                 text_align=ft.TextAlign.CENTER,
                             ),
@@ -160,7 +156,6 @@ def mostrar_ranking(page, volver):
             page.update()
             return
 
-        # PRIMER PUESTO
         primero = estudiantes[0]
 
         lista.controls.append(
@@ -172,13 +167,13 @@ def mostrar_ranking(page, volver):
                     [
                         ft.Text("🏆", size=42),
                         ft.Text(
-                            "LÍDER DEL RANKING",
+                            "LEADERBOARD CHAMPION",
                             color="#A66D00",
                             size=12,
                             weight=ft.FontWeight.BOLD,
                         ),
                         ft.Text(
-                            nombre_corto(primero["name"]),
+                            nombre_corto(primero.get("name")),
                             color=AZUL_OSCURO,
                             size=25,
                             weight=ft.FontWeight.BOLD,
@@ -190,7 +185,7 @@ def mostrar_ranking(page, volver):
                             weight=ft.FontWeight.BOLD,
                         ),
                         ft.Text(
-                            "¡Sigue siendo el número uno!",
+                            "Keep being number one!",
                             color="#8A6B24",
                             size=12,
                         ),
@@ -201,7 +196,6 @@ def mostrar_ranking(page, volver):
             )
         )
 
-        # SEGUNDO Y TERCER PUESTO
         if len(estudiantes) > 1:
             podio = []
 
@@ -219,11 +213,10 @@ def mostrar_ranking(page, volver):
                 )
             )
 
-        # RESTO DE LOS ESTUDIANTES
         if len(estudiantes) > 3:
             lista.controls.append(
                 ft.Text(
-                    "CLASIFICACIÓN GENERAL",
+                    "OVERALL LEADERBOARD",
                     color=AZUL_OSCURO,
                     size=15,
                     weight=ft.FontWeight.BOLD,
@@ -239,13 +232,8 @@ def mostrar_ranking(page, volver):
 
     encabezado = ft.Row(
         [
-            ft.IconButton(
-                icon=ft.Icons.ARROW_BACK_ROUNDED,
-                icon_color=AZUL_OSCURO,
-                on_click=lambda e: volver(),
-            ),
             ft.Text(
-                "Ranking",
+                "Leaderboard",
                 size=27,
                 color=AZUL_OSCURO,
                 weight=ft.FontWeight.BOLD,
@@ -254,7 +242,7 @@ def mostrar_ranking(page, volver):
             ft.IconButton(
                 icon=ft.Icons.REFRESH_ROUNDED,
                 icon_color=AZUL,
-                tooltip="Actualizar puntuaciones",
+                tooltip="Refresh leaderboard",
                 on_click=cargar_ranking,
             ),
         ],
@@ -263,7 +251,6 @@ def mostrar_ranking(page, volver):
     contenido = ft.Column(
         [
             encabezado,
-
             ft.Container(
                 padding=15,
                 border_radius=20,
@@ -271,13 +258,13 @@ def mostrar_ranking(page, volver):
                 content=ft.Column(
                     [
                         ft.Text(
-                            "🏆 Los mejores estudiantes",
+                            "🏆 Top Students",
                             size=19,
                             color=AZUL_OSCURO,
                             weight=ft.FontWeight.BOLD,
                         ),
                         ft.Text(
-                            "¡Aprende, practica y conquista el primer lugar!",
+                            "Learn, practice and reach the top!",
                             color=GRIS,
                             size=12,
                         ),
@@ -285,7 +272,6 @@ def mostrar_ranking(page, volver):
                     spacing=6,
                 ),
             ),
-
             lista,
         ],
         spacing=16,
@@ -293,13 +279,16 @@ def mostrar_ranking(page, volver):
         expand=True,
     )
 
-    page.add(
-        ft.Container(
-            expand=True,
-            padding=16,
-            bgcolor=FONDO,
-            content=contenido,
-        )
+    contenedor = ft.Container(
+        left=0,
+        top=0,
+        width=width,
+        height=height - 145,
+        padding=16,
+        bgcolor=FONDO,
+        content=contenido,
     )
 
     cargar_ranking()
+
+    return contenedor
