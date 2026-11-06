@@ -18,7 +18,7 @@ ASSET_HOME = "imagenes/home/"
 class HomeView:
     def __init__(self, page, user, total_exercises, on_practice,
                  on_logout, on_sentences=None, on_questions=None,
-                 on_phrases=None):
+                 on_phrases=None, on_songs=None):
         self.page = page
         self.user = user
         self.total = total_exercises
@@ -27,6 +27,7 @@ class HomeView:
         self.on_sentences = on_sentences
         self.on_questions = on_questions
         self.on_phrases = on_phrases
+        self.on_songs = on_songs
         self.tab = "home"
         self._width, self._height = 440, 844
         self.shell = ft.Container()
@@ -175,6 +176,12 @@ class HomeView:
     def _on_phrases(self, e=None):
         if self.on_phrases:
             self.on_phrases()
+        else:
+            self._coming_soon()
+
+    def _on_songs(self, e=None):
+        if self.on_songs:
+            self.on_songs()
         else:
             self._coming_soon()
 
@@ -439,7 +446,7 @@ class HomeView:
                 blur_radius=14 * sx,
                 color="#230F85C3",
             ),
-            on_click=self._coming_soon,
+            on_click=self._on_songs,
             ink=True,
         )
 

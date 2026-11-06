@@ -10,7 +10,7 @@ import sounddevice as sd
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="sounddevice")
 
 SAMPLE_RATE = 16000
-RECORD_SECONDS = 3
+RECORD_SECONDS = 5
 MIN_VOLUME = 300
 MODEL_SIZE = "base.en"      # "tiny.en" = más rápido, "small.en" = más preciso
 FUZZY_THRESHOLD = 0.80
