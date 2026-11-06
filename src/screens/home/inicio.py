@@ -6,6 +6,7 @@ igual que el código original que utiliza imagenes/profile.png.
 """
 
 import flet as ft
+from screens.ranking import mostrar_ranking
 from ui.theme import (
     BLUE, BLUE_SOFT, NAVY, GREY, LINE,
     WHITE, RED, RED_BG, BG_TOP
@@ -130,6 +131,9 @@ class HomeView:
         if key in ("home", "profile"):
             self.tab = key
             self.render()
+        elif key == "ranking":
+            self.close()
+            mostrar_ranking(self.page, self.show)
         elif key in ("lessons", "games"):
             self._coming_soon()
 
@@ -205,7 +209,7 @@ class HomeView:
                 expand=True,
                 controls=[
                     self._nav_item("Home", ft.Icons.HOME_ROUNDED, "home"),
-                    self._nav_item("Lessons", ft.Icons.MENU_BOOK_ROUNDED, "lessons"),
+                    self._nav_item("Ranking", ft.Icons.EMOJI_EVENTS, "ranking"),
                     self._nav_item("Games", ft.Icons.SPORTS_ESPORTS, "games"),
                     self._nav_item("Profile", ft.Icons.PERSON_OUTLINE, "profile"),
                 ],
