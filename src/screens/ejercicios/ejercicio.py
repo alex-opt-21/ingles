@@ -94,6 +94,11 @@ class QuizView:
         self.page.run_task(self._tick, self._tick_id)
 
     def close(self):
+        # Si la vista se cierra inesperadamente desde la navegación normal,
+        # conserva el estado pendiente antes de desmontarse.
+        if self.session.has_progress:
+            self.session.pause()
+            self.session.persist_now()
         self._tick_id += 1
         self.mode = "closed"
         self.page.on_resize = None
@@ -125,12 +130,21 @@ class QuizView:
             self.render()
 
     async def _tick(self, token):
+        ticks_since_save = 0
         while self._tick_id == token and self.mode == "quiz":
             self.timer_text.value = format_time(self.session.time_now())
             try:
                 self.timer_text.update()
             except Exception:
                 pass
+
+            # Guarda también el tiempo cada 5 segundos por si se cierra la app
+            # sin pulsar Save & Exit. Los cambios de respuesta se guardan al instante.
+            ticks_since_save += 1
+            if ticks_since_save >= 5:
+                self.session.persist_now()
+                ticks_since_save = 0
+
             await asyncio.sleep(1)
 
     # ---------- Audio, mensajes y acciones de QuizSession ----------
@@ -243,13 +257,16 @@ class QuizView:
         self.page.run_task(self._tick, self._tick_id)
 
     def _on_finish_now(self, e=None):
+        # Finish now significa cerrar esta práctica; elimina la sesión pendiente.
         self.session.finish_early()
         self._tick_id += 1
         self.mode = "end"
         self.render()
 
     def _on_save_exit(self, e=None):
+        # pause() ya guarda; persist_now() fuerza una última escritura antes de salir.
         self.session.pause()
+        self.session.persist_now()
         self.close()
         self.on_home()
 
@@ -257,6 +274,10 @@ class QuizView:
         self.show()
 
     def _on_home(self, e=None):
+        # Si vuelve al inicio antes de terminar, deja la práctica recuperable.
+        if self.session.has_progress:
+            self.session.pause()
+            self.session.persist_now()
         self.close()
         self.on_home()
 

@@ -1,7 +1,6 @@
-
-
 {
   "lesson_title": "Action Practice",
+  "description": "One continuous practice of 80 exercises. The difficulty and verb tenses increase gradually as the learner progresses.",
   "exercises": [
     {
       "id": "eat-01",
@@ -10,9 +9,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/eating.png",
       "image_credit": "",
-      "options": ["Eat", "Sleep", "Swim"],
+      "options": [
+        "Eat",
+        "Ask",
+        "Play"
+      ],
       "answer": "Eat",
-      "audio": "audio/eat.mp3"
+      "audio": "audio/eat-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "play-01",
@@ -21,9 +26,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/playing.png",
       "image_credit": "",
-      "options": ["Clean", "Play", "Sleep"],
+      "options": [
+        "Dance",
+        "Cook",
+        "Play"
+      ],
       "answer": "Play",
-      "audio": "audio/play.mp3"
+      "audio": "audio/play-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "read-01",
@@ -32,9 +43,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/reading.png",
       "image_credit": "",
-      "options": ["Cook", "Run", "Read"],
+      "options": [
+        "Read",
+        "Eat",
+        "Sing"
+      ],
       "answer": "Read",
-      "audio": "audio/read.mp3"
+      "audio": "audio/read-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "sing-01",
@@ -43,9 +60,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/singing.png",
       "image_credit": "",
-      "options": ["Sing", "Draw", "Sleep"],
+      "options": [
+        "Wash",
+        "Sing",
+        "Cook"
+      ],
       "answer": "Sing",
-      "audio": "audio/sing.mp3"
+      "audio": "audio/sing-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "write-01",
@@ -54,9 +77,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/writing.png",
       "image_credit": "",
-      "options": ["Dance", "Write", "Eat"],
+      "options": [
+        "Clean",
+        "Cook",
+        "Write"
+      ],
       "answer": "Write",
-      "audio": "audio/write.mp3"
+      "audio": "audio/write-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "sleep-01",
@@ -65,9 +94,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/sleeping.png",
       "image_credit": "",
-      "options": ["Sing", "Sleep", "Play"],
+      "options": [
+        "Sleep",
+        "Dance",
+        "Talk"
+      ],
       "answer": "Sleep",
-      "audio": "audio/sleep.mp3"
+      "audio": "audio/sleep-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "run-01",
@@ -76,9 +111,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/runing.png",
       "image_credit": "",
-      "options": ["Run", "Sleep", "Read"],
+      "options": [
+        "Read",
+        "Run",
+        "Learn"
+      ],
       "answer": "Run",
-      "audio": "audio/run.mp3"
+      "audio": "audio/run-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "talk-01",
@@ -87,9 +128,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/talking.png",
       "image_credit": "",
-      "options": ["Listen", "Eat", "Talk"],
+      "options": [
+        "Speak",
+        "Talk",
+        "Drink"
+      ],
       "answer": "Talk",
-      "audio": "audio/talk.mp3"
+      "audio": "audio/talk-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "dance-01",
@@ -98,9 +145,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/danceing.png",
       "image_credit": "",
-      "options": ["Write", "Dance", "Run"],
+      "options": [
+        "Speak",
+        "Read",
+        "Dance"
+      ],
       "answer": "Dance",
-      "audio": "audio/dance.mp3"
+      "audio": "audio/dance-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "listen-01",
@@ -109,9 +162,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/listening.png",
       "image_credit": "",
-      "options": ["Listen", "Sing", "Sleep"],
+      "options": [
+        "Listen",
+        "Sleep",
+        "Speak"
+      ],
       "answer": "Listen",
-      "audio": "audio/listen.mp3"
+      "audio": "audio/listen-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "answer-01",
@@ -120,9 +179,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/answering.png",
       "image_credit": "",
-      "options": ["Answer", "Ask", "Write"],
+      "options": [
+        "Read",
+        "Listen",
+        "Answer"
+      ],
       "answer": "Answer",
-      "audio": "audio/answer.mp3"
+      "audio": "audio/answer-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "ask-01",
@@ -131,9 +196,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/asking.png",
       "image_credit": "",
-      "options": ["Speak", "Ask", "Listen"],
+      "options": [
+        "Ask",
+        "Sleep",
+        "Practice"
+      ],
       "answer": "Ask",
-      "audio": "audio/ask.mp3"
+      "audio": "audio/ask-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "learn-01",
@@ -142,9 +213,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/learning.png",
       "image_credit": "",
-      "options": ["Teach", "Read", "Learn"],
+      "options": [
+        "Speak",
+        "Run",
+        "Learn"
+      ],
       "answer": "Learn",
-      "audio": "audio/learn.mp3"
+      "audio": "audio/learn-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "practice-01",
@@ -153,9 +230,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/practiceing.png",
       "image_credit": "",
-      "options": ["Practice", "Play", "Sleep"],
+      "options": [
+        "Teach",
+        "Practice",
+        "Talk"
+      ],
       "answer": "Practice",
-      "audio": "audio/practice.mp3"
+      "audio": "audio/practice-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "speak-01",
@@ -164,9 +247,15 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/speaking.png",
       "image_credit": "",
-      "options": ["Listen", "Speak", "Write"],
+      "options": [
+        "Speak",
+        "Answer",
+        "Play"
+      ],
       "answer": "Speak",
-      "audio": "audio/speak.mp3"
+      "audio": "audio/speak-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
     },
     {
       "id": "teach-01",
@@ -175,9 +264,1104 @@
       "hint": "Select the verb that best describes the picture.",
       "image": "imagenes/teaching.png",
       "image_credit": "",
-      "options": ["Learn", "Ask", "Teach"],
+      "options": [
+        "Teach",
+        "Run",
+        "Play"
+      ],
       "answer": "Teach",
-      "audio": "audio/teach.mp3"
+      "audio": "audio/teach-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
+    },
+    {
+      "id": "clean-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/cleaning.png",
+      "image_credit": "",
+      "options": [
+        "Speak",
+        "Clean",
+        "Drink"
+      ],
+      "answer": "Clean",
+      "audio": "audio/clean-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
+    },
+    {
+      "id": "cook-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/cooking.png",
+      "image_credit": "",
+      "options": [
+        "Play",
+        "Cook",
+        "Write"
+      ],
+      "answer": "Cook",
+      "audio": "audio/cook-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
+    },
+    {
+      "id": "drink-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/drinking.png",
+      "image_credit": "",
+      "options": [
+        "Run",
+        "Ask",
+        "Drink"
+      ],
+      "answer": "Drink",
+      "audio": "audio/drink-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
+    },
+    {
+      "id": "wash-01",
+      "type": "look_and_choose",
+      "prompt": "What is the action?",
+      "hint": "Select the verb that best describes the picture.",
+      "image": "imagenes/washing.png",
+      "image_credit": "",
+      "options": [
+        "Practice",
+        "Wash",
+        "Sing"
+      ],
+      "answer": "Wash",
+      "audio": "audio/wash-01.mp3",
+      "difficulty": "basic",
+      "tense": "present_simple"
+    },
+    {
+      "id": "past-eat-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ breakfast.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/eating.png",
+      "image_credit": "",
+      "options": [
+        "cooked",
+        "ate",
+        "listened"
+      ],
+      "answer": "ate",
+      "audio": "audio/past-eat-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-play-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ soccer.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/playing.png",
+      "image_credit": "",
+      "options": [
+        "played",
+        "learned",
+        "washed"
+      ],
+      "answer": "played",
+      "audio": "audio/past-play-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-read-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ a book.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/reading.png",
+      "image_credit": "",
+      "options": [
+        "learned",
+        "read",
+        "answered"
+      ],
+      "answer": "read",
+      "audio": "audio/past-read-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple",
+      "audio_text": "Yesterday, I read a book."
+    },
+    {
+      "id": "past-sing-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ a song.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/singing.png",
+      "image_credit": "",
+      "options": [
+        "drank",
+        "ate",
+        "sang"
+      ],
+      "answer": "sang",
+      "audio": "audio/past-sing-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-write-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ a letter.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/writing.png",
+      "image_credit": "",
+      "options": [
+        "practiced",
+        "taught",
+        "wrote"
+      ],
+      "answer": "wrote",
+      "audio": "audio/past-write-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-sleep-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ for eight hours.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/sleeping.png",
+      "image_credit": "",
+      "options": [
+        "talked",
+        "sang",
+        "slept"
+      ],
+      "answer": "slept",
+      "audio": "audio/past-sleep-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-run-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ in the park.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/runing.png",
+      "image_credit": "",
+      "options": [
+        "cooked",
+        "ran",
+        "listened"
+      ],
+      "answer": "ran",
+      "audio": "audio/past-run-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-talk-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ with my friend.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/talking.png",
+      "image_credit": "",
+      "options": [
+        "answered",
+        "talked",
+        "cleaned"
+      ],
+      "answer": "talked",
+      "audio": "audio/past-talk-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-dance-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ at the party.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/danceing.png",
+      "image_credit": "",
+      "options": [
+        "danced",
+        "learned",
+        "cleaned"
+      ],
+      "answer": "danced",
+      "audio": "audio/past-dance-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-listen-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ to music.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/listening.png",
+      "image_credit": "",
+      "options": [
+        "learned",
+        "ate",
+        "listened"
+      ],
+      "answer": "listened",
+      "audio": "audio/past-listen-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-answer-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ the question.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/answering.png",
+      "image_credit": "",
+      "options": [
+        "answered",
+        "cooked",
+        "taught"
+      ],
+      "answer": "answered",
+      "audio": "audio/past-answer-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-ask-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ a question.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/asking.png",
+      "image_credit": "",
+      "options": [
+        "practiced",
+        "cooked",
+        "asked"
+      ],
+      "answer": "asked",
+      "audio": "audio/past-ask-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-learn-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ English.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/learning.png",
+      "image_credit": "",
+      "options": [
+        "asked",
+        "sang",
+        "learned"
+      ],
+      "answer": "learned",
+      "audio": "audio/past-learn-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-practice-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ English.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/practiceing.png",
+      "image_credit": "",
+      "options": [
+        "asked",
+        "practiced",
+        "talked"
+      ],
+      "answer": "practiced",
+      "audio": "audio/past-practice-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-speak-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ English.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/speaking.png",
+      "image_credit": "",
+      "options": [
+        "asked",
+        "spoke",
+        "read"
+      ],
+      "answer": "spoke",
+      "audio": "audio/past-speak-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-teach-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ English.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/teaching.png",
+      "image_credit": "",
+      "options": [
+        "taught",
+        "played",
+        "asked"
+      ],
+      "answer": "taught",
+      "audio": "audio/past-teach-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-clean-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ my room.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/cleaning.png",
+      "image_credit": "",
+      "options": [
+        "cleaned",
+        "listened",
+        "spoke"
+      ],
+      "answer": "cleaned",
+      "audio": "audio/past-clean-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-cook-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ dinner.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/cooking.png",
+      "image_credit": "",
+      "options": [
+        "learned",
+        "cooked",
+        "spoke"
+      ],
+      "answer": "cooked",
+      "audio": "audio/past-cook-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-drink-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ water.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/drinking.png",
+      "image_credit": "",
+      "options": [
+        "drank",
+        "cooked",
+        "taught"
+      ],
+      "answer": "drank",
+      "audio": "audio/past-drink-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past-wash-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Yesterday, I ___ my hands.",
+      "hint": "Choose the past simple form of the verb.",
+      "image": "imagenes/washing.png",
+      "image_credit": "",
+      "options": [
+        "washed",
+        "spoke",
+        "learned"
+      ],
+      "answer": "washed",
+      "audio": "audio/past-wash-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "past_simple"
+    },
+    {
+      "id": "future-eat-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ breakfast.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/eating.png",
+      "image_credit": "",
+      "options": [
+        "will play",
+        "will eat",
+        "will drink"
+      ],
+      "answer": "will eat",
+      "audio": "audio/future-eat-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-play-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ soccer.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/playing.png",
+      "image_credit": "",
+      "options": [
+        "will play",
+        "will wash",
+        "will cook"
+      ],
+      "answer": "will play",
+      "audio": "audio/future-play-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-read-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ a book.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/reading.png",
+      "image_credit": "",
+      "options": [
+        "will read",
+        "will ask",
+        "will run"
+      ],
+      "answer": "will read",
+      "audio": "audio/future-read-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-sing-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ a song.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/singing.png",
+      "image_credit": "",
+      "options": [
+        "will sing",
+        "will write",
+        "will play"
+      ],
+      "answer": "will sing",
+      "audio": "audio/future-sing-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-write-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ a letter.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/writing.png",
+      "image_credit": "",
+      "options": [
+        "will write",
+        "will eat",
+        "will read"
+      ],
+      "answer": "will write",
+      "audio": "audio/future-write-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-sleep-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ for eight hours.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/sleeping.png",
+      "image_credit": "",
+      "options": [
+        "will learn",
+        "will wash",
+        "will sleep"
+      ],
+      "answer": "will sleep",
+      "audio": "audio/future-sleep-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-run-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ in the park.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/runing.png",
+      "image_credit": "",
+      "options": [
+        "will teach",
+        "will answer",
+        "will run"
+      ],
+      "answer": "will run",
+      "audio": "audio/future-run-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-talk-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ with my friend.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/talking.png",
+      "image_credit": "",
+      "options": [
+        "will answer",
+        "will talk",
+        "will write"
+      ],
+      "answer": "will talk",
+      "audio": "audio/future-talk-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-dance-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ at the party.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/danceing.png",
+      "image_credit": "",
+      "options": [
+        "will dance",
+        "will learn",
+        "will teach"
+      ],
+      "answer": "will dance",
+      "audio": "audio/future-dance-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-listen-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ to music.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/listening.png",
+      "image_credit": "",
+      "options": [
+        "will listen",
+        "will clean",
+        "will wash"
+      ],
+      "answer": "will listen",
+      "audio": "audio/future-listen-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-answer-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ the question.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/answering.png",
+      "image_credit": "",
+      "options": [
+        "will dance",
+        "will play",
+        "will answer"
+      ],
+      "answer": "will answer",
+      "audio": "audio/future-answer-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-ask-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ a question.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/asking.png",
+      "image_credit": "",
+      "options": [
+        "will speak",
+        "will ask",
+        "will clean"
+      ],
+      "answer": "will ask",
+      "audio": "audio/future-ask-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-learn-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ English.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/learning.png",
+      "image_credit": "",
+      "options": [
+        "will drink",
+        "will write",
+        "will learn"
+      ],
+      "answer": "will learn",
+      "audio": "audio/future-learn-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-practice-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ English.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/practiceing.png",
+      "image_credit": "",
+      "options": [
+        "will clean",
+        "will dance",
+        "will practice"
+      ],
+      "answer": "will practice",
+      "audio": "audio/future-practice-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-speak-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ English.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/speaking.png",
+      "image_credit": "",
+      "options": [
+        "will practice",
+        "will answer",
+        "will speak"
+      ],
+      "answer": "will speak",
+      "audio": "audio/future-speak-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-teach-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ English.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/teaching.png",
+      "image_credit": "",
+      "options": [
+        "will speak",
+        "will teach",
+        "will run"
+      ],
+      "answer": "will teach",
+      "audio": "audio/future-teach-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-clean-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ my room.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/cleaning.png",
+      "image_credit": "",
+      "options": [
+        "will clean",
+        "will sleep",
+        "will practice"
+      ],
+      "answer": "will clean",
+      "audio": "audio/future-clean-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-cook-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ dinner.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/cooking.png",
+      "image_credit": "",
+      "options": [
+        "will speak",
+        "will cook",
+        "will sleep"
+      ],
+      "answer": "will cook",
+      "audio": "audio/future-cook-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-drink-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ water.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/drinking.png",
+      "image_credit": "",
+      "options": [
+        "will cook",
+        "will drink",
+        "will listen"
+      ],
+      "answer": "will drink",
+      "audio": "audio/future-drink-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future-wash-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Tomorrow, I ___ my hands.",
+      "hint": "Choose the future form with will.",
+      "image": "imagenes/washing.png",
+      "image_credit": "",
+      "options": [
+        "will cook",
+        "will wash",
+        "will dance"
+      ],
+      "answer": "will wash",
+      "audio": "audio/future-wash-01.mp3",
+      "difficulty": "intermediate",
+      "tense": "future_simple"
+    },
+    {
+      "id": "continuous-eat-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/eating.png",
+      "image_credit": "",
+      "options": [
+        "eating",
+        "answering",
+        "learning"
+      ],
+      "answer": "eating",
+      "audio": "audio/continuous-eat-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-read-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/reading.png",
+      "image_credit": "",
+      "options": [
+        "asking",
+        "reading",
+        "answering"
+      ],
+      "answer": "reading",
+      "audio": "audio/continuous-read-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-write-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/writing.png",
+      "image_credit": "",
+      "options": [
+        "writing",
+        "singing",
+        "answering"
+      ],
+      "answer": "writing",
+      "audio": "audio/continuous-write-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-run-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/runing.png",
+      "image_credit": "",
+      "options": [
+        "running",
+        "cooking",
+        "dancing"
+      ],
+      "answer": "running",
+      "audio": "audio/continuous-run-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-dance-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/danceing.png",
+      "image_credit": "",
+      "options": [
+        "writing",
+        "running",
+        "dancing"
+      ],
+      "answer": "dancing",
+      "audio": "audio/continuous-dance-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-answer-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/answering.png",
+      "image_credit": "",
+      "options": [
+        "reading",
+        "cleaning",
+        "answering"
+      ],
+      "answer": "answering",
+      "audio": "audio/continuous-answer-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-learn-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/learning.png",
+      "image_credit": "",
+      "options": [
+        "learning",
+        "asking",
+        "listening"
+      ],
+      "answer": "learning",
+      "audio": "audio/continuous-learn-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-speak-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/speaking.png",
+      "image_credit": "",
+      "options": [
+        "writing",
+        "speaking",
+        "washing"
+      ],
+      "answer": "speaking",
+      "audio": "audio/continuous-speak-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-clean-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/cleaning.png",
+      "image_credit": "",
+      "options": [
+        "singing",
+        "cleaning",
+        "listening"
+      ],
+      "answer": "cleaning",
+      "audio": "audio/continuous-clean-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "continuous-drink-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: Look! I am ___ right now.",
+      "hint": "Use the present continuous: am + verb-ing.",
+      "image": "imagenes/drinking.png",
+      "image_credit": "",
+      "options": [
+        "reading",
+        "eating",
+        "drinking"
+      ],
+      "answer": "drinking",
+      "audio": "audio/continuous-drink-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_continuous"
+    },
+    {
+      "id": "perfect-play-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ soccer.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/playing.png",
+      "image_credit": "",
+      "options": [
+        "read",
+        "played",
+        "listened"
+      ],
+      "answer": "played",
+      "audio": "audio/perfect-play-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-sing-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ a song.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/singing.png",
+      "image_credit": "",
+      "options": [
+        "sung",
+        "taught",
+        "written"
+      ],
+      "answer": "sung",
+      "audio": "audio/perfect-sing-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-sleep-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ for eight hours.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/sleeping.png",
+      "image_credit": "",
+      "options": [
+        "slept",
+        "sung",
+        "danced"
+      ],
+      "answer": "slept",
+      "audio": "audio/perfect-sleep-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-talk-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ with my friend.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/talking.png",
+      "image_credit": "",
+      "options": [
+        "cleaned",
+        "slept",
+        "talked"
+      ],
+      "answer": "talked",
+      "audio": "audio/perfect-talk-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-listen-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ to music.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/listening.png",
+      "image_credit": "",
+      "options": [
+        "cooked",
+        "talked",
+        "listened"
+      ],
+      "answer": "listened",
+      "audio": "audio/perfect-listen-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-ask-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ a question.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/asking.png",
+      "image_credit": "",
+      "options": [
+        "talked",
+        "slept",
+        "asked"
+      ],
+      "answer": "asked",
+      "audio": "audio/perfect-ask-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-practice-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ English.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/practiceing.png",
+      "image_credit": "",
+      "options": [
+        "practiced",
+        "asked",
+        "taught"
+      ],
+      "answer": "practiced",
+      "audio": "audio/perfect-practice-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-teach-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ English.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/teaching.png",
+      "image_credit": "",
+      "options": [
+        "asked",
+        "taught",
+        "spoken"
+      ],
+      "answer": "taught",
+      "audio": "audio/perfect-teach-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-cook-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ dinner.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/cooking.png",
+      "image_credit": "",
+      "options": [
+        "cooked",
+        "practiced",
+        "talked"
+      ],
+      "answer": "cooked",
+      "audio": "audio/perfect-cook-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
+    },
+    {
+      "id": "perfect-wash-01",
+      "type": "look_and_choose",
+      "prompt": "Complete the sentence: I have already ___ my hands.",
+      "hint": "Use the present perfect: have + past participle.",
+      "image": "imagenes/washing.png",
+      "image_credit": "",
+      "options": [
+        "spoken",
+        "washed",
+        "listened"
+      ],
+      "answer": "washed",
+      "audio": "audio/perfect-wash-01.mp3",
+      "difficulty": "advanced",
+      "tense": "present_perfect"
     }
   ]
 }
