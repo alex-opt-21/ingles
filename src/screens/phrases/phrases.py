@@ -1,5 +1,4 @@
-
-"""Phrases Practice: diseño uniforme con Action Practice (Flet 1.x)."""
+"""Phrases Practice (Flet 1.x). Solo logica: lo visual vive en `exercises`."""
 
 import asyncio
 import flet as ft
@@ -13,41 +12,27 @@ from services.ejercicios.pronunciacion_oraciones_service import (
     listen_and_check_sentence,
     preload,
 )
-from ui.theme import (
+
+# AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
+from ui.exercises.core.exercise_choice_layout import ChoiceLayout, PHRASES_PRESET
+from ui.exercises.core.exercise_theme import EXERCISE_PALE_BLUE
+from ui.exercises.components.answer_options import answer_options
+from ui.exercises.components.exercise_illustration import exercise_illustration
+from ui.exercises.overlays.pause_overlay import pause_overlay
+from ui.exercises.overlays.results_overlay import results_screen
+from ui.exercises.core.exercise_theme import (
     EXERCISE_BLUE as BLUE,
-    EXERCISE_NAVY as NAVY,
-    EXERCISE_SOFT_BLUE as SOFT_BLUE,
     EXERCISE_GREEN as GREEN,
     EXERCISE_RED as RED,
-    EXERCISE_WHITE as WHITE,
-    EXERCISE_FONT as FONT,
+    EXERCISE_SOFT_BLUE as SOFT_BLUE,
 )
-
-FONDO_NUBES = "imagenes/fondo_nubes.png"
-HOJA_CENTRAL = "imagenes/hoja_central.png"
-
-CREAM = "#FFFCF7"
-PALE_BLUE = "#EAF4FF"
-BORDER_BLUE = "#A6CFFF"
-LOCKED_BG = "#D5DCE8"
-LOCKED_FG = "#8A97B0"
-SILVER = "#E9EDF4"
-YELLOW = "#FFD54A"
-YELLOW_BG = "#FFF6CC"
-
-BASE_W, BASE_H = 420, 870
-
-
-def _shadow(opacity=0.09, blur=12, y=3):
-    return ft.BoxShadow(
-        color=ft.Colors.with_opacity(opacity, "#153C81"),
-        blur_radius=blur,
-        offset=ft.Offset(0, y),
-    )
 
 
 class PhrasesView:
-    """Mantiene la lógica y la interfaz pública de Phrases."""
+    """Mantiene la logica y la interfaz publica de Phrases."""
+
+    TITLE = "Phrases"
+    SECTION = "PHRASES"
 
     def __init__(self, page: ft.Page, session, on_home):
         self.page = page
@@ -61,9 +46,7 @@ class PhrasesView:
         self._width = 440
         self._height = 844
         self.shell = ft.Container()
-
-        self.timer_text = ft.Text("00:00")
-        self.counter = ft.Text("1 / 1")
+        self._timer_label: ft.Text | None = None  # lo crea ChoiceLayout
 
         self.rec_state = "idle"
         self.rec_message = None
@@ -105,7 +88,7 @@ class PhrasesView:
         self.page.add(
             ft.Container(
                 expand=True,
-                bgcolor=PALE_BLUE,
+                bgcolor=EXERCISE_PALE_BLUE,
                 alignment=ft.Alignment.TOP_CENTER,
                 content=self.shell,
             )
@@ -130,14 +113,14 @@ class PhrasesView:
 
     async def _tick(self, token):
         while token == self._tick_id and self.mode == "quiz":
-            self.timer_text.value = self.session.format_time(
-                self.session.time_now()
-            )
-
-            try:
-                self.timer_text.update()
-            except Exception:
-                pass
+            if self._timer_label is not None:
+                self._timer_label.value = self.session.format_time(
+                    self.session.time_now()
+                )
+                try:
+                    self._timer_label.update()
+                except Exception:
+                    pass
 
             await asyncio.sleep(1)
 
@@ -278,7 +261,7 @@ class PhrasesView:
         self.render()
 
     # =====================================================
-    # PAUSA Y NAVEGACIÓN
+    # PAUSA Y NAVEGACION
     # =====================================================
 
     def _on_pause(self, e=None):
@@ -325,964 +308,103 @@ class PhrasesView:
         self.on_home()
 
     # =====================================================
-    # ESTILO VISUAL
+    # PANTALLAS (solo datos -> componentes)
     # =====================================================
 
-    def _text(
-        self,
-        value,
-        size=16,
-        color=NAVY,
-        bold=False,
-        italic=False,
-        align=ft.TextAlign.CENTER,
-        max_lines=None,
-    ):
-        return ft.Text(
-            str(value),
-            size=size,
-            color=color,
-            weight=(
-                ft.FontWeight.BOLD
-                if bold
-                else ft.FontWeight.NORMAL
-            ),
-            italic=italic,
-            font_family=FONT,
-            text_align=align,
-            max_lines=max_lines,
-        )
+    def _feedback(self, ex) -> tuple[str, str] | None:
+        s = self.session
 
-    # =====================================================
-    # HEADER - IGUAL QUE ACTION PRACTICE
-    # =====================================================
-
-    def _header(self):
-        scale = min(1.0, (self._width - 24) / 440)
-
-        badge = ft.Container(
-            width=46 * scale,
-            height=48 * scale,
-            bgcolor=BLUE,
-            border_radius=15 * scale,
-            border=ft.Border.all(
-                max(1, 2 * scale),
-                WHITE,
-            ),
-            shadow=_shadow(0.2, 7 * scale, 3 * scale),
-            alignment=ft.Alignment.CENTER,
-            content=self._text(
-                "A",
-                29 * scale,
-                WHITE,
-                True,
-                True,
-            ),
-        )
-
-        title = ft.Row(
-            tight=True,
-            spacing=7 * scale,
-            controls=[
-                badge,
-                self._text(
-                    "Phrases",
-                    17 * scale,
-                    bold=True,
-                    italic=True,
-                ),
-            ],
-        )
-
-        self.timer_text.value = self.session.format_time(
-            self.session.time_now()
-        )
-
-        self.counter.value = (
-            f"{self.session.number} / {self.session.total}"
-        )
-
-        for control in (self.timer_text, self.counter):
-            control.size = 15 * scale
-            control.color = NAVY
-            control.weight = ft.FontWeight.BOLD
-            control.font_family = FONT
-
-        timer = ft.Container(
-            height=40 * scale,
-            padding=ft.Padding.symmetric(
-                horizontal=8 * scale,
-            ),
-            bgcolor=WHITE,
-            border_radius=22 * scale,
-            border=ft.Border.all(
-                1.5 * scale,
-                PALE_BLUE,
-            ),
-            shadow=_shadow(0.09, 5 * scale, 2 * scale),
-            ink=True,
-            on_click=self._on_pause,
-            tooltip="Pause practice",
-            content=ft.Row(
-                tight=True,
-                spacing=3 * scale,
-                controls=[
-                    ft.Icon(
-                        ft.Icons.PAUSE_CIRCLE_OUTLINE,
-                        size=16 * scale,
-                        color=BLUE,
-                    ),
-                    self.timer_text,
-                ],
-            ),
-        )
-
-        counter = ft.Container(
-            height=40 * scale,
-            padding=ft.Padding.symmetric(
-                horizontal=10 * scale,
-            ),
-            bgcolor=WHITE,
-            border_radius=22 * scale,
-            border=ft.Border.all(
-                1.5 * scale,
-                PALE_BLUE,
-            ),
-            shadow=_shadow(0.09, 5 * scale, 2 * scale),
-            alignment=ft.Alignment.CENTER,
-            content=self.counter,
-        )
-
-        return ft.Container(
-            height=53 * scale,
-            alignment=ft.Alignment.CENTER,
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=5 * scale,
-                controls=[
-                    title,
-                    ft.Row(
-                        tight=True,
-                        spacing=5 * scale,
-                        controls=[
-                            timer,
-                            counter,
-                        ],
-                    ),
-                ],
-            ),
-        )
-
-    # =====================================================
-    # ILUSTRACIÓN
-    # =====================================================
-
-    def _illustration(self, src, scale):
-        return ft.Container(
-            width=232 * scale,
-            height=232 * scale,
-            padding=8 * scale,
-            bgcolor=CREAM,
-            border_radius=30 * scale,
-            border=ft.Border.all(
-                max(1, 2 * scale),
-                "#F0E9E0",
-            ),
-            shadow=_shadow(0.07, 9 * scale, 3 * scale),
-            content=ft.Container(
-                bgcolor=PALE_BLUE,
-                border_radius=24 * scale,
-                alignment=ft.Alignment.CENTER,
-                content=ft.Image(
-                    src=src,
-                    width=215 * scale,
-                    height=215 * scale,
-                    fit=ft.BoxFit.CONTAIN,
-                    error_content=self._text(
-                        "Image not available",
-                        12 * scale,
-                        SOFT_BLUE,
-                    ),
-                ),
-            ),
-        )
-
-    # =====================================================
-    # OPCIONES DE RESPUESTA
-    # =====================================================
-
-    def _option_button(self, ex, option, scale):
-        selected = self.session.picked_for(ex) == option
-
-        correct = selected and option == ex["answer"]
-        wrong = selected and not correct
-
-        eliminated = (
-            self.session.hint_for(ex) == option
-            and not selected
-        )
-
-        solved = self.session.is_solved(ex)
-
-        accent = (
-            GREEN if correct
-            else RED if wrong
-            else SILVER if eliminated
-            else BORDER_BLUE
-        )
-
-        bg = (
-            "#E9F8ED" if correct
-            else "#FFF0F0" if wrong
-            else "#F4F5F8" if eliminated
-            else WHITE
-        )
-
-        fg = (
-            GREEN if correct
-            else RED if wrong
-            else LOCKED_FG if eliminated
-            else NAVY
-        )
-
-        return ft.Container(
-            height=49 * scale,
-            bgcolor=bg,
-            border=ft.Border.all(
-                max(1, 2 * scale),
-                accent,
-            ),
-            border_radius=17 * scale,
-            padding=ft.Padding.symmetric(
-                horizontal=12 * scale,
-            ),
-            shadow=_shadow(0.06, 6 * scale, 2 * scale),
-            ink=not (eliminated or solved),
-            on_click=(
-                None
-                if eliminated or solved
-                else lambda e, value=option: self.page.run_task(
-                    self._choose,
-                    value,
-                )
-            ),
-            content=ft.Row(
-                spacing=9 * scale,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Container(
-                        width=25 * scale,
-                        height=25 * scale,
-                        border_radius=13 * scale,
-                        alignment=ft.Alignment.CENTER,
-                        border=ft.Border.all(
-                            max(1, 2 * scale),
-                            (
-                                GREEN if correct
-                                else RED if wrong
-                                else "#9EADD0"
-                            ),
-                        ),
-                        bgcolor=(
-                            GREEN if correct
-                            else RED if wrong
-                            else WHITE
-                        ),
-                        content=(
-                            ft.Icon(
-                                (
-                                    ft.Icons.CHECK
-                                    if correct
-                                    else ft.Icons.CLOSE
-                                ),
-                                size=17 * scale,
-                                color=WHITE,
-                            )
-                            if correct or wrong
-                            else None
-                        ),
-                    ),
-
-                    ft.Container(
-                        expand=True,
-                        alignment=ft.Alignment.CENTER_LEFT,
-                        content=self._text(
-                            "" if eliminated else option,
-                            15.5 * scale,
-                            fg,
-                            bold=True,
-                            align=ft.TextAlign.LEFT,
-                            max_lines=2,
-                        ),
-                    ),
-                ],
-            ),
-        )
-
-    # =====================================================
-    # BOTONES - MISMAS DIMENSIONES QUE ACTION PRACTICE
-    # =====================================================
-
-    def _small_button(
-        self,
-        label,
-        icon,
-        on_click,
-        scale,
-        enabled=True,
-    ):
-        color = BLUE if enabled else LOCKED_FG
-
-        return ft.Container(
-            width=104 * scale,
-            height=50 * scale,
-            bgcolor=WHITE if enabled else "#F4F6FA",
-            border_radius=25 * scale,
-            border=ft.Border.all(
-                max(1, 1.5 * scale),
-                BORDER_BLUE if enabled else SILVER,
-            ),
-            shadow=_shadow(0.08, 7 * scale, 3 * scale),
-            ink=enabled,
-            on_click=on_click if enabled else None,
-            alignment=ft.Alignment.CENTER,
-            content=ft.Row(
-                tight=True,
-                spacing=5 * scale,
-                alignment=ft.MainAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(
-                        icon,
-                        size=17 * scale,
-                        color=color,
-                    ),
-                    self._text(
-                        label,
-                        17 * scale,
-                        color,
-                        bold=True,
-                    ),
-                ],
-            ),
-        )
-
-    def _mic_button(self, scale):
-        recording = self.rec_state == "recording"
-
-        return ft.Container(
-            width=66 * scale,
-            height=66 * scale,
-            border_radius=34 * scale,
-            bgcolor=RED if recording else BLUE,
-            border=ft.Border.all(
-                max(2, 5 * scale),
-                "#CFE6FF",
-            ),
-            shadow=_shadow(0.2, 13 * scale, 4 * scale),
-            alignment=ft.Alignment.CENTER,
-            ink=not recording,
-            on_click=(
-                None
-                if recording
-                else lambda e: self.page.run_task(
-                    self._on_mic,
-                    e,
-                )
-            ),
-            tooltip="Speak the phrase",
-            content=ft.Icon(
-                (
-                    ft.Icons.GRAPHIC_EQ
-                    if recording
-                    else ft.Icons.MIC
-                ),
-                color=WHITE,
-                size=32 * scale,
-            ),
-        )
-
-    def _continue_button(self, scale):
-        ex = self.session.current
-        enabled = self.session.can_continue(ex)
-
-        return ft.Container(
-            width=222 * scale,
-            height=52 * scale,
-            bgcolor=GREEN if enabled else LOCKED_BG,
-            border_radius=28 * scale,
-            border=ft.Border.all(
-                max(1, 2 * scale),
-                GREEN,
-            ),
-            shadow=_shadow(0.1, 9 * scale, 3 * scale),
-            alignment=ft.Alignment.CENTER,
-            ink=True,
-            on_click=self._on_next,
-            content=ft.Row(
-                tight=True,
-                spacing=5 * scale,
-                alignment=ft.MainAxisAlignment.CENTER,
-                controls=[
-                    self._text(
-                        (
-                            "Finish"
-                            if self.session.is_last
-                            else "Continue"
-                        ),
-                        20 * scale,
-                        WHITE if enabled else LOCKED_FG,
-                        True,
-                    ),
-                    ft.Icon(
-                        ft.Icons.CHEVRON_RIGHT,
-                        size=21 * scale,
-                        color=WHITE if enabled else LOCKED_FG,
-                    ),
-                ],
-            ),
-        )
-
-    # =====================================================
-    # FEEDBACK DE RESPUESTAS
-    # =====================================================
-
-    def _feedback(self, scale):
-        ex = self.session.current
-
-        if (
-            self.rec_message is not None
-            and self.session.is_solved(ex)
-        ):
+        if self.rec_message is not None and s.is_solved(ex):
             ok, heard = self.rec_message
+            if ok:
+                return "Great pronunciation!", "success"
+            return f'I heard "{heard or "..."}". Try again.', "error"
 
-            msg = (
-                "Great pronunciation!"
-                if ok
-                else f'I heard "{heard or "..."}". Try again.'
-            )
+        if s.is_solved(ex):
+            if s.is_pronounced(ex):
+                return "Correct!", "success"
+            return "Correct! Now say it aloud.", "success"
 
-            color = GREEN if ok else RED
+        if s.picked_for(ex):
+            return "Wrong. Try again.", "error"
 
-        elif self.session.is_solved(ex):
-            msg, color = (
-                ("Correct!", GREEN)
-                if self.session.is_pronounced(ex)
-                else ("Correct! Now say it aloud.", GREEN)
-            )
-
-        elif self.session.picked_for(ex):
-            msg = "Wrong. Try again."
-            color = RED
-
-        else:
-            return None
-
-        return self._text(
-            msg,
-            12 * scale,
-            color,
-            bold=True,
-            max_lines=1,
-        )
-
-    # =====================================================
-    # HOJA PRINCIPAL
-    # =====================================================
+        return None
 
     def _build_quiz(self):
         s = self.session
         ex = s.current
 
-        header_scale = min(
-            1.0,
-            (self._width - 24) / 440,
+        return ChoiceLayout(
+            preset=PHRASES_PRESET,
+            width=self._width,
+            height=self._height,
+            title=self.TITLE,
+            current=s.number,
+            total=s.total,
+            time_text=s.format_time(s.time_now()),
+            section_title=self.SECTION,
+            prompt="Choose the best phrase",
+            hint_text="Select the most appropriate phrase\nfor the situation.",
+            situation=ex.get("prompt", "Situation"),
+            media_builder=lambda k: exercise_illustration(
+                ex["image"], scale=k, size=232
+            ),
+            answer_builder=lambda scale: answer_options(
+                ex["options"],
+                answer=ex["answer"],
+                picked=s.picked_for(ex),
+                eliminated=s.hint_for(ex),
+                solved=s.is_solved(ex),
+                on_choose=self._choose,
+                scale=scale,
+                style=PHRASES_PRESET.option_style,
+            ),
+            feedback=self._feedback(ex),
+            on_pause=self._on_pause,
+            on_hint=self._on_hint,
+            on_skip=self._on_skip,
+            on_microphone=self._on_mic,
+            on_continue=self._on_next,
+            hint_enabled=(
+                s.hint_available(ex) if hasattr(s, "hint_available") else True
+            ),
+            can_continue=s.can_continue(ex),
+            is_last=s.is_last,
+            recording=self.rec_state == "recording",
         )
-
-        header_h = 53 * header_scale
-
-        # Reservamos espacio para SafeArea en móviles.
-        paper_h = max(
-            220,
-            min(
-                850,
-                self._height - 20 - header_h - 5 - 46,
-            ),
-        )
-
-        paper_w = min(self._width - 24, 480)
-
-        sx = paper_w / BASE_W
-        sy = paper_h / BASE_H
-        scale = min(sx, sy)
-
-        def place(x, y, w, h, control):
-            return ft.Container(
-                left=x * sx,
-                top=y * sy,
-                width=w * sx,
-                height=h * sy,
-                alignment=ft.Alignment.CENTER,
-                content=control,
-            )
-
-        controls = [
-            # Hoja central
-            ft.Image(
-                src=HOJA_CENTRAL,
-                left=0,
-                top=0,
-                width=paper_w,
-                height=paper_h,
-                fit=ft.BoxFit.FILL,
-                error_content=self._text(
-                    "Sheet image not available",
-                    13 * scale,
-                    RED,
-                ),
-            ),
-
-            # Encabezado de la hoja
-            place(
-                36, 72, 348, 38,
-                ft.Container(
-                    bgcolor="#B3D7FF",
-                    border_radius=12 * scale,
-                    alignment=ft.Alignment.CENTER,
-                    content=self._text(
-                        "PHRASES",
-                        18 * scale,
-                        bold=True,
-                        italic=True,
-                    ),
-                ),
-            ),
-
-            # Título
-            place(
-                22, 115, 376, 43,
-                self._text(
-                    "Choose the best phrase",
-                    25 * scale,
-                    bold=True,
-                ),
-            ),
-
-            # Subtítulo
-            place(
-                38, 165, 344, 45,
-                self._text(
-                    "Select the most appropriate phrase\n"
-                    "for the situation.",
-                    14 * scale,
-                    SOFT_BLUE,
-                    max_lines=2,
-                ),
-            ),
-
-            # Imagen
-            place(
-                94, 221, 232, 232,
-                self._illustration(
-                    ex["image"],
-                    scale,
-                ),
-            ),
-
-            # Situación
-            place(
-                39, 465, 342, 51,
-                ft.Container(
-                    padding=ft.Padding.symmetric(
-                        horizontal=12 * scale,
-                    ),
-                    bgcolor=YELLOW_BG,
-                    border_radius=16 * scale,
-                    border=ft.Border.all(
-                        max(1, 1.5 * scale),
-                        YELLOW,
-                    ),
-                    alignment=ft.Alignment.CENTER,
-                    content=self._text(
-                        ex.get("prompt", "Situation"),
-                        15 * scale,
-                        NAVY,
-                        bold=True,
-                        max_lines=2,
-                    ),
-                ),
-            ),
-        ]
-
-        # Opciones
-        for i, option in enumerate(
-            ex["options"][:3]
-        ):
-            controls.append(
-                place(
-                    40,
-                    525 + i * 57,
-                    340,
-                    49,
-                    self._option_button(
-                        ex,
-                        option,
-                        scale,
-                    ),
-                )
-            )
-
-        # Feedback
-        feedback = self._feedback(scale)
-
-        if feedback is not None:
-            controls.append(
-                place(
-                    30, 688, 360, 20,
-                    feedback,
-                )
-            )
-
-        # Botones inferiores
-        hint_enabled = (
-            s.hint_available(ex)
-            if hasattr(s, "hint_available")
-            else True
-        )
-
-        controls.extend([
-            place(
-                38, 718, 104, 50,
-                self._small_button(
-                    "Hint",
-                    ft.Icons.LIGHTBULB_OUTLINE,
-                    self._on_hint,
-                    scale,
-                    hint_enabled,
-                ),
-            ),
-
-            place(
-                177, 710, 66, 66,
-                self._mic_button(scale),
-            ),
-
-            place(
-                278, 718, 104, 50,
-                self._small_button(
-                    "Skip",
-                    ft.Icons.FAST_FORWARD,
-                    self._on_skip,
-                    scale,
-                ),
-            ),
-
-            place(
-                110, 779, 200, 17,
-                self._text(
-                    (
-                        "Listening..."
-                        if self.rec_state == "recording"
-                        else "Tap to speak"
-                    ),
-                    12 * scale,
-                    SOFT_BLUE,
-                    bold=True,
-                ),
-            ),
-
-            place(
-                99, 800, 222, 52,
-                self._continue_button(scale),
-            ),
-        ])
-
-        return ft.Column(
-            expand=True,
-            spacing=5,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                self._header(),
-                ft.Stack(
-                    width=paper_w,
-                    height=paper_h,
-                    controls=controls,
-                ),
-            ],
-        )
-
-    # =====================================================
-    # BOTONES DE PAUSA Y RESULTADOS
-    # =====================================================
-
-    def _menu_button(
-        self,
-        label,
-        on_click,
-        primary=False,
-    ):
-        return ft.Container(
-            height=55,
-            width=min(250, self._width - 100),
-            bgcolor=BLUE if primary else WHITE,
-            border=ft.Border.all(
-                2,
-                BLUE if primary else BORDER_BLUE,
-            ),
-            border_radius=24,
-            alignment=ft.Alignment.CENTER,
-            ink=True,
-            on_click=on_click,
-            shadow=_shadow(0.07, 8, 3),
-            content=self._text(
-                label,
-                18,
-                WHITE if primary else BLUE,
-                bold=True,
-            ),
-        )
-
-    # =====================================================
-    # PANTALLA DE PAUSA
-    # =====================================================
 
     def _build_paused(self):
         s = self.session
-
-        return ft.Column(
-            expand=True,
-            spacing=14,
-            scroll=ft.ScrollMode.AUTO,
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                ft.Container(
-                    bgcolor=CREAM,
-                    padding=26,
-                    border_radius=30,
-                    shadow=_shadow(0.09, 15, 3),
-                    content=ft.Column(
-                        spacing=18,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            ft.Icon(
-                                ft.Icons.PAUSE_CIRCLE_FILLED,
-                                color=BLUE,
-                                size=82,
-                            ),
-                            self._text(
-                                "Paused",
-                                32,
-                                bold=True,
-                            ),
-                            self._text(
-                                f"Question {s.number} / {s.total}",
-                                18,
-                                SOFT_BLUE,
-                            ),
-                            self._text(
-                                f"Time {s.format_time(s.time_now())}",
-                                18,
-                                SOFT_BLUE,
-                            ),
-                            self._menu_button(
-                                "Resume",
-                                self._on_resume,
-                                True,
-                            ),
-                            self._menu_button(
-                                "Finish now",
-                                self._on_finish_now,
-                            ),
-                            self._menu_button(
-                                "Save & exit",
-                                self._on_save_exit,
-                            ),
-                        ],
-                    ),
-                ),
-            ],
-        )
-
-    # =====================================================
-    # ESTADÍSTICAS
-    # =====================================================
-
-    def _stat(self, icon, label, value, color):
-        return ft.Container(
-            expand=True,
-            bgcolor=WHITE,
-            border=ft.Border.all(1, PALE_BLUE),
-            border_radius=18,
-            padding=10,
-            content=ft.Column(
-                spacing=6,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(
-                        icon,
-                        size=27,
-                        color=color,
-                    ),
-                    self._text(
-                        value,
-                        21,
-                        NAVY,
-                        bold=True,
-                    ),
-                    self._text(
-                        label,
-                        12,
-                        SOFT_BLUE,
-                    ),
-                ],
-            ),
-        )
-
-    def _summary_line(self, label, value, color=NAVY):
-        return ft.Row(
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            controls=[
-                self._text(
-                    label,
-                    15,
-                    NAVY,
-                    bold=True,
-                ),
-                self._text(
-                    value,
-                    15,
-                    color,
-                    bold=True,
-                ),
-            ],
-        )
-
-    # =====================================================
-    # RESULTADOS A PANTALLA COMPLETA
-    # =====================================================
-
-    def _build_end(self):
-        stats = self.session.summary()
-
-        results = ft.Column(
-            spacing=16,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                ft.Icon(
-                    ft.Icons.EMOJI_EVENTS,
-                    color=GREEN,
-                    size=72,
-                ),
-                self._text(
-                    "Practice Completed!",
-                    26,
-                    bold=True,
-                ),
-                self._text(
-                    "Great job! You finished your phrases practice.",
-                    14,
-                    SOFT_BLUE,
-                    max_lines=2,
-                ),
-
-                ft.Row(
-                    spacing=10,
-                    controls=[
-                        self._stat(
-                            ft.Icons.ACCESS_TIME,
-                            "Total Time",
-                            stats["time"],
-                            BLUE,
-                        ),
-                        self._stat(
-                            ft.Icons.CHECK_CIRCLE_OUTLINE,
-                            "Completed",
-                            f'{stats["completed"]} / {stats["total"]}',
-                            GREEN,
-                        ),
-                    ],
-                ),
-
-                ft.Row(
-                    spacing=10,
-                    controls=[
-                        self._stat(
-                            ft.Icons.CANCEL_OUTLINED,
-                            "Wrong Answers",
-                            str(stats["errors"]),
-                            RED,
-                        ),
-                        self._stat(
-                            ft.Icons.SKIP_NEXT,
-                            "Skips Used",
-                            str(stats["skips"]),
-                            SOFT_BLUE,
-                        ),
-                    ],
-                ),
-
-                ft.Container(
-                    bgcolor=WHITE,
-                    border_radius=18,
-                    padding=15,
-                    content=ft.Column(
-                        spacing=13,
-                        controls=[
-                            self._summary_line(
-                                "XP Earned",
-                                f'+{stats["xp_earned"]} XP',
-                                GREEN,
-                            ),
-                            self._summary_line(
-                                "Total XP",
-                                f'{stats["xp_total"]} XP',
-                            ),
-                        ],
-                    ),
-                ),
-
-                self._menu_button(
-                    "Practice Again",
-                    self._on_restart,
-                    True,
-                ),
-
-                ft.Container(
-                    padding=8,
-                    ink=True,
-                    on_click=self._on_home,
-                    content=self._text(
-                        "Back to Home",
-                        16,
-                        SOFT_BLUE,
-                        bold=True,
-                    ),
-                ),
-            ],
-        )
-
-        return ft.Container(
+        return pause_overlay(
+            question_text=f"Question {s.number} / {s.total}",
+            time_text=s.format_time(s.time_now()),
+            on_resume=self._on_resume,
+            on_finish=self._on_finish_now,
+            on_save_exit=self._on_save_exit,
             width=self._width,
             height=self._height,
-            bgcolor=CREAM,
-            content=ft.SafeArea(
-                content=ft.Column(
-                    expand=True,
-                    scroll=ft.ScrollMode.AUTO,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        ft.Container(
-                            width=min(400, self._width - 30),
-                            padding=ft.Padding.symmetric(
-                                horizontal=8,
-                                vertical=26,
-                            ),
-                            content=results,
-                        ),
-                    ],
-                ),
-            ),
+        )
+
+    def _build_end(self):
+        st = self.session.summary()
+        return results_screen(
+            title="Practice Completed!",
+            subtitle="Great job! You finished your phrases practice.",
+            stats=[
+                (ft.Icons.ACCESS_TIME, "Total Time", st["time"], BLUE),
+                (ft.Icons.CHECK_CIRCLE_OUTLINE, "Completed",
+                 f'{st["completed"]} / {st["total"]}', GREEN),
+                (ft.Icons.CANCEL_OUTLINED, "Wrong Answers", str(st["errors"]), RED),
+                (ft.Icons.SKIP_NEXT, "Skips Used", str(st["skips"]), SOFT_BLUE),
+            ],
+            details=[
+                ("XP Earned", f'+{st["xp_earned"]} XP', GREEN),
+                ("Total XP", f'{st["xp_total"]} XP'),
+            ],
+            on_retry=self._on_restart,
+            on_exit=self._on_home,
+            width=self._width,
+            height=self._height,
         )
 
     # =====================================================
@@ -1293,55 +415,14 @@ class PhrasesView:
         if self.mode == "closed":
             return
 
-        self.timer_text.value = self.session.format_time(
-            self.session.time_now()
-        )
-
-        self.counter.value = (
-            f"{self.session.number} / {self.session.total}"
-        )
+        if self.mode == "quiz":
+            screen, self._timer_label = self._build_quiz()
+        elif self.mode == "paused":
+            screen = self._build_paused()
+        else:
+            screen = self._build_end()
 
         self.shell.width = self._width
         self.shell.height = self._height
-
-        # La pantalla final reemplaza al ejercicio.
-        if self.mode == "end":
-            self.shell.content = self._build_end()
-            self.page.update()
-            return
-
-        content = (
-            self._build_quiz()
-            if self.mode == "quiz"
-            else self._build_paused()
-        )
-
-        self.shell.content = ft.Stack(
-            width=self._width,
-            height=self._height,
-            controls=[
-                ft.Image(
-                    src=FONDO_NUBES,
-                    left=0,
-                    top=0,
-                    width=self._width,
-                    height=self._height,
-                    fit=ft.BoxFit.COVER,
-                ),
-                ft.Container(
-                    left=0,
-                    top=0,
-                    width=self._width,
-                    height=self._height,
-                    padding=ft.Padding.symmetric(
-                        horizontal=12,
-                        vertical=10,
-                    ),
-                    content=ft.SafeArea(
-                        content=content,
-                    ),
-                ),
-            ],
-        )
-
+        self.shell.content = screen
         self.page.update()

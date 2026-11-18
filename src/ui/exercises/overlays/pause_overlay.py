@@ -1,50 +1,55 @@
 from collections.abc import Callable
 import flet as ft
 
+from ..core.exercise_common import exercise_shadow, exercise_text
+from ..core.exercise_screen import ExerciseScreen
 from ..core.exercise_theme import (
     EXERCISE_BLUE,
-    EXERCISE_NAVY,
-    EXERCISE_WHITE,
     EXERCISE_CREAM,
+    EXERCISE_SOFT_BLUE,
 )
-
-
-from ..components.exercise_buttons import _build_button
+from ..components.exercise_buttons import menu_button
 
 
 def pause_overlay(
+    *,
+    question_text: str,
+    time_text: str,
     on_resume: Callable | None = None,
     on_finish: Callable | None = None,
     on_save_exit: Callable | None = None,
-    visible: bool = True,
-) -> ft.Container:
-    """Solo UI: la vista ejecuta reanudar, finalizar y guardar."""
-    return ft.Container(
-        left=0,
-        right=0,
-        top=0,
-        bottom=0,
-        visible=visible,
-        bgcolor="#990F172A",
-        alignment=ft.Alignment.CENTER,
-        content=ft.Container(
-            width=320,
-            bgcolor=EXERCISE_CREAM,
-            border_radius=24,
-            padding=24,
-            content=ft.Column(
-                tight=True,
-                spacing=14,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Icon(ft.Icons.PAUSE_CIRCLE_OUTLINE, size=54, color=EXERCISE_BLUE),
-                    ft.Text("Practice paused", size=23, weight=ft.FontWeight.BOLD, color=EXERCISE_NAVY),
-                    ft.Text("What would you like to do?", size=13, color=EXERCISE_NAVY),
-                    ft.Container(height=4),
-                    _build_button("Resume", ft.Icons.PLAY_ARROW, on_resume, bgcolor=EXERCISE_BLUE, color=EXERCISE_WHITE, width=222, height=50, disabled=on_resume is None),
-                    _build_button("Finish now", ft.Icons.FLAG_OUTLINED, on_finish, width=222, height=50, disabled=on_finish is None),
-                    _build_button("Save & Exit", ft.Icons.SAVE_OUTLINED, on_save_exit, width=222, height=50, disabled=on_save_exit is None),
-                ],
-            ),
+    width: float = 440,
+    height: float = 844,
+) -> ft.Control:
+    """Pantalla de pausa completa (mismo fondo de nubes que el ejercicio).
+
+    Solo UI: la vista ejecuta reanudar, finalizar y guardar.
+    ``question_text`` p. ej. ``"Question 3 / 16"``."""
+    card = ft.Container(
+        bgcolor=EXERCISE_CREAM,
+        padding=26,
+        border_radius=30,
+        shadow=exercise_shadow(0.09, 15, 3),
+        content=ft.Column(
+            spacing=18,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                ft.Icon(ft.Icons.PAUSE_CIRCLE_FILLED, color=EXERCISE_BLUE, size=82),
+                exercise_text("Paused", 32, bold=True),
+                exercise_text(question_text, 18, EXERCISE_SOFT_BLUE),
+                exercise_text(f"Time {time_text}", 18, EXERCISE_SOFT_BLUE),
+                menu_button("Resume", on_resume, primary=True),
+                menu_button("Finish now", on_finish),
+                menu_button("Save & exit", on_save_exit),
+            ],
         ),
     )
+    body = ft.Column(
+        expand=True,
+        spacing=14,
+        scroll=ft.ScrollMode.AUTO,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        alignment=ft.MainAxisAlignment.CENTER,
+        controls=[card],
+    )
+    return ExerciseScreen(body, width=width, height=height)

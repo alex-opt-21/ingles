@@ -1,43 +1,31 @@
-"""Feedback visual común a Quiz, Sentences, Questions y Phrases."""
 import flet as ft
 
+from ..core.exercise_common import exercise_text
 from ..core.exercise_theme import (
     EXERCISE_GREEN,
     EXERCISE_RED,
-    EXERCISE_BLUE,
-    EXERCISE_NAVY,
+    EXERCISE_SOFT_BLUE,
 )
+
+_COLORS = {
+    "success": EXERCISE_GREEN,
+    "error": EXERCISE_RED,
+    "info": EXERCISE_SOFT_BLUE,
+}
 
 
 def exercise_feedback(
     message: str,
     kind: str = "info",
-    visible: bool = True,
-    width: int = 330,
-) -> ft.Container:
-    """kind: 'success', 'error' o 'info'. No evalúa respuestas."""
-    styles = {
-        "success": (EXERCISE_GREEN, "#EBF8F1", ft.Icons.CHECK_CIRCLE_OUTLINE),
-        "error": (EXERCISE_RED, "#FFF0F0", ft.Icons.ERROR_OUTLINE),
-        "info": (EXERCISE_BLUE, "#EAF3FF", ft.Icons.INFO_OUTLINE),
-    }
-    if kind not in styles:
+    scale: float = 1.0,
+    *,
+    max_lines: int = 1,
+    bold: bool | None = None,
+) -> ft.Text:
+    """kind: 'success', 'error' o 'info'. Solo presenta; no evalua respuestas.
+    Por defecto es negrita salvo 'info' (pistas), que va normal."""
+    if kind not in _COLORS:
         raise ValueError("kind debe ser 'success', 'error' o 'info'")
-
-    accent, background, icon = styles[kind]
-    return ft.Container(
-        width=width,
-        visible=visible,
-        padding=12,
-        bgcolor=background,
-        border=ft.Border.all(1, accent),
-        border_radius=14,
-        content=ft.Row(
-            controls=[
-                ft.Icon(icon, color=accent, size=22),
-                ft.Text(message, color=EXERCISE_NAVY, size=14, expand=True),
-            ],
-            spacing=10,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER,
-        ),
-    )
+    if bold is None:
+        bold = kind != "info"
+    return exercise_text(message, 12 * scale, _COLORS[kind], bold=bold, max_lines=max_lines)

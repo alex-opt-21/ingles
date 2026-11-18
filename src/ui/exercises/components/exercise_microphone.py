@@ -1,75 +1,55 @@
-
-import flet as ft
 from collections.abc import Callable
+import flet as ft
 
+from ..core.exercise_common import exercise_shadow
 from ..core.exercise_theme import (
-    EXERCISE_GREEN,
+    EXERCISE_BLUE,
+    EXERCISE_LOCKED_BG,
+    EXERCISE_LOCKED_FG,
     EXERCISE_RED,
     EXERCISE_WHITE,
 )
 
 MICROPHONE_SIZE = 66
-MICROPHONE_ICON_SIZE = 29
-
 PROCESSING_COLOR = "#94A3B8"
-DISABLED_COLOR = "#CBD5E1"
 
 
 def exercise_microphone(
     on_click: Callable | None = None,
+    *,
     recording: bool = False,
     processing: bool = False,
     disabled: bool = False,
-    size: int = MICROPHONE_SIZE,
-) -> ft.IconButton:
-    """
-    Botón de micrófono reutilizable.
+    scale: float = 1.0,
+    size: float = MICROPHONE_SIZE,
+) -> ft.Container:
+    """Boton de microfono circular (``size`` en unidades de diseno).
 
-    Estados:
-    - Normal: verde, listo para grabar.
-    - Grabando: rojo, permite detener.
-    - Procesando: gris, deshabilitado.
-    - Deshabilitado: gris claro.
-
-    La lógica de audio se maneja desde cada vista.
-    """
-
+    Normal: azul. Grabando: rojo (no clicable). Procesando: gris.
+    Deshabilitado: gris claro bloqueado (no clicable).
+    La logica de audio vive en la vista."""
+    icon_color = EXERCISE_WHITE
     if disabled:
-        bgcolor = DISABLED_COLOR
-        icon = ft.Icons.MIC_OFF
-
+        color, icon, tip = EXERCISE_LOCKED_BG, ft.Icons.MIC, "Unavailable"
+        icon_color = EXERCISE_LOCKED_FG
     elif processing:
-        bgcolor = PROCESSING_COLOR
-        icon = ft.Icons.HOURGLASS_TOP
-
+        color, icon, tip = PROCESSING_COLOR, ft.Icons.HOURGLASS_TOP, "Processing..."
     elif recording:
-        bgcolor = EXERCISE_RED
-        icon = ft.Icons.STOP
-
+        color, icon, tip = EXERCISE_RED, ft.Icons.GRAPHIC_EQ, "Listening..."
     else:
-        bgcolor = EXERCISE_GREEN
-        icon = ft.Icons.MIC
+        color, icon, tip = EXERCISE_BLUE, ft.Icons.MIC, "Speak the answer"
 
-    tooltip = (
-        "Unavailable" if disabled
-        else "Processing..." if processing
-        else "Stop recording" if recording
-        else "Start recording"
-    )
-
-    return ft.IconButton(
-        icon=icon,
-        icon_color=EXERCISE_WHITE,
-        icon_size=MICROPHONE_ICON_SIZE,
-        bgcolor=bgcolor,
-        width=size,
-        height=size,
-        padding=0,
-        tooltip=tooltip,
-        disabled=disabled or processing,
-        on_click=on_click,
-        style=ft.ButtonStyle(
-            shape=ft.CircleBorder(),
-            elevation=3,
-        ),
+    clickable = not (disabled or processing or recording)
+    return ft.Container(
+        width=size * scale,
+        height=size * scale,
+        border_radius=(size / 2 + 1) * scale,
+        bgcolor=color,
+        border=ft.Border.all(max(2, 5 * scale), "#CFE6FF"),
+        shadow=exercise_shadow(0.2, 13 * scale, 4 * scale),
+        alignment=ft.Alignment.CENTER,
+        ink=clickable,
+        on_click=on_click if clickable else None,
+        tooltip=tip,
+        content=ft.Icon(icon, color=icon_color, size=32 * scale),
     )

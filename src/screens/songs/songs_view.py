@@ -11,6 +11,11 @@ from services.songs.songs_pronunciacion_service import (
     listen_and_check,
     preload as preload_songs_model,
 )
+
+# AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
+from ui.exercises.core.exercise_screen import ExerciseScreen
+from ui.exercises.components.exercise_microphone import exercise_microphone
+from ui.exercises.overlays.results_overlay import results_screen
 from ui.theme import (
     EXERCISE_BLUE as BLUE,
     EXERCISE_NAVY as NAVY,
@@ -26,7 +31,6 @@ try:
 except ImportError:
     fta = None
 
-ASSET_BACKGROUND = "imagenes/fondo_nubes.png"
 CATALOG_PATH = Path(__file__).resolve().parents[2] / "data" / "songs.json"
 PALE_BLUE = "#ECF7FF"
 PALE_YELLOW = "#FFF7DC"
@@ -605,17 +609,12 @@ class SongsView:
                             ft.Container(
                                 height=67 * self.scale,
                                 alignment=ft.Alignment.CENTER,
-                                content=ft.Container(
-                                    width=67 * self.scale,
-                                    height=67 * self.scale,
-                                    bgcolor=RED if self.recognizing else BLUE,
-                                    border_radius=40 * self.scale,
-                                    alignment=ft.Alignment.CENTER,
-                                    ink=not (self.recognizing or can_advance),
-                                    on_click=None if (self.recognizing or can_advance)
-                                    else self._on_mic,
-                                    content=ft.Icon(ft.Icons.MIC_ROUNDED,
-                                                    color=WHITE, size=34 * self.scale),
+                                # Microfono compartido con los demas ejercicios.
+                                content=exercise_microphone(
+                                    None if can_advance else self._on_mic,
+                                    recording=self.recognizing,
+                                    scale=self.scale,
+                                    size=67,
                                 ),
                             ),
                             ft.Row(spacing=10 * self.scale, controls=[
@@ -635,35 +634,23 @@ class SongsView:
         )
 
     def _finished(self):
+        """Pantalla final compartida (misma que los demas ejercicios)."""
         total = len(self.song["lines"])
-        return ft.Column(
-            expand=True,
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=16 * self.scale,
-            controls=[
-                ft.Icon(ft.Icons.EMOJI_EVENTS_ROUNDED, color="#F4B83E",
-                        size=95 * self.scale),
-                self._txt("Song practice finished!", 26, True, centered=True),
-                self._surface(ft.Column(
-                    spacing=13 * self.scale,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        self._txt(self.song.get("title", "Song"), 21, True,
-                                  centered=True),
-                        self._txt(f"{len(self.completed)} / {total} lines completed",
-                                  20, True, GREEN, centered=True),
-                        self._txt(f"{len(self.skipped)} skipped lines",
-                                  15, color=SOFT_BLUE),
-                    ],
-                )),
-                ft.Row(spacing=10, controls=[
-                    self._button("Song list", ft.Icons.LIST,
-                                 self._back),
-                    self._button("Try again", ft.Icons.REPLAY_ROUNDED,
-                                 lambda e: self._select_song(self.song), primary=True),
-                ]),
+        return results_screen(
+            title="Song practice finished!",
+            subtitle=self.song.get("title", "Song"),
+            stats=[
+                (ft.Icons.CHECK_CIRCLE_OUTLINE, "Lines completed",
+                 f"{len(self.completed)} / {total}", GREEN),
+                (ft.Icons.SKIP_NEXT, "Skipped lines",
+                 str(len(self.skipped)), SOFT_BLUE),
             ],
+            retry_label="Try again",
+            exit_label="Song list",
+            on_retry=lambda e: self._select_song(self.song),
+            on_exit=self._back,
+            width=self._width,
+            height=self._height,
         )
 
     def render(self):
@@ -671,24 +658,19 @@ class SongsView:
             return
         self.shell.width = self._width
         self.shell.height = self._height
-        content = {
-            "catalog": self._catalog,
-            "practice": self._practice,
-            "finished": self._finished,
-        }[self.stage]()
-        self.shell.content = ft.Stack(
-            width=self._width, height=self._height,
-            controls=[
-                ft.Image(src=ASSET_BACKGROUND, fit=ft.BoxFit.COVER,
-                         width=self._width, height=self._height,
-                         left=0, top=0),
-                ft.Container(
-                    left=0, top=0,
-                    width=self._width, height=self._height,
-                    padding=ft.Padding.symmetric(horizontal=17 * self.scale,
-                                                 vertical=15 * self.scale),
-                    content=ft.SafeArea(content=content),
-                ),
-            ],
-        )
+        if self.stage == "finished":
+            # results_screen ya trae fondo y area segura.
+            self.shell.content = self._finished()
+        else:
+            content = {
+                "catalog": self._catalog,
+                "practice": self._practice,
+            }[self.stage]()
+            self.shell.content = ExerciseScreen(
+                content,
+                width=self._width,
+                height=self._height,
+                padding=ft.Padding.symmetric(horizontal=17 * self.scale,
+                                             vertical=15 * self.scale),
+            )
         self.page.update()

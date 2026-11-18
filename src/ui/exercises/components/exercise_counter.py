@@ -1,8 +1,9 @@
 import flet as ft
 
+from ..core.exercise_common import exercise_shadow, exercise_text
 from ..core.exercise_theme import (
-    EXERCISE_BLUE,
     EXERCISE_NAVY,
+    EXERCISE_PALE_BLUE,
     EXERCISE_WHITE,
 )
 
@@ -10,49 +11,19 @@ from ..core.exercise_theme import (
 def exercise_counter(
     current: int = 1,
     total: int = 10,
+    *,
+    scale: float = 1.0,
 ) -> ft.Container:
-    """
-    Muestra el progreso del ejercicio.
-    Ejemplo: 03 / 10
-    """
-
+    """Progreso del ejercicio, ej. ``1 / 80``."""
     current = max(0, current)
     total = max(0, total)
-
     return ft.Container(
-        padding=ft.Padding.symmetric(
-            horizontal=14,
-            vertical=9,
-        ),
+        height=40 * scale,
         bgcolor=EXERCISE_WHITE,
-        border_radius=16,
-        shadow=ft.BoxShadow(
-            blur_radius=5,
-            color="#20000000",
-            offset=ft.Offset(0, 2),
-        ),
-        content=ft.Row(
-            controls=[
-                ft.Text(
-                    f"{current:02d}",
-                    size=17,
-                    weight=ft.FontWeight.BOLD,
-                    color=EXERCISE_BLUE,
-                ),
-                ft.Text(
-                    "/",
-                    size=14,
-                    color="#9CA3AF",
-                ),
-                ft.Text(
-                    f"{total:02d}",
-                    size=15,
-                    weight=ft.FontWeight.BOLD,
-                    color=EXERCISE_NAVY,
-                ),
-            ],
-            spacing=5,
-            tight=True,
-            alignment=ft.MainAxisAlignment.CENTER,
-        ),
+        border=ft.Border.all(max(1, 2 * scale), EXERCISE_PALE_BLUE),
+        border_radius=22 * scale,
+        padding=ft.Padding.symmetric(horizontal=10 * scale),
+        shadow=exercise_shadow(0.09, 5 * scale, 2 * scale),
+        alignment=ft.Alignment.CENTER,
+        content=exercise_text(f"{current} / {total}", 15 * scale, EXERCISE_NAVY, bold=True),
     )
