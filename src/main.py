@@ -131,6 +131,12 @@ def main(page: ft.Page):
     def go_home():
         close_current()
 
+        achievement_definitions = (
+            state["achievements"].achievements
+            if state["achievements"]
+            else []
+        )
+
         view = HomeView(
             page,
             state["user"],
@@ -141,6 +147,7 @@ def main(page: ft.Page):
             on_phrases=start_phrases,
             on_songs=start_songs,
             on_logout=logout,
+            achievement_definitions=achievement_definitions,
         )
 
         state["view"] = view

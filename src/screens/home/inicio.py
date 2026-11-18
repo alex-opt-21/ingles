@@ -16,7 +16,7 @@ ASSET_HOME = "imagenes/home/"
 class HomeView:
     def __init__(self, page, user, total_exercises, on_practice,
                  on_logout, on_sentences=None, on_questions=None,
-                 on_phrases=None, on_songs=None):
+                 on_phrases=None, on_songs=None, achievement_definitions=None):
         self.page = page
         self.user = user
         self.total = total_exercises
@@ -29,6 +29,7 @@ class HomeView:
         self.tab = "home"
         self._width, self._height = 440, 844
         self.shell = ft.Container()
+        self.achievement_definitions = achievement_definitions or []
 
     def show(self):
         self.tab = "home"
@@ -540,6 +541,7 @@ class HomeView:
                 width=self._width,
                 height=self._height,
                 on_logout=self._on_logout,
+                achievement_definitions=self.achievement_definitions,
             )
         ]
 
