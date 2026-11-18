@@ -8,7 +8,6 @@ from services.ejercicios.pronunciacion_oraciones_service import (
     preload,
 )
 
-# AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
 from ui.exercises.core.exercise_choice_layout import ChoiceLayout, PHRASES_PRESET
 from ui.exercises.core.exercise_theme import EXERCISE_PALE_BLUE
 from ui.exercises.components.answer_options import answer_options
@@ -25,7 +24,6 @@ from ui.exercises.core.exercise_theme import (
 
 
 class PhrasesView:
-    """Mantiene la logica y la interfaz publica de Phrases."""
 
     TITLE = "Phrases"
     SECTION = "PHRASES"
@@ -341,6 +339,7 @@ class PhrasesView:
             can_continue=s.can_continue(ex),
             is_last=s.is_last,
             recording=self.rec_state == "recording",
+            mic_disabled=not s.is_solved(ex),
         )
 
     def _build_paused(self):
@@ -373,26 +372,38 @@ class PhrasesView:
             ],
             on_retry=self._on_restart,
             on_exit=self._on_home,
-            width=self._width,
-            height=self._height,
+            width=self._full_size()[0],
+            height=self._full_size()[1],
         )
 
     # =====================================================
     # RENDER
     # =====================================================
 
+    def _full_size(self):
+        """Tamano real de la ventana (para la pantalla final)."""
+        return (self.page.width or self._width, self.page.height or self._height)
+
     def render(self):
         if self.mode == "closed":
             return
-
+        w, h = self._width, self._height
         if self.mode == "quiz":
             screen, self._timer_label = self._build_quiz()
         elif self.mode == "paused":
-            screen = self._build_paused()
+            # El ejercicio queda debajo y la pausa se dibuja encima.
+            quiz, self._timer_label = self._build_quiz()
+            screen = ft.Stack(
+                width=w,
+                height=h,
+                controls=[quiz, self._build_paused()],
+            )
         else:
+            # Pantalla final: ocupa todo el espacio de la ventana.
+            w, h = self._full_size()
             screen = self._build_end()
 
-        self.shell.width = self._width
-        self.shell.height = self._height
+        self.shell.width = w
+        self.shell.height = h
         self.shell.content = screen
         self.page.update()

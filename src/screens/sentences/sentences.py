@@ -655,22 +655,36 @@ class SentencesView:
             ],
             on_retry=self.restart,
             on_exit=self.home,
-            width=self.w,
-            height=self.h,
+            width=self._full_size()[0],
+            height=self._full_size()[1],
         )
 
     # =============== RENDER ===============
 
+    def _full_size(self):
+        """Tamano real de la ventana (para la pantalla final)."""
+        return (self.page.width or self.w, self.page.height or self.h)
+
     def render(self):
         if self.mode == "closed":
             return
+        w, h = self.w, self.h
         if self.mode == "quiz":
             screen, self._timer_label = self.build_quiz()
         elif self.mode == "paused":
-            screen = self.build_paused()
+            # El ejercicio queda debajo y la pausa se dibuja encima.
+            quiz, self._timer_label = self.build_quiz()
+            screen = ft.Stack(
+                width=w,
+                height=h,
+                controls=[quiz, self.build_paused()],
+            )
         else:
+            # Pantalla final: ocupa todo el espacio de la ventana.
+            w, h = self._full_size()
             screen = self.build_end()
-        self.shell.width = self.w
-        self.shell.height = self.h
+
+        self.shell.width = w
+        self.shell.height = h
         self.shell.content = screen
         self.page.update()

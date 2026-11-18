@@ -109,6 +109,7 @@ def ChoiceLayout(
     is_last: bool,
     recording: bool = False,
     processing: bool = False,
+    mic_disabled: bool = False,
     situation: str | None = None,
     badge_letter: str | None = None,
     badge_image: str | None = None,
@@ -119,6 +120,7 @@ def ChoiceLayout(
     answer_builder(scale) -> controles de respuesta (se usan las 3 primeras)
     feedback              -> (mensaje, kind) con kind en success/error/info, o None
     situation             -> texto para la tarjeta amarilla (solo si el preset la define)
+    mic_disabled          -> True: el microfono se ve apagado (aun no se puede usar)
     badge_image           -> ruta (relativa a assets) de la imagen del badge del header
     """
 
@@ -153,6 +155,7 @@ def ChoiceLayout(
             on_continue=on_continue,
             hint_enabled=hint_enabled,
             recording=recording, processing=processing,
+            mic_disabled=mic_disabled,
             caption="Listening..." if recording else "Tap to speak",
             can_continue=can_continue, is_last=is_last,
         )

@@ -1,10 +1,7 @@
-"""Pantalla de resultados compartida (Practice Completed!)."""
-
 from collections.abc import Callable, Sequence
 import flet as ft
 
-from ..core.exercise_common import exercise_shadow, exercise_text
-from ..core.exercise_screen import ExerciseScreen
+from ..core.exercise_common import exercise_text
 from ..core.exercise_theme import (
     EXERCISE_CREAM,
     EXERCISE_GREEN,
@@ -63,10 +60,13 @@ def results_screen(
     width: float = 440,
     height: float = 844,
 ) -> ft.Control:
-    """Pantalla final. Cada ejercicio decide QUE estadisticas mostrar:
+    """Pantalla final a pantalla completa. Cada ejercicio decide QUE mostrar:
 
     stats   -> tarjetas con icono, de dos en dos (cuadricula)
     details -> lineas "etiqueta ........ valor" dentro de una tarjeta blanca
+
+    La tarjeta crema se expande para ocupar todo el espacio disponible y el
+    contenido queda centrado verticalmente (con scroll si no cabe).
     """
     rows = [
         ft.Row(spacing=10, controls=[_stat_card(*s) for s in stats[i:i + 2]])
@@ -94,32 +94,22 @@ def results_screen(
         )
 
     controls.append(menu_button(retry_label, on_retry, primary=True))
-    controls.append(
-        ft.Container(
-            padding=8,
-            ink=on_exit is not None,
-            on_click=on_exit,
-            alignment=ft.Alignment.CENTER,
-            content=exercise_text(exit_label, 16, EXERCISE_SOFT_BLUE, bold=True),
-        )
-    )
+    controls.append(menu_button(exit_label, on_exit))
 
-    body = ft.Column(
+    # Pantalla completa: sin ExerciseScreen (no hay marco ni fondo de nubes),
+    # el color crema cubre toda la ventana de borde a borde.
+    return ft.Container(
         expand=True,
-        scroll=ft.ScrollMode.AUTO,
-        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
-        controls=[
-            ft.Container(
-                bgcolor=EXERCISE_CREAM,
-                padding=18,
-                border_radius=30,
-                shadow=exercise_shadow(0.09, 14, 4),
-                content=ft.Column(
-                    spacing=18,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=controls,
-                ),
-            ),
-        ],
+        width=width,
+        height=height,
+        bgcolor=EXERCISE_CREAM,
+        padding=ft.Padding.only(left=22, right=22, top=24, bottom=16),
+        content=ft.Column(
+            expand=True,
+            scroll=ft.ScrollMode.AUTO,
+            spacing=18,
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=controls,
+        ),
     )
-    return ExerciseScreen(body, width=width, height=height)

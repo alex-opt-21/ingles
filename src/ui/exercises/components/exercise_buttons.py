@@ -68,7 +68,7 @@ def continue_button(
     scale: float = 1.0,
     height: float = 52,
 ) -> ft.Container:
-    """Verde cuando se puede avanzar, gris cuando no.
+    """Verde cuando se puede avanzar, gris (sin borde verde) cuando no.
 
     ``on_click`` se mantiene aunque este gris, para que la vista pueda
     explicar por que esta bloqueado (toast)."""
@@ -78,8 +78,10 @@ def continue_button(
         height=height * scale,
         border_radius=(height / 2 + 2) * scale,
         bgcolor=GREEN if enabled else EXERCISE_LOCKED_BG,
-        border=ft.Border.all(max(1, 2 * scale), GREEN),
-        shadow=exercise_shadow(0.1, 9 * scale, 3 * scale),
+        border=ft.Border.all(
+            max(1, 2 * scale), GREEN if enabled else EXERCISE_SILVER
+        ),
+        shadow=exercise_shadow(0.1, 9 * scale, 3 * scale) if enabled else None,
         ink=enabled,
         on_click=on_click,
         alignment=ft.Alignment.CENTER,

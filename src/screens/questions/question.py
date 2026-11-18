@@ -2,8 +2,6 @@ import asyncio
 import flet as ft
 
 from services.ejercicios.questions_service import format_time
-
-# AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
 from ui.exercises.core.exercise_choice_layout import ChoiceLayout, QUESTIONS_PRESET
 from ui.exercises.core.exercise_theme import (
     EXERCISE_BLUE as BLUE,
@@ -20,17 +18,13 @@ from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 
-# Ilustraciones JSON: "imagenes/questions/Fiesta.png" y "imagenes/questions/Niño.png"
-# Las coordenadas del globo de cada escena estan en
-# exercises/components/exercise_illustrated_question.py (tabla SCENES).
-
 
 class QuestionsView:
     """Interfaz: QuestionsView(page, session, on_home).show()."""
 
     TITLE = "Questions"
     SECTION = "QUESTIONS & ANSWERS"
-    ICON = "imagenes/home/preguntas .png"   # AJUSTA: ruta relativa a assets
+    ICON = "imagenes/home/preguntas.png"   # AJUSTA: ruta relativa a assets
 
     def __init__(self, page: ft.Page, session, on_home):
         self.page = page
@@ -284,6 +278,7 @@ class QuestionsView:
             can_continue=s.can_continue(),
             is_last=s.is_last,
             recording=self._recording,
+            mic_disabled=not s.is_solved(),
         )
 
     def _build_paused(self):
@@ -316,22 +311,36 @@ class QuestionsView:
             ],
             on_retry=self._on_restart,
             on_exit=self._on_home,
-            width=self.w,
-            height=self.h,
+            width=self._full_size()[0],
+            height=self._full_size()[1],
         )
 
     # ------------------ Render general ------------------
 
+    def _full_size(self):
+        """Tamano real de la ventana (para la pantalla final)."""
+        return (self.page.width or self.w, self.page.height or self.h)
+
     def render(self):
         if self.mode == "closed":
             return
+        w, h = self.w, self.h
         if self.mode == "quiz":
             screen, self._timer_label = self._build_quiz()
         elif self.mode == "paused":
-            screen = self._build_paused()
+            # El ejercicio queda debajo y la pausa se dibuja encima.
+            quiz, self._timer_label = self._build_quiz()
+            screen = ft.Stack(
+                width=w,
+                height=h,
+                controls=[quiz, self._build_paused()],
+            )
         else:
+            # Pantalla final: ocupa todo el espacio de la ventana.
+            w, h = self._full_size()
             screen = self._build_end()
-        self.shell.width = self.w
-        self.shell.height = self.h
+
+        self.shell.width = w
+        self.shell.height = h
         self.shell.content = screen
         self.page.update()

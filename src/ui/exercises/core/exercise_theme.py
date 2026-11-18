@@ -1,10 +1,3 @@
-"""Tema compartido de todos los ejercicios.
-
-Los colores principales y la fuente vienen de ``ui.theme`` (misma fuente de
-verdad que usaba la vista original). Aqui solo se definen los colores
-auxiliares, las dimensiones de la hoja y los recursos de imagen.
-"""
-
 from ui.theme import (
     EXERCISE_BLUE,
     EXERCISE_NAVY,
@@ -40,5 +33,5 @@ SHEET_ADJUST_X = 0
 SHEET_ADJUST_Y = 0
 
 # ---- Recursos compartidos (rutas relativas a src/assets/) ----
-BACKGROUND_IMAGE = "imagenes/fondo_nubes.png"
-SHEET_IMAGE = "imagenes/hoja_central.png"
+BACKGROUND_IMAGE = "imagenes/fondo_e.png"
+SHEET_IMAGE = "imagenes/hoja_centra.png"
