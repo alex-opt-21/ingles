@@ -18,18 +18,22 @@ from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 
+ACHIEVEMENT_MODULE = "questions"
+
 
 class QuestionsView:
-    """Interfaz: QuestionsView(page, session, on_home).show()."""
+    """Interfaz: QuestionsView(page, session, on_home, achievements).show()."""
 
     TITLE = "Questions"
     SECTION = "QUESTIONS & ANSWERS"
     ICON = "imagenes/home/preguntas.png"   # AJUSTA: ruta relativa a assets
 
-    def __init__(self, page: ft.Page, session, on_home):
+    def __init__(self, page: ft.Page, session, on_home, achievements=None):
         self.page = page
         self.session = session
         self.on_home = on_home
+        self.achievements = achievements
+        self.new_achievements: list[dict] = []
         self.mode = "quiz"  # quiz, paused, end, closed
         self.w = 440
         self.h = 844
@@ -42,27 +46,43 @@ class QuestionsView:
 
     # ------------------ Ciclo de vida ------------------
 
+    
     def show(self, resume=False):
-        """show(resume=True) restaura el progreso guardado si existe."""
+        """Muestra Questions y continúa o inicia una sesión."""
+
         self._token += 1
         self.sfx.stop()
         self.mode = "quiz"
         self._recording = False
         self._mic_message = None
-        if not (resume and self.session.resume_saved()):
+        self.new_achievements = []
+
+        if resume:
+            self.session.resume()
+        else:
             self.session.start()
+
         self.page.clean()
         self.page.padding = 0
         self.page.spacing = 0
+
         self.page.add(ft.Container(
             expand=True,
             bgcolor=EXERCISE_PALE_BLUE,
             alignment=ft.Alignment.TOP_CENTER,
             content=self.shell,
         ))
+
         self.page.on_resize = self._fit
         self._fit(force=True)
+
+        if not resume and self.achievements:
+            self._notify_started(
+                self.achievements.practice_started()
+            )
+
         self.page.run_task(self._tick, self._token)
+
 
     def close(self):
         self._token += 1
@@ -94,10 +114,27 @@ class QuestionsView:
         except Exception:
             print(text)
 
+    def _notify_started(self, unlocked):
+        """Aviso breve para logros de inicio (p. ej. First Steps)."""
+        for a in unlocked or []:
+            self._toast(f'🏆 {a["name"]}: {a["description"]}')
+
+    def _register_achievements(self):
+        """Solo cuenta si se completaron TODAS las preguntas (no Finish now)."""
+        if not self.achievements:
+            return
+        st = self.session.summary()
+        if st["completed"] == st["total"]:
+            perfect = st["errors"] == 0 and st["skips"] == 0
+            self.new_achievements = self.achievements.practice_completed(
+                ACHIEVEMENT_MODULE, perfect
+            )
+
     def _finish_ui(self):
         self.mode = "end"
         self._token += 1
         self.sfx.finish()
+        self._register_achievements()
 
     # ------------------ Audio / pronunciación ------------------
 
@@ -309,6 +346,7 @@ class QuestionsView:
                 ("Correct on First Try", str(st["first_try"])),
                 ("XP Earned", f'+{st["xp_earned"]} XP', GREEN),
             ],
+            achievements=self.new_achievements,
             on_retry=self._on_restart,
             on_exit=self._on_home,
             width=self._full_size()[0],

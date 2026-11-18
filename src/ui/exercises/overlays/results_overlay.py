@@ -47,10 +47,29 @@ def _detail_row(label: str, value: str, color: str = EXERCISE_NAVY) -> ft.Row:
     )
 
 
+def _achievement_row(name: str, description: str) -> ft.Row:
+    return ft.Row(
+        spacing=10,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            ft.Icon(ft.Icons.EMOJI_EVENTS, color=EXERCISE_GREEN, size=28),
+            ft.Column(
+                expand=True,
+                spacing=1,
+                controls=[
+                    exercise_text(name, 15, EXERCISE_NAVY, bold=True),
+                    exercise_text(description, 12, EXERCISE_SOFT_BLUE, max_lines=2),
+                ],
+            ),
+        ],
+    )
+
+
 def results_screen(
     *,
     stats: Sequence[Stat],
     details: Sequence[Detail] = (),
+    achievements: Sequence[dict] = (),
     title: str = "Practice Completed!",
     subtitle: str = "Great job! You finished your practice.",
     retry_label: str = "Practice Again",
@@ -62,8 +81,9 @@ def results_screen(
 ) -> ft.Control:
     """Pantalla final a pantalla completa. Cada ejercicio decide QUE mostrar:
 
-    stats   -> tarjetas con icono, de dos en dos (cuadricula)
-    details -> lineas "etiqueta ........ valor" dentro de una tarjeta blanca
+    stats        -> tarjetas con icono, de dos en dos (cuadricula)
+    details      -> lineas "etiqueta ........ valor" dentro de una tarjeta blanca
+    achievements -> lista de dicts {"name", "description"} recien desbloqueados
 
     La tarjeta crema se expande para ocupar todo el espacio disponible y el
     contenido queda centrado verticalmente (con scroll si no cabe).
@@ -89,6 +109,31 @@ def results_screen(
                 content=ft.Column(
                     spacing=13,
                     controls=[_detail_row(*d) for d in details],
+                ),
+            )
+        )
+
+    if achievements:
+        controls.append(
+            ft.Container(
+                padding=15,
+                bgcolor=EXERCISE_WHITE,
+                border=ft.Border.all(1.5, EXERCISE_GREEN),
+                border_radius=18,
+                content=ft.Column(
+                    spacing=12,
+                    controls=[
+                        exercise_text(
+                            "Achievement unlocked!"
+                            if len(achievements) == 1
+                            else "Achievements unlocked!",
+                            16, EXERCISE_GREEN, bold=True,
+                        ),
+                        *[
+                            _achievement_row(a["name"], a["description"])
+                            for a in achievements
+                        ],
+                    ],
                 ),
             )
         )

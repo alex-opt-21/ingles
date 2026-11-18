@@ -19,6 +19,11 @@ from ui.exercises.core.exercise_theme import (
     EXERCISE_SOFT_BLUE,
 )
 
+ACHIEVEMENT_MODULE = "flashcards"
+MODULE_ID = "flashcards"
+LESSON_ID = "action_practice"
+LEVEL_ID = "basic"
+
 
 class QuizView:
     """Vista del ejercicio Quiz.
@@ -32,10 +37,13 @@ class QuizView:
     SECTION = "LOOK & CHOOSE"
     ICON = "imagenes/home/tarjetas.png"   # ruta relativa a assets
 
-    def __init__(self, page: ft.Page, session: QuizSession, on_home):
+    def __init__(self, page: ft.Page, session: QuizSession, on_home,
+                 achievements=None):
         self.page = page
         self.session = session
         self.on_home = on_home
+        self.achievements = achievements
+        self.new_achievements: list[dict] = []
         self.mode = "quiz"       # quiz | paused | end | closed
         self._tick_id = 0
         self.sfx = SoundEffects(page)
@@ -51,13 +59,22 @@ class QuizView:
     def show(self, resume=False):
         self.mode = "quiz"
         self._tick_id += 1
+        self.new_achievements = []
+
+        started_new = False
         if resume and self.session.has_progress:
             self.session.resume()
         else:
             self.session.start()
+            started_new = True
+
         self.rec_state = "idle"
         self.rec_message = None
         self._mount()
+
+        if started_new and self.achievements:
+            self._notify_started(self.achievements.practice_started())
+
         self.page.run_task(self._tick, self._tick_id)
 
     def close(self):
@@ -121,6 +138,11 @@ class QuizView:
         except Exception as err:
             print(f"{message} ({err})")
 
+    def _notify_started(self, unlocked):
+        """Aviso breve para logros de inicio (p. ej. First Steps)."""
+        for a in unlocked or []:
+            self._toast(f'🏆 {a["name"]}: {a["description"]}')
+
     async def _choose(self, option):
         result = self.session.choose(option)
         if result == "ignored":
@@ -138,10 +160,22 @@ class QuizView:
         else:
             self._on_home()
 
+    def _register_achievements(self):
+        """Solo cuenta si se completaron TODOS los ejercicios (no Finish now)."""
+        if not self.achievements:
+            return
+        st = self.session.summary()
+        if st["completed"] == st["total"]:
+            perfect = st["errors"] == 0 and st["skips"] == 0
+            self.new_achievements = self.achievements.practice_completed(
+                ACHIEVEMENT_MODULE, perfect
+            )
+
     def _finish_ui(self):
         self.mode = "end"
         self._tick_id += 1
         self.sfx.finish()
+        self._register_achievements()
 
     def _on_next(self, e=None):
         result = self.session.advance()
@@ -320,6 +354,7 @@ class QuizView:
                 ("XP Earned", f'+{st["xp_earned"]} XP', EXERCISE_GREEN),
                 ("Total XP", f'{st["xp_total"]} XP'),
             ],
+            achievements=self.new_achievements,
             on_retry=self._on_restart,
             on_exit=self._on_home,
             width=self._full_size()[0],

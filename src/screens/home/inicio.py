@@ -1,8 +1,6 @@
-
-"""Bright English - Main Home, Leaderboard and Profile screens."""
-
 import flet as ft
 from screens.ranking import construir_ranking
+from .profile_view import construir_perfil
 from ui.theme import (
     BLUE, BLUE_SOFT, NAVY, GREY, LINE,
     WHITE, RED, RED_BG, BG_TOP
@@ -535,96 +533,15 @@ class HomeView:
 
     # PROFILE SCREEN
     def _build_profile(self):
-        name = self.user.get("name", "") or "Student"
-        email = self.user.get("email", "") or ""
-        initial = name.strip()[:1].upper() or "?"
-
-        items = [
-            ft.Image(
-                src="imagenes/profile.png",
+        return [
+            construir_perfil(
+                user=self.user,
+                total=self.total,
                 width=self._width,
                 height=self._height,
-                fit=ft.BoxFit.FILL,
-                left=0,
-                top=0,
-                error_content=ft.Container(
-                    bgcolor=BG_TOP,
-                    alignment=ft.Alignment.CENTER,
-                    content=ft.Text(
-                        "Missing profile image"
-                    ),
-                ),
+                on_logout=self._on_logout,
             )
         ]
-
-        items.extend([
-            self._label(
-                53, 49, 89, 95,
-                initial, 73, WHITE, True, True,
-            ),
-            self._label(
-                155, 48, 590, 105,
-                "English Adventure", 43, NAVY,
-            ),
-            self._label(
-                250, 222, 445, 125,
-                "My Profile", 66, NAVY, True, True,
-            ),
-            self._label(
-                148, 355, 645, 65,
-                "Here is your learning progress!",
-                33, SUBTEXT, False, True,
-            ),
-            self._label(
-                174, 522, 218, 190,
-                initial, 115, WHITE, True, True,
-            ),
-            self._label(
-                423, 520, 365, 95,
-                name, 69, NAVY,
-            ),
-            self._label(
-                423, 614, 365, 65,
-                email, 33, SUBTEXT, False,
-            ),
-            self._label(
-                245, 794, 195, 67,
-                "Total XP", 37, NAVY, True, True,
-            ),
-            self._label(
-                247, 862, 188, 90,
-                str(self._xp()), 61, NAVY, True, True,
-            ),
-            self._label(
-                615, 794, 202, 67,
-                "Completed", 35, NAVY, True, True,
-            ),
-            self._label(
-                613, 862, 205, 90,
-                f"{self._done()} / {self.total}",
-                46, NAVY, True, True,
-            ),
-        ])
-
-        # LOG OUT - bottom navigation handles returning to Home
-        items.extend([
-            self._at(
-                258, 1160, 430, 98,
-                self._text("Log out", 47, NAVY),
-                alignment=ft.Alignment.CENTER_LEFT,
-                on_click=self._on_logout,
-            ),
-            self._touch(
-                92, 1144, 760, 125,
-                self._on_logout,
-            ),
-            self._label(
-                250, 1300, 440, 90,
-                "My Achievements", 43, NAVY, True, True,
-            ),
-        ])
-
-        return items
 
     # MAIN SCREEN RENDERER
     def render(self):

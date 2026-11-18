@@ -38,7 +38,6 @@ MUTED = "#8194AE"
 
 
 def load_songs(path: Path = CATALOG_PATH) -> list[dict]:
-    """Lee el catálogo; admite canciones sin letra para escuchar el MP3."""
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
         songs = data.get("songs", []) if isinstance(data, dict) else data
@@ -53,7 +52,7 @@ def load_songs(path: Path = CATALOG_PATH) -> list[dict]:
 
 
 class SongsView:
-    def __init__(self, page: ft.Page, on_home, songs=None):
+    def __init__(self, page: ft.Page, on_home, songs=None, achievements=None):
         self.page = page
         self.on_home = on_home
         self.songs = songs if songs is not None else load_songs()
@@ -72,6 +71,7 @@ class SongsView:
         self.playing = False
         self.audio_end_ms = None
         self._audio_token = 0
+        self.achievements = achievements
 
     def close(self):
         """Ciclo de vida compatible con close_current() de src/main.py.

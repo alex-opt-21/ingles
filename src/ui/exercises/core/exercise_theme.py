@@ -34,4 +34,4 @@ SHEET_ADJUST_Y = 0
 
 # ---- Recursos compartidos (rutas relativas a src/assets/) ----
 BACKGROUND_IMAGE = "imagenes/fondo_e.png"
-SHEET_IMAGE = "imagenes/hoja_centra.png"
+SHEET_IMAGE = "imagenes/hoja_central.png"

@@ -1,9 +1,11 @@
+
 from pathlib import Path
 import hashlib
 import flet as ft
 
 # ---------- SERVICES ----------
 from services.auth import auth_service as auth
+from services.achievements.achievement_service import AchievementService
 
 from services.ejercicios.ejercicio_service import (
     QuizSession,
@@ -31,19 +33,38 @@ from screens.songs.songs_view import SongsView, load_songs
 
 from ui.theme import APP_NAME, BG_TOP
 
+
 # ---------- PATHS ----------
 BASE_DIR = Path(__file__).resolve().parent
+
 EXERCISES_FILE = BASE_DIR / "data" / "acciones.json"
 SENTENCES_FILE = BASE_DIR / "data" / "sentences.json"
 QUESTIONS_FILE = BASE_DIR / "data" / "preguntas.json"
 PHRASES_FILE = BASE_DIR / "data" / "phrases.json"
 SONGS_FILE = BASE_DIR / "data" / "songs.json"
+
 ASSETS_DIR = BASE_DIR / "assets"
 
-ACTION_LESSON_ID = "action_practice"
 
+# ---------- PROGRESS IDENTIFIERS ----------
+ACTION_MODULE_ID = "flashcards"
+ACTION_LESSON_ID = "action_practice"
+ACTION_LEVEL_ID = "basic"
+
+SENTENCES_MODULE_ID = "sentences"
+SENTENCES_LESSON_ID = "sentence_practice"
+SENTENCES_LEVEL_ID = "basic"
+
+QUESTIONS_MODULE_ID = "questions"
+QUESTIONS_LESSON_ID = "question_practice"
+QUESTIONS_LEVEL_ID = "basic"
+
+PHRASES_MODULE_ID = "phrases"
+PHRASES_LESSON_ID = "phrase_practice"
+PHRASES_LEVEL_ID = "basic"
 
 def main(page: ft.Page):
+
     # ---------- CONFIGURATION ----------
     page.title = APP_NAME
     page.padding = 0
@@ -66,11 +87,29 @@ def main(page: ft.Page):
     exercises = load_exercises(EXERCISES_FILE, ASSETS_DIR)
     sentences = load_sentences(SENTENCES_FILE, ASSETS_DIR)
 
-    state = {"user": None, "view": None}
+    state = {
+        "user": None,
+        "view": None,
+        "achievements": None,
+    }
+
+    # ---------- ACHIEVEMENTS ----------
+    def init_achievements():
+        """Crea el servicio de logros para el usuario autenticado."""
+        user = state["user"]
+
+        if user:
+            state["achievements"] = AchievementService(
+                user,
+                auth.save_progress,
+            )
+        else:
+            state["achievements"] = None
 
     # ---------- CLOSE VIEW ----------
     def close_current():
         view = state["view"]
+
         if view is not None:
             view.close()
             state["view"] = None
@@ -91,6 +130,7 @@ def main(page: ft.Page):
     # ---------- HOME ----------
     def go_home():
         close_current()
+
         view = HomeView(
             page,
             state["user"],
@@ -102,84 +142,220 @@ def main(page: ft.Page):
             on_songs=start_songs,
             on_logout=logout,
         )
+
         state["view"] = view
         view.show()
 
     # ---------- ACTION PRACTICE: SAVE / RESTORE ----------
     def start_quiz(e=None, force_new=False):
         close_current()
+
         user = state["user"]
 
         if not user or not user.get("email"):
-            print("[!] No se puede iniciar Action Practice sin un usuario autenticado.")
+            print(
+                "[!] No se puede iniciar Action Practice "
+                "sin un usuario autenticado."
+            )
             go_login()
             return
 
+        email = user["email"]
+
+        # Crear sesión independiente de Flash Cards.
         session = QuizSession(
             exercises=exercises,
             user=user,
             save_progress=auth.save_progress,
-            save_session=auth.save_active_session,
-            clear_session=auth.clear_active_session,
+
+            save_session=lambda email, session_state: (
+                auth.save_module_progress(
+                    email,
+                    ACTION_MODULE_ID,
+                    ACTION_LESSON_ID,
+                    ACTION_LEVEL_ID,
+                    session_state,
+                )
+            ),
+
+            clear_session=lambda email: (
+                auth.clear_module_progress(
+                    email,
+                    ACTION_MODULE_ID,
+                    ACTION_LESSON_ID,
+                    ACTION_LEVEL_ID,
+                )
+            ),
+
             session_size=None,
+            module_id=ACTION_MODULE_ID,
             lesson_id=ACTION_LESSON_ID,
+            level_id=ACTION_LEVEL_ID,
         )
 
         restored = False
-        saved_state = None
+
+        # Recuperar únicamente el progreso de Flash Cards.
+        if not force_new:
+
+            saved_state = auth.get_module_progress(
+                email,
+                ACTION_MODULE_ID,
+                ACTION_LESSON_ID,
+                ACTION_LEVEL_ID,
+            )
+
+            if saved_state:
+                restored = session.restore_state(saved_state)
+
+                if restored:
+                    print(
+                        "[+] Sesión de Flash Cards recuperada: "
+                        f"ejercicio {session.number}/{session.total} "
+                        f"({session.current['id']})."
+                    )
+                else:
+                    print(
+                        "[!] La sesión guardada no coincide "
+                        "con los ejercicios actuales. "
+                        "Se comenzará una práctica nueva."
+                    )
+
+                    auth.clear_module_progress(
+                        email,
+                        ACTION_MODULE_ID,
+                        ACTION_LESSON_ID,
+                        ACTION_LEVEL_ID,
+                    )
+
+        else:
+            # Reiniciar solamente esta práctica.
+            auth.clear_module_progress(
+                email,
+                ACTION_MODULE_ID,
+                ACTION_LESSON_ID,
+                ACTION_LEVEL_ID,
+            )
+
+        # Volver al inicio.
+        def back_to_home():
+            user["xp"] = session.xp
+            user["completed"] = list(session.completed)
+            go_home()
+
+        # Crear vista.
+        view = QuizView(
+            page,
+            session,
+            on_home=back_to_home,
+            achievements=state["achievements"],
+        )
+
+        state["view"] = view
+        view.show(resume=restored)
+    
+# ---------- SENTENCES: SAVE / RESTORE ----------
+    def start_sentences(e=None, force_new=False):
+        close_current()
+
+        user = state["user"]
+
+        if not user or not user.get("email"):
+            print("[!] No se puede iniciar Sentences sin un usuario autenticado.")
+            go_login()
+            return
+
+        email = user["email"]
+
+        session = SentencesSession(
+            exercises=sentences,
+            user=user,
+            save_progress=auth.save_progress,
+
+            save_session=lambda email, session_state: (
+                auth.save_module_progress(
+                    email,
+                    SENTENCES_MODULE_ID,
+                    SENTENCES_LESSON_ID,
+                    SENTENCES_LEVEL_ID,
+                    session_state,
+                )
+            ),
+
+            clear_session=lambda email: (
+                auth.clear_module_progress(
+                    email,
+                    SENTENCES_MODULE_ID,
+                    SENTENCES_LESSON_ID,
+                    SENTENCES_LEVEL_ID,
+                )
+            ),
+
+            session_size=None,
+            module_id=SENTENCES_MODULE_ID,
+            lesson_id=SENTENCES_LESSON_ID,
+            level_id=SENTENCES_LEVEL_ID,
+        )
+
+        restored = False
 
         if not force_new:
-            saved_state = auth.get_active_session(user["email"])
+            saved_state = auth.get_module_progress(
+                email,
+                SENTENCES_MODULE_ID,
+                SENTENCES_LESSON_ID,
+                SENTENCES_LEVEL_ID,
+            )
 
-        if saved_state:
-            restored = session.restore_state(saved_state)
-            if restored:
-                print(
-                    "[+] Sesión recuperada: "
-                    f"ejercicio {session.number}/{session.total} "
-                    f"({session.current['id']})."
-                )
-            else:
-                print(
-                    "[!] La sesión guardada no coincide con el JSON actual. "
-                    "Se eliminará y comenzará una práctica nueva."
-                )
-                auth.clear_active_session(user["email"])
+            if saved_state:
+                restored = session.restore_state(saved_state)
 
-        elif force_new:
-            auth.clear_active_session(user["email"])
+                if restored:
+                    print(
+                        "[+] Sesión de Sentences recuperada: "
+                        f"ejercicio {session.number}/{session.total} "
+                        f"({session.current['id']})."
+                    )
+                else:
+                    print(
+                        "[!] La sesión guardada no coincide "
+                        "con los ejercicios actuales. "
+                        "Se comenzará una práctica nueva."
+                    )
+
+                    auth.clear_module_progress(
+                        email,
+                        SENTENCES_MODULE_ID,
+                        SENTENCES_LESSON_ID,
+                        SENTENCES_LEVEL_ID,
+                    )
+
+        else:
+            auth.clear_module_progress(
+                email,
+                SENTENCES_MODULE_ID,
+                SENTENCES_LESSON_ID,
+                SENTENCES_LEVEL_ID,
+            )
 
         def back_to_home():
             user["xp"] = session.xp
             user["completed"] = list(session.completed)
-            user["active_session"] = auth.get_active_session(user["email"])
             go_home()
 
-        view = QuizView(page, session, on_home=back_to_home)
+        view = SentencesView(
+            page,
+            session,
+            on_home=back_to_home,
+            achievements=state["achievements"],
+        )
+
         state["view"] = view
         view.show(resume=restored)
 
-    # ---------- SENTENCES ----------
-    def start_sentences(e=None):
-        close_current()
-        user = state["user"]
-        session = SentencesSession(
-            sentences,
-            user,
-            save_progress=auth.save_progress,
-        )
-
-        def back_to_home():
-            user["xp"] = session.xp
-            user["completed"] = list(session.completed)
-            go_home()
-
-        view = SentencesView(page, session, on_home=back_to_home)
-        state["view"] = view
-        view.show()
-
-    # ---------- QUESTIONS & ANSWERS ----------
-    def start_questions(e=None):
+    
+# ---------- QUESTIONS & ANSWERS: SAVE / RESTORE ----------
+    def start_questions(e=None, force_new=False):
         close_current()
 
         if not QUESTIONS_FILE.exists():
@@ -187,27 +363,102 @@ def main(page: ft.Page):
             go_home()
             return
 
-        user = state["user"] or {}
-        identity = str(
-            user.get("id") or user.get("_id") or user.get("email") or "local"
-        )
-        user_hash = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
-        progress_file = Path.home() / ".saylo" / f"questions_{user_hash}.json"
+        user = state["user"]
+
+        if not user or not user.get("email"):
+            print("[!] No se puede iniciar Questions sin un usuario autenticado.")
+            go_login()
+            return
+
+        email = user["email"]
 
         session = QuestionsSession.from_json(
             path=QUESTIONS_FILE,
-            progress_file=progress_file,
+            user=user,
+            save_progress=auth.save_progress,
+
+            save_session=lambda email, session_state: (
+                auth.save_module_progress(
+                    email,
+                    QUESTIONS_MODULE_ID,
+                    QUESTIONS_LESSON_ID,
+                    QUESTIONS_LEVEL_ID,
+                    session_state,
+                )
+            ),
+
+            clear_session=lambda email: (
+                auth.clear_module_progress(
+                    email,
+                    QUESTIONS_MODULE_ID,
+                    QUESTIONS_LESSON_ID,
+                    QUESTIONS_LEVEL_ID,
+                )
+            ),
+
+            module_id=QUESTIONS_MODULE_ID,
+            lesson_id=QUESTIONS_LESSON_ID,
+            level_id=QUESTIONS_LEVEL_ID,
         )
+
+        restored = False
+
+        if not force_new:
+            saved_state = auth.get_module_progress(
+                email,
+                QUESTIONS_MODULE_ID,
+                QUESTIONS_LESSON_ID,
+                QUESTIONS_LEVEL_ID,
+            )
+
+            if saved_state:
+                restored = session.restore_state(saved_state)
+
+                if restored:
+                    print(
+                        "[+] Sesión de Questions recuperada: "
+                        f"pregunta {session.number}/{session.total} "
+                        f"({session.current['id']})."
+                    )
+                else:
+                    print(
+                        "[!] La sesión guardada no coincide "
+                        "con las preguntas actuales. "
+                        "Se comenzará una práctica nueva."
+                    )
+
+                    auth.clear_module_progress(
+                        email,
+                        QUESTIONS_MODULE_ID,
+                        QUESTIONS_LESSON_ID,
+                        QUESTIONS_LEVEL_ID,
+                    )
+
+        else:
+            auth.clear_module_progress(
+                email,
+                QUESTIONS_MODULE_ID,
+                QUESTIONS_LESSON_ID,
+                QUESTIONS_LEVEL_ID,
+            )
 
         def back_to_home():
             go_home()
 
-        view = QuestionsView(page, session, on_home=back_to_home)
-        state["view"] = view
-        view.show(resume=session.has_progress)
+        view = QuestionsView(
+            page,
+            session,
+            on_home=back_to_home,
+            achievements=state["achievements"],
+        )
 
-    # ---------- PHRASES ----------
-    def start_phrases(e=None):
+        state["view"] = view
+        view.show(resume=restored)
+
+
+    
+# ---------- PHRASES: SAVE / RESTORE ----------
+    def start_phrases(e=None, force_new=False):
         close_current()
 
         if not PHRASES_FILE.exists():
@@ -216,65 +467,162 @@ def main(page: ft.Page):
             return
 
         phrases = load_phrases(PHRASES_FILE, ASSETS_DIR)
+
         if not phrases:
             print("No hay ejercicios en phrases.json")
             go_home()
             return
 
-        user = state["user"] or {}
-        identity = str(
-            user.get("id") or user.get("_id") or user.get("email") or "local"
-        )
-        user_hash = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
-        progress_dir = Path.home() / ".saylo"
-        progress_dir.mkdir(parents=True, exist_ok=True)
-        progress_file = progress_dir / f"phrases_{user_hash}.json"
+        user = state["user"]
+
+        if not user or not user.get("email"):
+            print("[!] No se puede iniciar Phrases sin un usuario autenticado.")
+            go_login()
+            return
+
+        email = user["email"]
 
         session = PhrasesSession(
-            phrases,
-            user,
+            exercises=phrases,
+            user=user,
             save_progress=auth.save_progress,
-            progress_file=progress_file,
+
+            save_session=lambda email, session_state: (
+                auth.save_module_progress(
+                    email,
+                    PHRASES_MODULE_ID,
+                    PHRASES_LESSON_ID,
+                    PHRASES_LEVEL_ID,
+                    session_state,
+                )
+            ),
+
+            clear_session=lambda email: (
+                auth.clear_module_progress(
+                    email,
+                    PHRASES_MODULE_ID,
+                    PHRASES_LESSON_ID,
+                    PHRASES_LEVEL_ID,
+                )
+            ),
+
+            module_id=PHRASES_MODULE_ID,
+            lesson_id=PHRASES_LESSON_ID,
+            level_id=PHRASES_LEVEL_ID,
         )
+
+        restored = False
+
+        if not force_new:
+            saved_state = auth.get_module_progress(
+                email,
+                PHRASES_MODULE_ID,
+                PHRASES_LESSON_ID,
+                PHRASES_LEVEL_ID,
+            )
+
+            if saved_state:
+                restored = session.restore_state(saved_state)
+
+                if restored:
+                    print(
+                        "[+] Sesión de Phrases recuperada: "
+                        f"ejercicio {session.number}/{session.total} "
+                        f"({session.current['id']})."
+                    )
+                else:
+                    print(
+                        "[!] La sesión guardada no coincide "
+                        "con los ejercicios actuales. "
+                        "Se comenzará una práctica nueva."
+                    )
+
+                    auth.clear_module_progress(
+                        email,
+                        PHRASES_MODULE_ID,
+                        PHRASES_LESSON_ID,
+                        PHRASES_LEVEL_ID,
+                    )
+
+        else:
+            auth.clear_module_progress(
+                email,
+                PHRASES_MODULE_ID,
+                PHRASES_LESSON_ID,
+                PHRASES_LEVEL_ID,
+            )
 
         def back_to_home():
             user["xp"] = session.xp
             user["completed"] = list(session.completed)
             go_home()
 
-        view = PhrasesView(page, session, on_home=back_to_home)
+        view = PhrasesView(
+            page,
+            session,
+            on_home=back_to_home,
+            achievements=state["achievements"],
+        )
+
         state["view"] = view
-        view.show(resume=session.has_progress)
+        view.show(resume=restored)
+
 
     # ---------- SONGS: KARAOKE SPEAKING ----------
     def start_songs(e=None):
         close_current()
+
         songs = load_songs(SONGS_FILE)
-        view = SongsView(page, songs=songs, on_home=go_home)
+
+        view = SongsView(
+            page,
+            songs=songs,
+            on_home=go_home,
+            achievements=state["achievements"],
+        )
+
         state["view"] = view
         view.show()
 
     # ---------- LOGOUT ----------
     def logout(e=None):
         close_current()
+
         state["user"] = None
+        state["achievements"] = None
+
         go_login()
 
     # ---------- AUTHENTICATION ----------
     def do_login(email, password):
         ok, result = auth.login(email, password)
+
         if not ok:
             return result
+
         state["user"] = result
+
+        init_achievements()
         go_home()
+
         return None
 
     def do_register(name, email, password, confirm):
-        ok, result = auth.register(name, email, password, confirm)
+        ok, result = auth.register(
+            name,
+            email,
+            password,
+            confirm,
+        )
+
         if not ok:
             return result
+
         state["user"] = result
+
+        init_achievements()
         go_home()
+
         return None
 
     # ---------- START ----------
@@ -282,4 +630,7 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
-    ft.run(main, assets_dir=str(ASSETS_DIR))
+    ft.run(
+        main,
+        assets_dir=str(ASSETS_DIR),
+    )

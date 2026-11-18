@@ -40,20 +40,16 @@ from ui.exercises.overlays.results_overlay import results_screen
 
 
 class SentencesView:
-    """Conserva la interfaz pública anterior: show(), close(), render().
-
-    Aquí vive SOLO la lógica (sesión, audio, dictado, micrófono). Todo lo
-    visual sale de la carpeta `exercises`, compartida con los demás ejercicios.
-    """
 
     TITLE = "Sentences"
     SECTION = "SENTENCES"
-    ICON = "imagenes/home/oraciones .png"   # AJUSTA: ruta relativa a assets
+    ICON = "imagenes/home/oraciones .png"   
 
-    def __init__(self, page: ft.Page, session, on_home):
+    def __init__(self, page: ft.Page, session, on_home, achievements=None):
         self.page = page
         self.session = session
         self.on_home = on_home
+        self.achievements = achievements
         self.mode = "quiz"  # quiz | paused | end | closed
         self.token = 0
         self.w, self.h = 440, 844

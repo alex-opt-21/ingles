@@ -38,10 +38,29 @@ def load_sentences(sentences_file: Path, assets_dir: Path = None):
 class SentencesSession(QuizSession):
     """Sesión independiente de oraciones con XP compartido."""
 
-    def __init__(self, exercises, user, save_progress=None):
-        super().__init__(exercises, user, save_progress)
+    def __init__(
+        self,
+        exercises,
+        user,
+        save_progress=None,
+        save_session=None,
+        clear_session=None,
+        session_size=None,
+        module_id="sentences",
+        lesson_id="sentence_practice",
+        level_id="basic",
+    ):
+        super().__init__(
+            exercises=exercises,
+            user=user,
+            save_progress=save_progress,
+            save_session=save_session,
+            clear_session=clear_session,
+            session_size=session_size,
+            module_id=module_id,
+            lesson_id=lesson_id,
+            level_id=level_id,
+        )
 
     def summary(self):
-        stats = super().summary()
-        stats["sentences"] = stats.pop("verbs")
-        return stats
+        return super().summary()

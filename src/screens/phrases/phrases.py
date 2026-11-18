@@ -27,12 +27,13 @@ class PhrasesView:
 
     TITLE = "Phrases"
     SECTION = "PHRASES"
-    ICON = "imagenes/home/frases.png"   # AJUSTA: ruta relativa a assets
+    ICON = "imagenes/home/frases.png"   
 
-    def __init__(self, page: ft.Page, session, on_home):
+    def __init__(self, page: ft.Page, session, on_home, achievements=None):
         self.page = page
         self.session = session
         self.on_home = on_home
+        self.achievements = achievements
 
         self.mode = "quiz"
         self._tick_id = 0
@@ -75,6 +76,9 @@ class PhrasesView:
         self.mode = "closed"
         self.page.on_resize = None
         self.sfx.stop()
+
+        if hasattr(self.session, "pause"):
+            self.session.pause()
 
     def _mount(self):
         self.page.clean()

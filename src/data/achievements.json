@@ -1,0 +1,123 @@
+
+{
+  "achievements": [
+    {
+      "id": 1,
+      "name": "First Steps",
+      "description": "Start your first practice.",
+      "category": "initial",
+      "condition": {
+        "type": "practice_started"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Elephant Memory",
+      "description": "Complete a Flashcards practice.",
+      "category": "module",
+      "condition": {
+        "type": "module_completed",
+        "module": "flashcards"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Sentence Builder",
+      "description": "Complete a Sentences practice.",
+      "category": "module",
+      "condition": {
+        "type": "module_completed",
+        "module": "sentences"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Curious Mind",
+      "description": "Complete a Questions practice.",
+      "category": "module",
+      "condition": {
+        "type": "module_completed",
+        "module": "questions"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Smooth Talker",
+      "description": "Complete a Phrases practice.",
+      "category": "module",
+      "condition": {
+        "type": "module_completed",
+        "module": "phrases"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Music Lover",
+      "description": "Complete a Songs practice.",
+      "category": "module",
+      "condition": {
+        "type": "module_completed",
+        "module": "songs"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Perfect Practice",
+      "description": "Complete a practice without mistakes or skips.",
+      "category": "challenge",
+      "condition": {
+        "type": "perfect_practices",
+        "target": 1
+      }
+    },
+    {
+      "id": 8,
+      "name": "Perfectionist",
+      "description": "Complete 3 perfect practices.",
+      "category": "challenge",
+      "condition": {
+        "type": "perfect_practices",
+        "target": 3
+      }
+    },
+    {
+      "id": 9,
+      "name": "Excellence",
+      "description": "Complete 5 perfect practices.",
+      "category": "challenge",
+      "condition": {
+        "type": "perfect_practices",
+        "target": 5
+      }
+    },
+    {
+      "id": 10,
+      "name": "Explorer",
+      "description": "Complete at least one practice in each of the five modules.",
+      "category": "special",
+      "condition": {
+        "type": "all_modules_completed"
+      }
+    },
+    {
+      "id": 11,
+      "name": "Collector",
+      "description": "Unlock 5 achievements.",
+      "category": "special",
+      "condition": {
+        "type": "achievements_unlocked",
+        "target": 5
+      }
+    },
+    {
+      "id": 12,
+      "name": "Achievement Hunter",
+      "description": "Unlock 10 achievements.",
+      "category": "special",
+      "condition": {
+        "type": "achievements_unlocked",
+        "target": 10
+      }
+    }
+  ]
+}
