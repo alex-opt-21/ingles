@@ -7,6 +7,7 @@ except ImportError:
 
 
 class SoundEffects:
+    # Rutas relativas a la carpeta assets (sin "src/assets/")
     CORRECT = "audio/effects/correct_answer.wav"
     WRONG = "audio/effects/wrong_answer.wav"
     FINISH = "audio/effects/finish.wav"
@@ -30,6 +31,14 @@ class SoundEffects:
     def voice(self, src):
         """Audio de la palabra u otro audio hablado."""
         self._play("voice", src)
+
+    def stop_voice(self):
+        """Detiene solo la voz (no corta los efectos)."""
+        self._remove("voice")
+        try:
+            self.page.update()
+        except Exception:
+            pass
 
     def stop(self):
         """Quita ambos reproductores (llamar al cerrar el ejercicio)."""

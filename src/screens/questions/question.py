@@ -16,13 +16,9 @@ from ui.exercises.components.answer_options import answer_options
 from ui.exercises.components.exercise_illustrated_question import (
     exercise_illustrated_question,
 )
+from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
-
-try:
-    import flet_audio as fta
-except ImportError:
-    fta = None
 
 # Ilustraciones JSON: "imagenes/questions/Fiesta.png" y "imagenes/questions/Niño.png"
 # Las coordenadas del globo de cada escena estan en
@@ -32,8 +28,9 @@ except ImportError:
 class QuestionsView:
     """Interfaz: QuestionsView(page, session, on_home).show()."""
 
-    TITLE = "Questions Practice"
+    TITLE = "Questions"
     SECTION = "QUESTIONS & ANSWERS"
+    ICON = "imagenes/home/preguntas .png"   # AJUSTA: ruta relativa a assets
 
     def __init__(self, page: ft.Page, session, on_home):
         self.page = page
@@ -47,14 +44,14 @@ class QuestionsView:
         self._token = 0
         self._recording = False
         self._mic_message = None  # (ok, heard)
-        self._audio_player = None
+        self.sfx = SoundEffects(page)
 
     # ------------------ Ciclo de vida ------------------
 
     def show(self, resume=False):
         """show(resume=True) restaura el progreso guardado si existe."""
         self._token += 1
-        self._stop_audio()
+        self.sfx.stop()
         self.mode = "quiz"
         self._recording = False
         self._mic_message = None
@@ -75,7 +72,7 @@ class QuestionsView:
 
     def close(self):
         self._token += 1
-        self._stop_audio()
+        self.sfx.stop()
         self.mode = "closed"
         self.page.on_resize = None
         self.session.pause()
@@ -103,35 +100,16 @@ class QuestionsView:
         except Exception:
             print(text)
 
+    def _finish_ui(self):
+        self.mode = "end"
+        self._token += 1
+        self.sfx.finish()
+
     # ------------------ Audio / pronunciación ------------------
-
-    def _stop_audio(self):
-        player = self._audio_player
-        self._audio_player = None
-        if player is not None:
-            try:
-                if player in self.page.services:
-                    self.page.services.remove(player)
-                    self.page.update()
-            except Exception as err:
-                print(f"Error deteniendo audio: {err}")
-
-    def _play_audio(self, src):
-        """Reproduce un audio opcional del JSON sin await play()/release()."""
-        if not src or fta is None:
-            return
-        self._stop_audio()
-        try:
-            player = fta.Audio(src=src, autoplay=True)
-            self.page.services.append(player)
-            self._audio_player = player
-            self.page.update()
-        except Exception as err:
-            print(f"No se pudo reproducir {src}: {err}")
 
     def listen_again(self, e=None):
         if self.mode == "quiz" and self.session.is_solved() and not self._recording:
-            self._play_audio(self.session.current.get("audio"))
+            self.sfx.voice(self.session.current.get("audio"))
 
     async def _choose(self, option):
         result = self.session.choose(option)
@@ -140,7 +118,9 @@ class QuestionsView:
         self._mic_message = None
         self.render()
         if result == "correct":
-            self._play_audio(self.session.current.get("audio"))
+            self.sfx.voice(self.session.current.get("audio"))
+        else:
+            self.sfx.wrong()
 
     async def _on_mic(self, e=None):
         if self._recording or self.mode != "quiz":
@@ -148,7 +128,7 @@ class QuestionsView:
         if not self.session.is_solved():
             self._toast("First choose the correct answer.")
             return
-        self._stop_audio()
+        self.sfx.stop_voice()
         self._recording = True
         self._mic_message = None
         current_id = self.session.current["id"]
@@ -184,12 +164,11 @@ class QuestionsView:
     def _on_skip(self, e=None):
         if self._recording:
             return
-        self._stop_audio()
+        self.sfx.stop_voice()
         result = self.session.skip()
         self._mic_message = None
         if result == "finished":
-            self.mode = "end"
-            self._token += 1
+            self._finish_ui()
         self.render()
 
     def _on_continue(self, e=None):
@@ -203,17 +182,16 @@ class QuestionsView:
                 else "First choose the correct answer."
             )
             return
-        self._stop_audio()
+        self.sfx.stop_voice()
         self._mic_message = None
         if result == "finished":
-            self._token += 1
-            self.mode = "end"
+            self._finish_ui()
         self.render()
 
     def _on_pause(self, e=None):
         if self.mode != "quiz" or self._recording:
             return
-        self._stop_audio()
+        self.sfx.stop_voice()
         self.session.pause()
         self.mode = "paused"
         self._token += 1
@@ -228,8 +206,7 @@ class QuestionsView:
 
     def _on_finish_now(self, e=None):
         self.session.finish_early()
-        self._token += 1
-        self.mode = "end"
+        self._finish_ui()
         self.render()
 
     def _on_save_exit(self, e=None):
@@ -272,6 +249,7 @@ class QuestionsView:
             width=self.w,
             height=self.h,
             title=self.TITLE,
+            badge_image=self.ICON,
             current=s.number,
             total=s.total,
             time_text=format_time(s.time_now()),

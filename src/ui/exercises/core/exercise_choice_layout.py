@@ -111,6 +111,7 @@ def ChoiceLayout(
     processing: bool = False,
     situation: str | None = None,
     badge_letter: str | None = None,
+    badge_image: str | None = None,
 ) -> tuple[ft.Control, ft.Text]:
     """Devuelve ``(pantalla, timer_label)``.
 
@@ -118,6 +119,7 @@ def ChoiceLayout(
     answer_builder(scale) -> controles de respuesta (se usan las 3 primeras)
     feedback              -> (mensaje, kind) con kind en success/error/info, o None
     situation             -> texto para la tarjeta amarilla (solo si el preset la define)
+    badge_image           -> ruta (relativa a assets) de la imagen del badge del header
     """
 
     def slots(slot, k):
@@ -159,7 +161,8 @@ def ChoiceLayout(
     return ExerciseFrame(
         width=width, height=height, title=title,
         current=current, total=total, time_text=time_text,
-        on_pause=on_pause, slots=slots, badge_letter=badge_letter,
+        on_pause=on_pause, slots=slots,
+        badge_letter=badge_letter, badge_image=badge_image,
         title_size=preset.header_title_size,
         min_sheet_height=preset.min_sheet_height,
     )

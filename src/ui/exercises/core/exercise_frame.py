@@ -29,15 +29,10 @@ def ExerciseFrame(
     on_pause: Callable | None,
     slots: SlotsBuilder,
     badge_letter: str | None = None,
+    badge_image: str | None = None,
     title_size: float = 17,
     min_sheet_height: float = 220,
 ) -> tuple[ft.Control, ft.Text]:
-    """Devuelve ``(pantalla, timer_label)``.
-
-    ``slots(slot, scale)`` devuelve la lista de controles posicionados sobre
-    la hoja. ``timer_label`` es el ft.Text del cronometro: la vista cambia su
-    ``.value`` cada segundo y llama ``.update()`` sin reconstruir nada.
-    """
     paper_h = max(
         min_sheet_height,
         min(SHEET_MAX_HEIGHT, height - header_height(width) - SHEET_VERTICAL_RESERVE),
@@ -78,6 +73,7 @@ def ExerciseFrame(
                 timer_label=timer_label,
                 on_pause=on_pause,
                 badge_letter=badge_letter,
+                badge_image=badge_image,
                 title_size=title_size,
             ),
             sheet,

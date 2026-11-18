@@ -8,6 +8,7 @@ from services.ejercicios.pronunciacion_service import listen_and_check
 from ui.exercises.core.exercise_choice_layout import ChoiceLayout, QUIZ_PRESET
 from ui.exercises.components.answer_options import answer_options
 from ui.exercises.components.exercise_illustration import exercise_illustration
+from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 from ui.exercises.core.exercise_theme import (
@@ -18,22 +19,12 @@ from ui.exercises.core.exercise_theme import (
     EXERCISE_SOFT_BLUE,
 )
 
-try:
-    import flet_audio as fta
-except ImportError:
-    fta = None
-
 
 class QuizView:
-    """Vista del ejercicio Quiz.
 
-    Aqui vive SOLO la logica (sesion, timer, audio, microfono). Todo lo
-    visual sale de la carpeta `exercises`, compartida con los demas
-    ejercicios. Misma interfaz publica que la version anterior.
-    """
-
-    TITLE = "Action Practice"
+    TITLE = "Flash Cards"
     SECTION = "LOOK & CHOOSE"
+    ICON = "imagenes/home/tarjetas .png"   # ruta relativa a assets
 
     def __init__(self, page: ft.Page, session: QuizSession, on_home):
         self.page = page
@@ -41,12 +32,12 @@ class QuizView:
         self.on_home = on_home
         self.mode = "quiz"       # quiz | paused | end | closed
         self._tick_id = 0
-        self._player = None
+        self.sfx = SoundEffects(page)
         self.rec_state = "idle"
         self.rec_message = None
         self._width = 440
         self._height = 844
-        self._timer_label: ft.Text | None = None   # lo crea ExerciseLayout
+        self._timer_label: ft.Text | None = None   # lo crea el layout
         self.shell = ft.Container()
 
     # ---------- Ciclo de vida ----------
@@ -70,6 +61,7 @@ class QuizView:
         self._tick_id += 1
         self.mode = "closed"
         self.page.on_resize = None
+        self.sfx.stop()
 
     def _mount(self):
         self.page.clean()
@@ -115,20 +107,7 @@ class QuizView:
 
             await asyncio.sleep(1)
 
-    # ---------- Audio, mensajes y acciones de QuizSession ----------
-
-    async def _speak(self, src):
-        if fta is None or not src:
-            return
-        try:
-            if self._player is not None and self._player in self.page.services:
-                self.page.services.remove(self._player)
-            new = fta.Audio(src=src, autoplay=True)
-            self.page.services.append(new)
-            self._player = new
-            self.page.update()
-        except Exception as err:
-            print(f"No se pudo reproducir {src}: {err}")
+    # ---------- Mensajes y acciones de QuizSession ----------
 
     def _toast(self, message):
         try:
@@ -142,7 +121,9 @@ class QuizView:
             return
         self.render()
         if result == "correct":
-            await self._speak(self.session.current.get("audio"))
+            self.sfx.voice(self.session.current.get("audio"))
+        else:
+            self.sfx.wrong()
 
     def _on_back(self, e=None):
         self.rec_message = None
@@ -150,6 +131,11 @@ class QuizView:
             self.render()
         else:
             self._on_home()
+
+    def _finish_ui(self):
+        self.mode = "end"
+        self._tick_id += 1
+        self.sfx.finish()
 
     def _on_next(self, e=None):
         result = self.session.advance()
@@ -161,8 +147,7 @@ class QuizView:
             return
         self.rec_message = None
         if result == "finished":
-            self.mode = "end"
-            self._tick_id += 1
+            self._finish_ui()
         self.render()
 
     def _on_hint(self, e=None):
@@ -173,14 +158,13 @@ class QuizView:
         self.rec_message = None
         result = self.session.skip()
         if result == "finished":
-            self.mode = "end"
-            self._tick_id += 1
+            self._finish_ui()
         self.render()
 
     async def _on_listen(self, e=None):
         ex = self.session.current
         if self.session.is_solved(ex):
-            await self._speak(ex.get("audio"))
+            self.sfx.voice(ex.get("audio"))
         else:
             self._toast("First choose the correct answer.")
 
@@ -227,8 +211,7 @@ class QuizView:
     def _on_finish_now(self, e=None):
         # Finish now cierra la practica y elimina la sesion pendiente.
         self.session.finish_early()
-        self._tick_id += 1
-        self.mode = "end"
+        self._finish_ui()
         self.render()
 
     def _on_save_exit(self, e=None):
@@ -273,6 +256,7 @@ class QuizView:
             width=self._width,
             height=self._height,
             title=self.TITLE,
+            badge_image=self.ICON,
             current=s.number,
             total=s.total,
             time_text=format_time(s.time_now()),

@@ -34,6 +34,7 @@ from ui.exercises.components.exercise_feedback import exercise_feedback
 from ui.exercises.components.exercise_heading import exercise_section_heading
 from ui.exercises.components.exercise_illustration import exercise_illustration
 from ui.exercises.components.exercise_text_input import exercise_text_input
+from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 
@@ -45,8 +46,9 @@ class SentencesView:
     visual sale de la carpeta `exercises`, compartida con los demás ejercicios.
     """
 
-    TITLE = "Sentence Practice"
+    TITLE = "Sentences"
     SECTION = "SENTENCES"
+    ICON = "imagenes/home/oraciones .png"   # AJUSTA: ruta relativa a assets
 
     def __init__(self, page: ft.Page, session, on_home):
         self.page = page
@@ -72,6 +74,9 @@ class SentencesView:
         self._pause_started = None
         self._audio_player = None
         self._audio_request = 0
+        # Efectos (wrong / finish). El audio de las oraciones sigue usando
+        # su propio reproductor (_audio_player) para no mezclarse.
+        self.sfx = SoundEffects(page)
 
     # =============== AUDIO DE ORACIONES ===============
 
@@ -174,6 +179,7 @@ class SentencesView:
 
     def show(self, resume=False):
         self._stop_audio()
+        self.sfx.stop()
         self.token += 1
         self.mode = "quiz"
         self.is_recording = False
@@ -212,6 +218,7 @@ class SentencesView:
 
     def close(self):
         self._stop_audio()
+        self.sfx.stop()
         self.token += 1
         self.mode = "closed"
         self.page.on_resize = None
@@ -335,6 +342,7 @@ class SentencesView:
                 except TypeError:
                     pass  # El servicio puede exigir otra firma.
             self.text_feedback = "Not quite. Check your sentence and try again."
+            self.sfx.wrong()
         self.render()
         if play_sentence is not None:
             self.page.run_task(self._play_sentence_audio, self._key(), play_sentence)
@@ -506,6 +514,7 @@ class SentencesView:
         self.final_time = format_time(self._tiempo_activo())
         self.token += 1
         self.mode = "end"
+        self.sfx.finish()
         self.render()
 
     def save_exit(self, e=None):
@@ -605,12 +614,12 @@ class SentencesView:
             width=self.w,
             height=self.h,
             title=self.TITLE,
+            badge_image=self.ICON,
             current=self.session.number,
             total=self.session.total,
             time_text=format_time(self._tiempo_activo()),
             on_pause=self.pause,
             slots=slots,
-            title_size=15,
             min_sheet_height=260,
         )
 

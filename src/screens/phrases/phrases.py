@@ -3,11 +3,6 @@
 import asyncio
 import flet as ft
 
-try:
-    import flet_audio as fta
-except ImportError:
-    fta = None
-
 from services.ejercicios.pronunciacion_oraciones_service import (
     listen_and_check_sentence,
     preload,
@@ -18,6 +13,7 @@ from ui.exercises.core.exercise_choice_layout import ChoiceLayout, PHRASES_PRESE
 from ui.exercises.core.exercise_theme import EXERCISE_PALE_BLUE
 from ui.exercises.components.answer_options import answer_options
 from ui.exercises.components.exercise_illustration import exercise_illustration
+from ui.exercises.components.sound_effects import SoundEffects
 from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 from ui.exercises.core.exercise_theme import (
@@ -33,6 +29,7 @@ class PhrasesView:
 
     TITLE = "Phrases"
     SECTION = "PHRASES"
+    ICON = "imagenes/home/frases.png"   # AJUSTA: ruta relativa a assets
 
     def __init__(self, page: ft.Page, session, on_home):
         self.page = page
@@ -41,7 +38,7 @@ class PhrasesView:
 
         self.mode = "quiz"
         self._tick_id = 0
-        self._player = None
+        self.sfx = SoundEffects(page)
 
         self._width = 440
         self._height = 844
@@ -59,6 +56,7 @@ class PhrasesView:
 
     def show(self, resume=False):
         self.mode = "quiz"
+        self.sfx.stop()
 
         if resume and getattr(self.session, "has_progress", False):
             if hasattr(self.session, "resume"):
@@ -78,7 +76,7 @@ class PhrasesView:
         self._tick_id += 1
         self.mode = "closed"
         self.page.on_resize = None
-        self._stop_audio_sync()
+        self.sfx.stop()
 
     def _mount(self):
         self.page.clean()
@@ -125,7 +123,7 @@ class PhrasesView:
             await asyncio.sleep(1)
 
     # =====================================================
-    # AUDIO
+    # MENSAJES
     # =====================================================
 
     def _toast(self, message):
@@ -136,36 +134,10 @@ class PhrasesView:
         except Exception:
             print(message)
 
-    async def _speak(self, src):
-        if not src or fta is None:
-            return
-
-        self._stop_audio_sync()
-
-        try:
-            self._player = fta.Audio(
-                src=src,
-                autoplay=True,
-            )
-            self.page.services.append(self._player)
-            self.page.update()
-
-        except Exception as err:
-            print(f"No se pudo reproducir {src}: {err}")
-
-    def _stop_audio_sync(self):
-        try:
-            if (
-                self._player is not None
-                and self._player in self.page.services
-            ):
-                self.page.services.remove(self._player)
-
-            self._player = None
-            self.page.update()
-
-        except Exception:
-            self._player = None
+    def _finish_ui(self):
+        self.mode = "end"
+        self._tick_id += 1
+        self.sfx.finish()
 
     # =====================================================
     # ACCIONES DEL EJERCICIO
@@ -181,9 +153,9 @@ class PhrasesView:
         self.render()
 
         if result == "correct":
-            await self._speak(
-                self.session.current.get("audio")
-            )
+            self.sfx.voice(self.session.current.get("audio"))
+        else:
+            self.sfx.wrong()
 
     def _on_hint(self, e=None):
         if self.session.use_hint():
@@ -192,12 +164,11 @@ class PhrasesView:
             self._toast("No hints available.")
 
     def _on_skip(self, e=None):
-        self._stop_audio_sync()
+        self.sfx.stop_voice()
         self.rec_message = None
 
         if self.session.skip() == "finished":
-            self.mode = "end"
-            self._tick_id += 1
+            self._finish_ui()
 
         self.render()
 
@@ -211,7 +182,7 @@ class PhrasesView:
         if self.rec_state != "idle":
             return
 
-        self._stop_audio_sync()
+        self.sfx.stop_voice()
 
         self.rec_state = "recording"
         self.rec_message = None
@@ -249,14 +220,13 @@ class PhrasesView:
             )
             return
 
-        self._stop_audio_sync()
+        self.sfx.stop_voice()
 
         result = self.session.advance()
         self.rec_message = None
 
         if result == "finished":
-            self.mode = "end"
-            self._tick_id += 1
+            self._finish_ui()
 
         self.render()
 
@@ -289,8 +259,7 @@ class PhrasesView:
         if hasattr(self.session, "finish_early"):
             self.session.finish_early()
 
-        self._tick_id += 1
-        self.mode = "end"
+        self._finish_ui()
         self.render()
 
     def _on_save_exit(self, e=None):
@@ -339,6 +308,7 @@ class PhrasesView:
             width=self._width,
             height=self._height,
             title=self.TITLE,
+            badge_image=self.ICON,
             current=s.number,
             total=s.total,
             time_text=s.format_time(s.time_now()),
