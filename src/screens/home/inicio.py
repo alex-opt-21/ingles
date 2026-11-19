@@ -11,6 +11,7 @@ FONT = "Comic Sans MS"
 SUBTEXT = "#58739F"
 NAV_TEXT = "#536B96"
 ASSET_HOME = "imagenes/home/"
+ASSET_PROFILE_BG = "imagenes/fondo_nubes.png"   # fondo de la pantalla Profile
 
 
 class HomeView:
@@ -125,6 +126,18 @@ class HomeView:
                 alignment=ft.Alignment.CENTER,
                 content=ft.Text("Missing home/background image"),
             ),
+        )
+
+    def _profile_background(self):
+        """Fondo de la pantalla Profile (src/assets/imagenes/fondo_e.png)."""
+        return ft.Image(
+            src=ASSET_PROFILE_BG,
+            width=self._width,
+            height=self._height,
+            fit=ft.BoxFit.COVER,   # usa FILL si prefieres estirarlo al tamano exacto
+            left=0,
+            top=0,
+            error_content=ft.Container(bgcolor=BG_TOP),
         )
 
     def _done(self):
@@ -534,15 +547,21 @@ class HomeView:
 
     # PROFILE SCREEN
     def _build_profile(self):
+        # Espacio que ocupa la barra inferior, para que el scroll del perfil
+        # no deje contenido tapado por ella.
+        nav_space = (BASE_H - 1525) * self._height / BASE_H
+
         return [
+            self._profile_background(),
             construir_perfil(
                 user=self.user,
                 total=self.total,
                 width=self._width,
                 height=self._height,
                 on_logout=self._on_logout,
+                bottom_space=nav_space,
                 achievement_definitions=self.achievement_definitions,
-            )
+            ),
         ]
 
     # MAIN SCREEN RENDERER

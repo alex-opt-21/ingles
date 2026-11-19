@@ -2,9 +2,7 @@ import flet as ft
 
 from ui.profile_components import (
     BLUE,
-    GREEN,
     GOLD,
-    NAVY,
     achievement_badge,
     card,
     profile_header,
@@ -14,6 +12,11 @@ from ui.profile_components import (
 )
 
 XP_PER_LEVEL = 100
+
+# Rutas relativas a src/assets/ (la carpeta se llama "My profile", con espacio).
+ASSET_PROFILE = "imagenes/My profile/"
+IMG_XP = ASSET_PROFILE + "XP.png"
+IMG_LV = ASSET_PROFILE + "LV.png"
 
 # Iconos asociados a los IDs de achievements.json.
 ACHIEVEMENT_ICONS = {
@@ -60,8 +63,6 @@ def construir_perfil(
     email = (user.get("email") or "").strip()
 
     xp = _int(user.get("xp"))
-    completed = user.get("completed") or []
-    done = min(len(completed), max(total, 0))
 
     level = xp // XP_PER_LEVEL + 1
     xp_in_level = xp % XP_PER_LEVEL
@@ -82,8 +83,10 @@ def construir_perfil(
         if str(achievement.get("id")) in unlocked_ids
     )
 
+    # Dos columnas: se descuenta el padding (16*2) y el borde (2*2) de la tarjeta.
     gap = 10 * s
-    badge_w = max(100, (inner_w - gap) / 2)
+    card_inner_w = inner_w - 36 * s
+    badge_w = max(100, (card_inner_w - gap) / 2 - 1)
 
     achievement_controls = [
         achievement_badge(
@@ -127,6 +130,7 @@ def construir_perfil(
             "My Profile",
             "Here are your achievements!",
             s,
+            inner_w,
         ),
 
         profile_header(
@@ -140,28 +144,23 @@ def construir_perfil(
         ),
 
         ft.Row(
-            spacing=10 * s,
+            spacing=12 * s,
             controls=[
                 stat_tile(
-                    ft.Icons.STAR_ROUNDED,
+                    IMG_XP,
                     "Total XP",
                     str(xp),
-                    GOLD,
                     s,
+                    ft.Icons.STAR_ROUNDED,
+                    GOLD,
                 ),
                 stat_tile(
-                    ft.Icons.MILITARY_TECH_ROUNDED,
+                    IMG_LV,
                     "Level",
                     str(level),
+                    s,
+                    ft.Icons.MILITARY_TECH_ROUNDED,
                     BLUE,
-                    s,
-                ),
-                stat_tile(
-                    ft.Icons.CHECK_CIRCLE_ROUNDED,
-                    "Completed",
-                    f"{done}/{total}",
-                    GREEN,
-                    s,
                 ),
             ],
         ),

@@ -1,17 +1,23 @@
-
-"""Componentes del perfil. Todos reciben `s` (escala) y NO usan coordenadas
-fijas ni imagenes de fondo: crecen y se reacomodan segun el ancho disponible."""
+import re
+from functools import lru_cache
+from pathlib import Path
 
 import flet as ft
 
 from ui.theme import BLUE, NAVY, WHITE, RED, RED_BG
+
+# AJUSTA esta ruta a donde tengas tu BlueBanner.
+from ui.exercises.components.blue_banner import BlueBanner
 
 FONT = "Comic Sans MS"
 SUBTEXT = "#58739F"
 MUTED = "#8AA0C0"
 CARD_BORDER = "#D8EAFB"
 PALE = "#E3F3FF"
-TITLE_BG = "#B8D8FF"
+BANNER_SRC = "imagenes/My profile/banner_azul.svg"   # relativa a src/assets/
+BANNER_WIDTH_FACTOR = 0.8     # 1.0 = ancho completo; menor = banner mas chico y centrado
+BANNER_ASPECT_FALLBACK = 600 / 230   # solo si no se puede leer el SVG
+BANNER_TEXT = NAVY            # pon WHITE si tu banner es de azul oscuro          # pon WHITE si tu banner es de azul oscuro
 GOLD = "#F4B83E"
 GOLD_BG = "#FFF3D1"
 GREEN = "#16A34A"
@@ -60,38 +66,78 @@ def card(content, s, padding=16, radius=26, color=WHITE):
     )
 
 
-def profile_title(title, subtitle, s):
-    return ft.Column(
-        spacing=6 * s,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        controls=[
-            ft.Container(
-                bgcolor=TITLE_BG,
-                border_radius=18 * s,
-                padding=ft.Padding.symmetric(
-                    horizontal=28 * s,
-                    vertical=8 * s,
-                ),
-                alignment=ft.Alignment.CENTER,
-                content=_text(
+@lru_cache(maxsize=None)
+def banner_aspect():
+    """Proporcion (ancho / alto) REAL del SVG, leida de su viewBox.
+
+    Usar la proporcion exacta evita que el banner se deforme o quede
+    desalineado con el texto. Si no se puede leer, usa el valor de respaldo.
+    """
+    for folder in Path(__file__).resolve().parents:
+        path = folder / "assets" / BANNER_SRC
+        if not path.is_file():
+            continue
+        try:
+            head = path.read_text(encoding="utf-8", errors="ignore")[:4000]
+        except OSError:
+            break
+        tag = re.search(r"<svg\b[^>]*>", head, flags=re.S)
+        tag = tag.group(0) if tag else head
+        box = re.search(r'viewBox\s*=\s*"([^"]+)"', tag)
+        if box:
+            nums = re.findall(r"-?\d+(?:\.\d+)?", box.group(1))
+            if len(nums) == 4 and float(nums[3]) > 0:
+                return float(nums[2]) / float(nums[3])
+        w = re.search(r'(?<![-\w])width\s*=\s*"([\d.]+)', tag)
+        h = re.search(r'(?<![-\w])height\s*=\s*"([\d.]+)', tag)
+        if w and h and float(h.group(1)) > 0:
+            return float(w.group(1)) / float(h.group(1))
+        break
+    return BANNER_ASPECT_FALLBACK
+
+
+def profile_title(title, subtitle, s, width):
+    """Titulo sobre el banner, centrado. El banner mide `width * BANNER_WIDTH_FACTOR`
+    y su alto sale de la proporcion real del SVG (sin deformarlo)."""
+    banner_w = width * BANNER_WIDTH_FACTOR
+    banner_h = banner_w / banner_aspect()
+
+    banner = BlueBanner(
+        width=banner_w,
+        height=banner_h,
+        padding=6 * s,
+        svg_src=BANNER_SRC,
+        content=ft.Column(
+            tight=True,
+            spacing=2 * s,
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                _text(
                     title,
                     26 * s,
-                    NAVY,
+                    BANNER_TEXT,
                     True,
                     ft.TextAlign.CENTER,
                     italic=True,
                 ),
-            ),
-            _text(
-                subtitle,
-                13 * s,
-                SUBTEXT,
-                False,
-                ft.TextAlign.CENTER,
-            ),
-        ],
+                _text(
+                    subtitle,
+                    12 * s,
+                    BANNER_TEXT,
+                    False,
+                    ft.TextAlign.CENTER,
+                ),
+            ],
+        ),
     )
 
+    # El contenedor ocupa todo el ancho y centra el banner dentro.
+    return ft.Container(
+        width=width,
+        alignment=ft.Alignment.CENTER,
+        content=banner,
+    )
 
 def section_title(title, s, trailing=None):
     controls = [_text(title, 19 * s, NAVY, True)]
@@ -150,6 +196,28 @@ def level_chip(level, s):
     )
 
 
+def logout_icon_button(on_click, s, size=40):
+    """Boton circular solo con icono (cerrar sesion)."""
+    d = size * s
+
+    return ft.Container(
+        width=d,
+        height=d,
+        border_radius=d / 2,
+        bgcolor=RED_BG,
+        border=ft.Border.all(max(1, 2 * s), RED),
+        alignment=ft.Alignment.CENTER,
+        ink=True,
+        on_click=on_click,
+        tooltip="Log out",
+        content=ft.Icon(
+            ft.Icons.LOGOUT_ROUNDED,
+            size=(size * 0.5) * s,
+            color=RED,
+        ),
+    )
+
+
 def profile_header(
     name,
     email,
@@ -167,11 +235,26 @@ def profile_header(
         else 0
     )
 
-    logout = (
-        [logout_button(on_logout, s, height=40, font=15, icon=18)]
-        if on_logout
-        else []
-    )
+    top_row = [
+        avatar(initial, 76, s),
+        ft.Column(
+            expand=True,
+            spacing=3 * s,
+            tight=True,
+            controls=[
+                _text(name, 22 * s, NAVY, True),
+                (
+                    _text(email, 13 * s, SUBTEXT)
+                    if email
+                    else ft.Container(height=1)
+                ),
+                level_chip(level, s),
+            ],
+        ),
+    ]
+
+    if on_logout:
+        top_row.append(logout_icon_button(on_logout, s))
 
     return card(
         ft.Column(
@@ -179,24 +262,10 @@ def profile_header(
             controls=[
                 ft.Row(
                     spacing=14 * s,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        avatar(initial, 76, s),
-                        ft.Column(
-                            expand=True,
-                            spacing=3 * s,
-                            tight=True,
-                            controls=[
-                                _text(name, 22 * s, NAVY, True),
-                                (
-                                    _text(email, 13 * s, SUBTEXT)
-                                    if email
-                                    else ft.Container(height=1)
-                                ),
-                                level_chip(level, s),
-                            ],
-                        ),
-                    ],
+                    # START = icono arriba a la derecha.
+                    # Cambialo a CENTER si lo quieres a la mitad.
+                    vertical_alignment=ft.CrossAxisAlignment.START,
+                    controls=top_row,
                 ),
                 ft.Column(
                     spacing=5 * s,
@@ -216,43 +285,74 @@ def profile_header(
                         ),
                     ],
                 ),
-                *logout,
             ],
         ),
         s,
     )
 
 
-def stat_tile(icon, label, value, color, s):
+def stat_tile(
+    image_src,
+    label,
+    value,
+    s,
+    fallback_icon=ft.Icons.STAR_ROUNDED,
+    fallback_color=GOLD,
+):
+    """Tarjeta con imagen a la izquierda, etiqueta arriba y valor grande abajo.
+
+    Si la imagen no se encuentra, muestra `fallback_icon` para no romper el diseno.
+    """
+    img = 50 * s
+
     return ft.Container(
         expand=True,
         bgcolor=WHITE,
         padding=ft.Padding.symmetric(
-            horizontal=6 * s,
-            vertical=12 * s,
+            horizontal=10 * s,
+            vertical=10 * s,
         ),
-        border_radius=20 * s,
+        border_radius=22 * s,
         border=ft.Border.all(max(1, 2 * s), CARD_BORDER),
         shadow=_shadow(s, 0.08, 10, 3),
-        content=ft.Column(
-            spacing=4 * s,
-            tight=True,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        content=ft.Row(
+            spacing=8 * s,
+            alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Icon(icon, size=26 * s, color=color),
-                _text(
-                    value,
-                    21 * s,
-                    NAVY,
-                    True,
-                    ft.TextAlign.CENTER,
+                ft.Image(
+                    src=image_src,
+                    width=img,
+                    height=img,
+                    fit=ft.BoxFit.CONTAIN,
+                    error_content=ft.Icon(
+                        fallback_icon,
+                        size=img * 0.8,
+                        color=fallback_color,
+                    ),
                 ),
-                _text(
-                    label,
-                    12 * s,
-                    SUBTEXT,
-                    False,
-                    ft.TextAlign.CENTER,
+                ft.Column(
+                    expand=True,
+                    spacing=2 * s,
+                    tight=True,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    controls=[
+                        _text(
+                            label,
+                            12 * s,
+                            NAVY,
+                            True,
+                            ft.TextAlign.CENTER,
+                        ),
+                        _text(
+                            value,
+                            24 * s,
+                            NAVY,
+                            True,
+                            ft.TextAlign.CENTER,
+                        ),
+                    ],
                 ),
             ],
         ),
@@ -303,31 +403,6 @@ def achievement_badge(
                     ft.TextAlign.CENTER,
                     max_lines=2,
                 ),
-            ],
-        ),
-    )
-
-
-def logout_button(on_click, s, height=50, font=17, icon=20):
-    return ft.Container(
-        height=height * s,
-        bgcolor=RED_BG,
-        border=ft.Border.all(max(1, 2 * s), RED),
-        border_radius=(height / 2) * s,
-        alignment=ft.Alignment.CENTER,
-        ink=True,
-        on_click=on_click,
-        content=ft.Row(
-            tight=True,
-            spacing=8 * s,
-            alignment=ft.MainAxisAlignment.CENTER,
-            controls=[
-                ft.Icon(
-                    ft.Icons.LOGOUT_ROUNDED,
-                    size=icon * s,
-                    color=RED,
-                ),
-                _text("Log out", font * s, RED, True),
             ],
         ),
     )
