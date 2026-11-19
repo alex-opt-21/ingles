@@ -17,12 +17,13 @@ PALE = "#E3F3FF"
 BANNER_SRC = "imagenes/My profile/banner_azul.svg"   # relativa a src/assets/
 BANNER_WIDTH_FACTOR = 0.8     # 1.0 = ancho completo; menor = banner mas chico y centrado
 BANNER_ASPECT_FALLBACK = 600 / 230   # solo si no se puede leer el SVG
-BANNER_TEXT = NAVY            # pon WHITE si tu banner es de azul oscuro          # pon WHITE si tu banner es de azul oscuro
+BANNER_TEXT = NAVY            # pon WHITE si tu banner es de azul oscuro
 GOLD = "#F4B83E"
 GOLD_BG = "#FFF3D1"
 GREEN = "#16A34A"
 LOCKED_BG = "#EEF2F7"
 LOCKED_FG = "#A3B1C6"
+LOCKED_IMG = "imagenes/achievements/locked.png"   # relativa a src/assets/
 
 
 def _text(
@@ -138,6 +139,7 @@ def profile_title(title, subtitle, s, width):
         alignment=ft.Alignment.CENTER,
         content=banner,
     )
+
 
 def section_title(title, s, trailing=None):
     controls = [_text(title, 19 * s, NAVY, True)]
@@ -366,8 +368,39 @@ def achievement_badge(
     unlocked,
     width,
     s,
+    image_src=None,
 ):
+    """Insignia de logro.
+
+    - Desbloqueado con imagen  -> muestra la imagen del logro.
+    - Desbloqueado sin imagen  -> muestra el icono de Flet (`icon`).
+    - Bloqueado                -> muestra locked.png.
+    Si alguna imagen no se encuentra, cae al icono de Flet.
+    """
     fg = GOLD if unlocked else LOCKED_FG
+    img = 56 * s
+
+    fallback = ft.Icon(
+        icon if unlocked else ft.Icons.LOCK_OUTLINE,
+        size=img * 0.6,
+        color=fg,
+    )
+
+    if unlocked and not image_src:
+        visual = ft.Container(
+            width=img,
+            height=img,
+            alignment=ft.Alignment.CENTER,
+            content=fallback,
+        )
+    else:
+        visual = ft.Image(
+            src=image_src if unlocked else LOCKED_IMG,
+            width=img,
+            height=img,
+            fit=ft.BoxFit.CONTAIN,
+            error_content=fallback,
+        )
 
     return ft.Container(
         width=width,
@@ -383,11 +416,7 @@ def achievement_badge(
             tight=True,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Icon(
-                    icon if unlocked else ft.Icons.LOCK_OUTLINE,
-                    size=30 * s,
-                    color=fg,
-                ),
+                visual,
                 _text(
                     title,
                     14 * s,
@@ -405,4 +434,83 @@ def achievement_badge(
                 ),
             ],
         ),
+    )
+
+def achievement_icon(
+    icon,
+    title,
+    unlocked,
+    size,
+    s,
+    image_src=None,
+):
+    """Icono del logro (estilo galeria) con su nombre debajo.
+
+    - Desbloqueado con imagen -> imagen del logro.
+    - Desbloqueado sin imagen -> circulo dorado con icono de Flet.
+    - Bloqueado               -> locked.png (o circulo gris con candado si falta).
+    """
+    lock_fallback = ft.Container(
+        width=size,
+        height=size,
+        border_radius=size / 2,
+        bgcolor=LOCKED_BG,
+        alignment=ft.Alignment.CENTER,
+        content=ft.Icon(
+            ft.Icons.LOCK_OUTLINE,
+            size=size * 0.45,
+            color=LOCKED_FG,
+        ),
+    )
+
+    if unlocked and image_src:
+        visual = ft.Image(
+            src=image_src,
+            width=size,
+            height=size,
+            fit=ft.BoxFit.CONTAIN,
+            error_content=ft.Container(
+                width=size,
+                height=size,
+                border_radius=size / 2,
+                bgcolor=GOLD_BG,
+                alignment=ft.Alignment.CENTER,
+                content=ft.Icon(icon, size=size * 0.5, color=GOLD),
+            ),
+        )
+    elif unlocked:
+        visual = ft.Container(
+            width=size,
+            height=size,
+            border_radius=size / 2,
+            bgcolor=GOLD_BG,
+            border=ft.Border.all(max(1, 2 * s), GOLD),
+            alignment=ft.Alignment.CENTER,
+            content=ft.Icon(icon, size=size * 0.5, color=GOLD),
+        )
+    else:
+        visual = ft.Image(
+            src=LOCKED_IMG,
+            width=size,
+            height=size,
+            fit=ft.BoxFit.CONTAIN,
+            error_content=lock_fallback,
+        )
+
+    return ft.Column(
+        width=size,
+        spacing=4 * s,
+        tight=True,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            visual,
+            _text(
+                title,
+                12 * s,
+                NAVY if unlocked else LOCKED_FG,
+                True,
+                ft.TextAlign.CENTER,
+                max_lines=2,
+            ),
+        ],
     )

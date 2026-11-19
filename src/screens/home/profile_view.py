@@ -3,11 +3,13 @@ import flet as ft
 from ui.profile_components import (
     BLUE,
     GOLD,
-    achievement_badge,
+    NAVY,
+    SUBTEXT,
+    _text,
+    achievement_icon,
     card,
     profile_header,
     profile_title,
-    section_title,
     stat_tile,
 )
 
@@ -18,7 +20,10 @@ ASSET_PROFILE = "imagenes/My profile/"
 IMG_XP = ASSET_PROFILE + "XP.png"
 IMG_LV = ASSET_PROFILE + "LV.png"
 
-# Iconos asociados a los IDs de achievements.json.
+# Imagenes de logros (campo "icon" de achievements.json).
+ASSET_ACHIEVEMENTS = "imagenes/achievements/"
+
+# Iconos de respaldo para logros que aun no tienen imagen.
 ACHIEVEMENT_ICONS = {
     "1": ft.Icons.FLAG_ROUNDED,
     "2": ft.Icons.PSYCHOLOGY_ROUNDED,
@@ -34,12 +39,20 @@ ACHIEVEMENT_ICONS = {
     "12": ft.Icons.EMOJI_EVENTS_ROUNDED,
 }
 
+ICONS_PER_ROW = 3  # cuantos iconos por fila
+
 
 def _int(value, default=0):
     try:
         return max(0, int(value))
     except (TypeError, ValueError):
         return default
+
+
+def _achievement_image(achievement):
+    """Ruta (relativa a assets) de la imagen del logro, o None si no tiene."""
+    icon_file = achievement.get("icon")
+    return ASSET_ACHIEVEMENTS + icon_file if icon_file else None
 
 
 def construir_perfil(
@@ -83,22 +96,28 @@ def construir_perfil(
         if str(achievement.get("id")) in unlocked_ids
     )
 
-    # Dos columnas: se descuenta el padding (16*2) y el borde (2*2) de la tarjeta.
-    gap = 10 * s
+    # Ancho interno de la tarjeta (se descuenta padding y borde).
+    gap = 14 * s
     card_inner_w = inner_w - 36 * s
-    badge_w = max(100, (card_inner_w - gap) / 2 - 1)
+
+    # Tamano de cada icono: ICONS_PER_ROW por fila, con tope de 92*s.
+    icon_size = min(
+        92 * s,
+        (card_inner_w - gap * (ICONS_PER_ROW - 1)) / ICONS_PER_ROW - 1,
+    )
+    icon_size = max(56, icon_size)
 
     achievement_controls = [
-        achievement_badge(
+        achievement_icon(
             icon=ACHIEVEMENT_ICONS.get(
                 str(achievement.get("id")),
                 ft.Icons.EMOJI_EVENTS_ROUNDED,
             ),
             title=achievement.get("name", "Achievement"),
-            description=achievement.get("description", ""),
             unlocked=str(achievement.get("id")) in unlocked_ids,
-            width=badge_w,
+            size=icon_size,
             s=s,
+            image_src=_achievement_image(achievement),
         )
         for achievement in definitions
     ]
@@ -120,9 +139,32 @@ def construir_perfil(
     badges = ft.Row(
         wrap=True,
         spacing=gap,
-        run_spacing=gap,
+        run_spacing=12 * s,
         alignment=ft.MainAxisAlignment.CENTER,
+        vertical_alignment=ft.CrossAxisAlignment.START,
         controls=achievement_controls,
+    )
+
+    achievements_title = ft.Column(
+        spacing=2 * s,
+        tight=True,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            _text(
+                "My Achievements",
+                19 * s,
+                NAVY,
+                True,
+                ft.TextAlign.CENTER,
+            ),
+            _text(
+                f"{unlocked_count} / {len(definitions)}",
+                13 * s,
+                SUBTEXT,
+                True,
+                ft.TextAlign.CENTER,
+            ),
+        ],
     )
 
     controls = [
@@ -167,13 +209,11 @@ def construir_perfil(
 
         card(
             ft.Column(
-                spacing=12 * s,
+                width=card_inner_w,  # <- hace que la tarjeta ocupe todo el ancho
+                spacing=16 * s,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    section_title(
-                        "Achievements",
-                        s,
-                        f"{unlocked_count} / {len(definitions)}",
-                    ),
+                    achievements_title,
                     badges,
                 ],
             ),

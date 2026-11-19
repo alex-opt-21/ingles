@@ -4,6 +4,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[2]
 ACHIEVEMENTS_FILE = BASE_DIR / "data" / "achievements.json"
 
+# Carpeta de íconos (ajusta si tu BASE_DIR no es la raíz del proyecto)
+ASSETS_DIR = BASE_DIR / "src" / "assets" / "imagenes" / "achievements"
+LOCKED_ICON = ASSETS_DIR / "locked.png"
+DEFAULT_ICON = ASSETS_DIR / "default.png"  # opcional: respaldo para logros sin imagen
+
 MODULES = {"flashcards", "sentences", "questions", "phrases", "songs"}
 
 
@@ -18,6 +23,8 @@ class AchievementService:
         self.perfect_practices = int(data.get("perfect_practices", 0))
 
         self.achievements = self._load_achievements()
+
+    # ---------- Carga y guardado ----------
 
     def _load_achievements(self):
         try:
@@ -40,6 +47,8 @@ class AchievementService:
                 self.save_progress(email, {"achievements": data})
             except Exception as err:
                 print(f"[!] No se pudieron guardar los logros: {err}")
+
+    # ---------- Evaluación de condiciones ----------
 
     def _is_met(self, cond: dict, event: str) -> bool:
         kind = cond.get("type")
@@ -72,6 +81,36 @@ class AchievementService:
         if new:
             self._save()
         return new
+
+    # ---------- Íconos ----------
+
+    def icon_path(self, achievement: dict) -> Path:
+        """Devuelve la ruta del ícono a mostrar:
+        - bloqueado -> locked.png
+        - desbloqueado con ícono propio -> ese ícono
+        - desbloqueado sin ícono -> default.png (si existe) o locked.png
+        """
+        if achievement["id"] not in self.unlocked:
+            return LOCKED_ICON
+
+        icon = achievement.get("icon")
+        if icon:
+            path = ASSETS_DIR / icon
+            if path.exists():
+                return path
+
+        return DEFAULT_ICON if DEFAULT_ICON.exists() else LOCKED_ICON
+
+    def get_all(self) -> list[dict]:
+        """Lista lista para pintar en la UI."""
+        return [
+            {
+                **a,
+                "unlocked": a["id"] in self.unlocked,
+                "icon_path": str(self.icon_path(a)),
+            }
+            for a in self.achievements
+        ]
 
     # ---------- API pública ----------
 
