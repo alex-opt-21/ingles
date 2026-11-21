@@ -342,7 +342,20 @@
       "xp": 0,
       "completed": [],
       "active_session": null
+    },
+    "gabriel@gmail.com": {
+      "name": "gabriel",
+      "salt": "71d757654914e79ff40f7730e100c74f",
+      "hash": "ae5ffdca665b901f5f2f4e63eda180aab8fa8db37caf155a15ff7b5c7cbf0622",
+      "xp": 0,
+      "completed": [],
+      "active_session": null,
+      "achievements": {
+        "unlocked": [],
+        "completed_modules": [],
+        "perfect_practices": 0
+      },
+      "progress": {}
     }
   }
 }
-
