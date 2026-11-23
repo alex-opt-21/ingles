@@ -25,8 +25,8 @@ def exercise_microphone(
 ) -> ft.Container:
     """Boton de microfono circular (``size`` en unidades de diseno).
 
-    Normal: azul. Grabando: rojo (no clicable). Procesando: gris.
-    Deshabilitado: gris claro bloqueado (no clicable).
+    Normal: azul. Grabando: rojo con icono de stop (clicable para parar).
+    Procesando: gris (no clicable). Deshabilitado: gris claro bloqueado.
     La logica de audio vive en la vista."""
     icon_color = EXERCISE_WHITE
     if disabled:
@@ -35,11 +35,11 @@ def exercise_microphone(
     elif processing:
         color, icon, tip = PROCESSING_COLOR, ft.Icons.HOURGLASS_TOP, "Processing..."
     elif recording:
-        color, icon, tip = EXERCISE_RED, ft.Icons.GRAPHIC_EQ, "Listening..."
+        color, icon, tip = EXERCISE_RED, ft.Icons.STOP, "Tap to stop"
     else:
         color, icon, tip = EXERCISE_BLUE, ft.Icons.MIC, "Speak the answer"
 
-    clickable = not (disabled or processing or recording)
+    clickable = not (disabled or processing)
     return ft.Container(
         width=size * scale,
         height=size * scale,

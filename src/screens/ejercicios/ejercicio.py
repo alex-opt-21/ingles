@@ -1,8 +1,13 @@
 import asyncio
+import threading
+
 import flet as ft
 
 from services.ejercicios.ejercicio_service import QuizSession, format_time
-from services.ejercicios.pronunciacion_service import listen_and_check
+from services.ejercicios.pronunciacion_service import (
+    MAX_RECORD_SECONDS,
+    listen_and_check,
+)
 
 # AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
 from ui.exercises.core.exercise_choice_layout import ChoiceLayout, QUIZ_PRESET
@@ -47,8 +52,9 @@ class QuizView:
         self.mode = "quiz"       # quiz | paused | end | closed
         self._tick_id = 0
         self.sfx = SoundEffects(page)
-        self.rec_state = "idle"
+        self.rec_state = "idle"  # idle | recording | processing
         self.rec_message = None
+        self._stop_event = threading.Event()
         self._width = 440
         self._height = 844
         self._timer_label: ft.Text | None = None   # lo crea el layout
@@ -84,6 +90,7 @@ class QuizView:
         self._tick_id += 1
         self.mode = "closed"
         self.page.on_resize = None
+        self._stop_event.set()   # no dejar el microfono abierto
         self.sfx.stop()
 
     def _mount(self):
@@ -213,13 +220,32 @@ class QuizView:
         if not self.session.is_solved(ex):
             self._toast("First choose the correct answer.")
             return
+
+        # Segundo toque: detener la grabacion y procesar.
+        if self.rec_state == "recording":
+            self._stop_event.set()
+            self.rec_state = "processing"
+            self.render()
+            return
+
+        # Ignorar toques mientras procesa.
         if self.rec_state != "idle":
             return
+
+        # Primer toque: empezar a grabar (maximo MAX_RECORD_SECONDS).
+        self._stop_event = threading.Event()
         self.rec_state = "recording"
         self.rec_message = None
         self.render()
         try:
-            result = await asyncio.to_thread(listen_and_check, ex["answer"])
+            result = await asyncio.to_thread(
+                listen_and_check,
+                ex["answer"],
+                self._stop_event,
+                MAX_RECORD_SECONDS,
+            )
+            if self.mode == "closed":
+                return
             self.rec_message = result
             if result[0]:
                 self.session.mark_pronounced(ex)

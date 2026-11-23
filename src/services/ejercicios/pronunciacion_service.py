@@ -1,6 +1,7 @@
 import difflib
 import re
 import threading
+import time
 import warnings
 
 import numpy as np
@@ -10,7 +11,8 @@ import sounddevice as sd
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="sounddevice")
 
 SAMPLE_RATE = 16000
-RECORD_SECONDS = 5
+MAX_RECORD_SECONDS = 10     # límite máximo de grabación
+MIN_RECORD_SECONDS = 0.4    # evita toques accidentales dobles
 MIN_VOLUME = 300
 MODEL_SIZE = "base.en"      # "tiny.en" = más rápido, "small.en" = más preciso
 FUZZY_THRESHOLD = 0.80
@@ -49,15 +51,30 @@ def _normalize(text):
     return re.sub(r"[^a-z\s]", "", text.lower()).strip()
 
 
-def _record():
-    audio = sd.rec(
-        int(RECORD_SECONDS * SAMPLE_RATE),
+def _record(stop_event=None, max_seconds=MAX_RECORD_SECONDS):
+    """Graba hasta que stop_event se active o pasen max_seconds."""
+    chunks = []
+
+    def callback(indata, frames, time_info, status):
+        chunks.append(indata.copy())
+
+    start = time.monotonic()
+    with sd.InputStream(
         samplerate=SAMPLE_RATE,
         channels=1,
         dtype="int16",
-    )
-    sd.wait()
-    return audio
+        callback=callback,
+    ):
+        while time.monotonic() - start < max_seconds:
+            if stop_event is not None:
+                if stop_event.wait(0.05):
+                    break
+            else:
+                time.sleep(0.05)
+
+    if not chunks:
+        return np.zeros((0, 1), dtype="int16")
+    return np.concatenate(chunks)
 
 
 def _matches(heard, target):
@@ -70,12 +87,15 @@ def _matches(heard, target):
     return False
 
 
-def listen_and_check(expected):
-    """Graba, transcribe en local (gratis) y compara. Devuelve (ok, heard)."""
-    audio = _record()
+def listen_and_check(expected, stop_event=None, max_seconds=MAX_RECORD_SECONDS):
+    """Graba (hasta 2º toque o max_seconds), transcribe en local y compara.
+    Devuelve (ok, heard)."""
+    audio = _record(stop_event, max_seconds)
 
-    # Si no se habló, no se transcribe: evita que Whisper invente texto
-    # ("Thank you.") a partir del silencio.
+    # Muy corto o en silencio: no transcribir (Whisper inventaría texto
+    # como "Thank you." a partir del silencio).
+    if audio.size < MIN_RECORD_SECONDS * SAMPLE_RATE:
+        return False, ""
     if np.abs(audio).max() < MIN_VOLUME:
         return False, ""
 
