@@ -594,6 +594,7 @@ def main(page: ft.Page):
     # ---------- LOGOUT ----------
     def logout(e=None):
         close_current()
+        auth.logout()
 
         state["user"] = None
         state["achievements"] = None
@@ -633,7 +634,15 @@ def main(page: ft.Page):
         return None
 
     # ---------- START ----------
-    go_welcome()
+
+    saved_user = auth.restore_session()
+
+    if saved_user:
+        state["user"] = saved_user
+        init_achievements()
+        go_home()
+    else:
+        go_welcome()
 
 
 if __name__ == "__main__":

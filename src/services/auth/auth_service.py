@@ -14,7 +14,7 @@ from typing import Optional
 BASE_DIR = Path(__file__).resolve().parent
 STORAGE_DIR = BASE_DIR / "storage"
 USERS_FILE = STORAGE_DIR / "users.json"
-
+SESSION_FILE= STORAGE_DIR / "session.json"
 
 # ---------- CONFIGURATION ----------
 
@@ -61,6 +61,65 @@ def _save(data: dict) -> None:
         print(f"[ERROR] No se pudo guardar users.json: {err}")
         raise
 
+
+# ---------- PERSISTENT LOCAL SESSION ----------
+
+def _save_session(email: str) -> str:
+    """Genera y guarda un token local para recordar al usuario."""
+
+    STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+    token = secrets.token_urlsafe(32)
+
+    session = {
+        "email": email,
+        "token": token,
+    }
+
+    tmp = STORAGE_DIR / "session.tmp"
+
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(session, f, ensure_ascii=False, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+
+    os.replace(tmp, SESSION_FILE)
+
+    return token
+
+
+def restore_session() -> Optional[dict]:
+    """Recupera la sesión del usuario al abrir la aplicación."""
+
+    try:
+        with SESSION_FILE.open("r", encoding="utf-8") as f:
+            session = json.load(f)
+
+        email = session.get("email", "").strip().lower()
+        token = session.get("token", "")
+
+        if not email or not token:
+            return None
+
+        user = _load()["users"].get(email)
+
+        if not user or not user.get("active", True):
+            logout()
+            return None
+
+        return _public(email, user)
+
+    except (FileNotFoundError, json.JSONDecodeError, AttributeError):
+        return None
+
+
+def logout() -> None:
+    """Cierra la sesión y elimina el token local."""
+
+    try:
+        SESSION_FILE.unlink(missing_ok=True)
+    except OSError as error:
+        print(f"[ERROR] No se pudo cerrar la sesión: {error}")
 
 # ---------- PASSWORD SECURITY ----------
 
@@ -134,9 +193,16 @@ def register(name: str, email: str, password: str, confirm: str):
 
     except OSError:
         return False, "No se pudo guardar la cuenta."
+    try:
+        token = _save_session(email)
+    except OSError:
+        return False, "La cuenta se creó, pero no se pudo guardar la sesión."
 
-    return True, _public(email, data["users"][email])
+    resultado = _public(email, data["users"][email])
+    resultado["token"] = token
 
+    return True, resultado
+    
 
 # ---------- LOGIN ----------
 
@@ -160,7 +226,15 @@ def login(email: str, password: str):
     if not hmac.compare_digest(expected, given):
         return False, "Correo o contraseña incorrectos."
 
-    return True, _public(email, user)
+    try:
+       token = _save_session(email)
+    except OSError:
+       return False, "No se pudo guardar la sesión local."
+
+    resultado = _public(email, user)
+    resultado["token"] = token
+
+    return True, resultado
 
 
 # ---------- GET USER ----------
