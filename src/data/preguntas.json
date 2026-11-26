@@ -5,10 +5,14 @@
       "scene": "cantar",
       "question": "What does the girl do?",
       "answer": "She sings a song.",
-      "options": ["She sings a song.", "She cooks dinner.", "She plays soccer."],
+      "options": [
+        "She sings a song.",
+        "She cooks dinner.",
+        "She plays soccer."
+      ],
       "hint": "La niña canta una canción.",
       "image": "imagenes/questions/Cantar.png",
-      "audio": "",
+      "audio": "audio/questions/she_sings_a_song_ecc9bdaed2.mp3",
       "tense": "present_simple"
     },
     {
@@ -16,10 +20,14 @@
       "scene": "cocina",
       "question": "What does the chef do?",
       "answer": "He cooks food.",
-      "options": ["He cooks food.", "He paints a picture.", "He catches fish."],
+      "options": [
+        "He cooks food.",
+        "He paints a picture.",
+        "He catches fish."
+      ],
       "hint": "El chef cocina comida.",
       "image": "imagenes/questions/Cocina.png",
-      "audio": "",
+      "audio": "audio/questions/he_cooks_food_94f5b4da31.mp3",
       "tense": "present_simple"
     },
     {
@@ -27,10 +35,14 @@
       "scene": "construccion",
       "question": "What does the boy do?",
       "answer": "He builds a house.",
-      "options": ["He builds a house.", "He treats a patient.", "He waters flowers."],
+      "options": [
+        "He builds a house.",
+        "He treats a patient.",
+        "He waters flowers."
+      ],
       "hint": "El niño construye una casa.",
       "image": "imagenes/questions/Construccion.png",
-      "audio": "",
+      "audio": "audio/questions/he_builds_a_house_850c25aa65.mp3",
       "tense": "present_simple"
     },
     {
@@ -38,10 +50,14 @@
       "scene": "doctora",
       "question": "What does the doctor do?",
       "answer": "She helps sick people.",
-      "options": ["She helps sick people.", "She bakes cakes.", "She plays soccer."],
+      "options": [
+        "She helps sick people.",
+        "She bakes cakes.",
+        "She plays soccer."
+      ],
       "hint": "La doctora ayuda a las personas enfermas.",
       "image": "imagenes/questions/Doctora.png",
-      "audio": "",
+      "audio": "audio/questions/she_helps_sick_people_74a98db492.mp3",
       "tense": "present_simple"
     },
     {
@@ -49,10 +65,14 @@
       "scene": "estudiar",
       "question": "What does the girl do?",
       "answer": "She studies at her desk.",
-      "options": ["She studies at her desk.", "She fishes in a lake.", "She sings on a stage."],
+      "options": [
+        "She studies at her desk.",
+        "She fishes in a lake.",
+        "She sings on a stage."
+      ],
       "hint": "La niña estudia en su escritorio.",
       "image": "imagenes/questions/Estudiar.png",
-      "audio": "",
+      "audio": "audio/questions/she_studies_at_her_desk_5cd7081f3a.mp3",
       "tense": "present_simple"
     },
     {
@@ -60,10 +80,14 @@
       "scene": "fiesta",
       "question": "What does the boy do at the party?",
       "answer": "He celebrates his birthday.",
-      "options": ["He celebrates his birthday.", "He builds a house.", "He plants flowers."],
+      "options": [
+        "He celebrates his birthday.",
+        "He builds a house.",
+        "He plants flowers."
+      ],
       "hint": "El niño celebra su cumpleaños.",
       "image": "imagenes/questions/Fiesta.png",
-      "audio": "",
+      "audio": "audio/questions/he_celebrates_his_birthday_e14234e82c.mp3",
       "tense": "present_simple"
     },
     {
@@ -71,10 +95,14 @@
       "scene": "futbol",
       "question": "What does the boy do?",
       "answer": "He plays soccer.",
-      "options": ["He plays soccer.", "He paints pictures.", "He cooks food."],
+      "options": [
+        "He plays soccer.",
+        "He paints pictures.",
+        "He cooks food."
+      ],
       "hint": "El niño juega fútbol.",
       "image": "imagenes/questions/Futbol.png",
-      "audio": "",
+      "audio": "audio/questions/he_plays_soccer_1d1afdda8a.mp3",
       "tense": "present_simple"
     },
     {
@@ -82,10 +110,14 @@
       "scene": "jardin",
       "question": "What does the child do in the garden?",
       "answer": "The child takes care of the flowers.",
-      "options": ["The child takes care of the flowers.", "The child catches fish.", "The child studies English."],
+      "options": [
+        "The child takes care of the flowers.",
+        "The child catches fish.",
+        "The child studies English."
+      ],
       "hint": "El niño cuida las flores.",
       "image": "imagenes/questions/Jardin.png",
-      "audio": "",
+      "audio": "audio/questions/the_child_takes_care_of_the_flowers_75ce27255c.mp3",
       "tense": "present_simple"
     },
     {
@@ -93,10 +125,14 @@
       "scene": "niño",
       "question": "What does the boy do outside?",
       "answer": "He walks in the park.",
-      "options": ["He walks in the park.", "He bakes cookies.", "He visits a doctor."],
+      "options": [
+        "He walks in the park.",
+        "He bakes cookies.",
+        "He visits a doctor."
+      ],
       "hint": "El niño camina por el parque.",
       "image": "imagenes/questions/Niño.png",
-      "audio": "",
+      "audio": "audio/questions/he_walks_in_the_park_9d482cb2c9.mp3",
       "tense": "present_simple"
     },
     {
@@ -104,10 +140,14 @@
       "scene": "paisaje",
       "question": "What does the girl do in nature?",
       "answer": "She enjoys the beautiful landscape.",
-      "options": ["She enjoys the beautiful landscape.", "She cooks in the kitchen.", "She plays at a party."],
+      "options": [
+        "She enjoys the beautiful landscape.",
+        "She cooks in the kitchen.",
+        "She plays at a party."
+      ],
       "hint": "La niña disfruta del hermoso paisaje.",
       "image": "imagenes/questions/Paisaje.png",
-      "audio": "",
+      "audio": "audio/questions/she_enjoys_the_beautiful_landscape_b10b2dbb23.mp3",
       "tense": "present_simple"
     },
     {
@@ -115,10 +155,14 @@
       "scene": "pescar",
       "question": "What does the boy do?",
       "answer": "He catches fish.",
-      "options": ["He catches fish.", "He sings songs.", "He builds houses."],
+      "options": [
+        "He catches fish.",
+        "He sings songs.",
+        "He builds houses."
+      ],
       "hint": "El niño pesca.",
       "image": "imagenes/questions/Pescar.png",
-      "audio": "",
+      "audio": "audio/questions/he_catches_fish_a400caed9c.mp3",
       "tense": "present_simple"
     },
     {
@@ -126,10 +170,14 @@
       "scene": "pintar",
       "question": "What do the children do?",
       "answer": "They paint a picture.",
-      "options": ["They paint a picture.", "They play soccer.", "They go fishing."],
+      "options": [
+        "They paint a picture.",
+        "They play soccer.",
+        "They go fishing."
+      ],
       "hint": "Los niños pintan un cuadro.",
       "image": "imagenes/questions/Pintar.png",
-      "audio": "",
+      "audio": "audio/questions/they_paint_a_picture_9567450881.mp3",
       "tense": "present_simple"
     },
     {
@@ -137,10 +185,14 @@
       "scene": "playa",
       "question": "What does the girl do at the beach?",
       "answer": "She enjoys the beach.",
-      "options": ["She enjoys the beach.", "She studies at school.", "She builds a house."],
+      "options": [
+        "She enjoys the beach.",
+        "She studies at school.",
+        "She builds a house."
+      ],
       "hint": "La niña disfruta de la playa.",
       "image": "imagenes/questions/Playa.png",
-      "audio": "",
+      "audio": "audio/questions/she_enjoys_the_beach_af03764909.mp3",
       "tense": "present_simple"
     },
     {
@@ -148,332 +200,29 @@
       "scene": "reposteria",
       "question": "What does the girl do?",
       "answer": "She bakes cookies.",
-      "options": ["She bakes cookies.", "She catches fish.", "She plays soccer."],
+      "options": [
+        "She bakes cookies.",
+        "She catches fish.",
+        "She plays soccer."
+      ],
       "hint": "La niña prepara galletas.",
       "image": "imagenes/questions/Reposteria.png",
-      "audio": "",
+      "audio": "audio/questions/she_bakes_cookies_d7c89d2829.mp3",
       "tense": "present_simple"
     },
-
-    {
-      "id": "past_simple-01",
-      "scene": "cantar",
-      "question": "What did the girl do?",
-      "answer": "She sang a song.",
-      "options": ["She sang a song.", "She cooked dinner.", "She played soccer."],
-      "hint": "La niña cantó una canción.",
-      "image": "imagenes/questions/Cantar.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-02",
-      "scene": "cocina",
-      "question": "What did the chef do?",
-      "answer": "He cooked food.",
-      "options": ["He cooked food.", "He painted a picture.", "He caught fish."],
-      "hint": "El chef cocinó comida.",
-      "image": "imagenes/questions/Cocina.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-03",
-      "scene": "construccion",
-      "question": "What did the boy do?",
-      "answer": "He built a house.",
-      "options": ["He built a house.", "He treated a patient.", "He watered flowers."],
-      "hint": "El niño construyó una casa.",
-      "image": "imagenes/questions/Construccion.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-04",
-      "scene": "doctora",
-      "question": "What did the doctor do?",
-      "answer": "She helped a patient.",
-      "options": ["She helped a patient.", "She baked a cake.", "She played soccer."],
-      "hint": "La doctora ayudó a un paciente.",
-      "image": "imagenes/questions/Doctora.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-05",
-      "scene": "estudiar",
-      "question": "What did the girl do?",
-      "answer": "She studied at her desk.",
-      "options": ["She studied at her desk.", "She fished in a lake.", "She sang on a stage."],
-      "hint": "La niña estudió en su escritorio.",
-      "image": "imagenes/questions/Estudiar.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-06",
-      "scene": "fiesta",
-      "question": "What did the boy do at the party?",
-      "answer": "He celebrated his birthday.",
-      "options": ["He celebrated his birthday.", "He built a house.", "He planted flowers."],
-      "hint": "El niño celebró su cumpleaños.",
-      "image": "imagenes/questions/Fiesta.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-07",
-      "scene": "futbol",
-      "question": "What did the boy do?",
-      "answer": "He played soccer.",
-      "options": ["He played soccer.", "He painted pictures.", "He cooked food."],
-      "hint": "El niño jugó fútbol.",
-      "image": "imagenes/questions/Futbol.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-08",
-      "scene": "jardin",
-      "question": "What did the child do in the garden?",
-      "answer": "The child took care of the flowers.",
-      "options": ["The child took care of the flowers.", "The child caught fish.", "The child studied English."],
-      "hint": "El niño cuidó las flores.",
-      "image": "imagenes/questions/Jardin.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-09",
-      "scene": "niño",
-      "question": "What did the boy do outside?",
-      "answer": "He walked in the park.",
-      "options": ["He walked in the park.", "He baked cookies.", "He visited a doctor."],
-      "hint": "El niño caminó por el parque.",
-      "image": "imagenes/questions/Niño.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-10",
-      "scene": "paisaje",
-      "question": "What did the girl do in nature?",
-      "answer": "She enjoyed the beautiful landscape.",
-      "options": ["She enjoyed the beautiful landscape.", "She cooked in the kitchen.", "She played at a party."],
-      "hint": "La niña disfrutó del hermoso paisaje.",
-      "image": "imagenes/questions/Paisaje.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-12",
-      "scene": "pescar",
-      "question": "What did the boy do?",
-      "answer": "He caught fish.",
-      "options": ["He caught fish.", "He sang songs.", "He built houses."],
-      "hint": "El niño pescó.",
-      "image": "imagenes/questions/Pescar.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-13",
-      "scene": "pintar",
-      "question": "What did the children do?",
-      "answer": "They painted a picture.",
-      "options": ["They painted a picture.", "They played soccer.", "They went fishing."],
-      "hint": "Los niños pintaron un cuadro.",
-      "image": "imagenes/questions/Pintar.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-14",
-      "scene": "playa",
-      "question": "What did the girl do at the beach?",
-      "answer": "She enjoyed the beach.",
-      "options": ["She enjoyed the beach.", "She studied at school.", "She built a house."],
-      "hint": "La niña disfrutó de la playa.",
-      "image": "imagenes/questions/Playa.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-    {
-      "id": "past_simple-15",
-      "scene": "reposteria",
-      "question": "What did the girl do?",
-      "answer": "She baked cookies.",
-      "options": ["She baked cookies.", "She caught fish.", "She played soccer."],
-      "hint": "La niña preparó galletas.",
-      "image": "imagenes/questions/Reposteria.png",
-      "audio": "",
-      "tense": "past_simple"
-    },
-
-    {
-      "id": "future_simple-01",
-      "scene": "cantar",
-      "question": "What will the girl do?",
-      "answer": "She will sing a song.",
-      "options": ["She will sing a song.", "She will cook dinner.", "She will play soccer."],
-      "hint": "La niña cantará una canción.",
-      "image": "imagenes/questions/Cantar.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-02",
-      "scene": "cocina",
-      "question": "What will the chef do?",
-      "answer": "He will cook food.",
-      "options": ["He will cook food.", "He will paint a picture.", "He will catch fish."],
-      "hint": "El chef cocinará comida.",
-      "image": "imagenes/questions/Cocina.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-03",
-      "scene": "construccion",
-      "question": "What will the boy do?",
-      "answer": "He will build a house.",
-      "options": ["He will build a house.", "He will treat a patient.", "He will water flowers."],
-      "hint": "El niño construirá una casa.",
-      "image": "imagenes/questions/Construccion.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-04",
-      "scene": "doctora",
-      "question": "What will the doctor do?",
-      "answer": "She will help a patient.",
-      "options": ["She will help a patient.", "She will bake a cake.", "She will play soccer."],
-      "hint": "La doctora ayudará a un paciente.",
-      "image": "imagenes/questions/Doctora.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-05",
-      "scene": "estudiar",
-      "question": "What will the girl do?",
-      "answer": "She will study at her desk.",
-      "options": ["She will study at her desk.", "She will fish in a lake.", "She will sing on a stage."],
-      "hint": "La niña estudiará en su escritorio.",
-      "image": "imagenes/questions/Estudiar.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-06",
-      "scene": "fiesta",
-      "question": "What will the boy do at the party?",
-      "answer": "He will celebrate his birthday.",
-      "options": ["He will celebrate his birthday.", "He will build a house.", "He will plant flowers."],
-      "hint": "El niño celebrará su cumpleaños.",
-      "image": "imagenes/questions/Fiesta.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-07",
-      "scene": "futbol",
-      "question": "What will the boy do?",
-      "answer": "He will play soccer.",
-      "options": ["He will play soccer.", "He will paint pictures.", "He will cook food."],
-      "hint": "El niño jugará fútbol.",
-      "image": "imagenes/questions/Futbol.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-08",
-      "scene": "jardin",
-      "question": "What will the child do in the garden?",
-      "answer": "The child will take care of the flowers.",
-      "options": ["The child will take care of the flowers.", "The child will catch fish.", "The child will study English."],
-      "hint": "El niño cuidará las flores.",
-      "image": "imagenes/questions/Jardin.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-09",
-      "scene": "niño",
-      "question": "What will the boy do outside?",
-      "answer": "He will walk in the park.",
-      "options": ["He will walk in the park.", "He will bake cookies.", "He will visit a doctor."],
-      "hint": "El niño caminará por el parque.",
-      "image": "imagenes/questions/Niño.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-10",
-      "scene": "paisaje",
-      "question": "What will the girl do in nature?",
-      "answer": "She will enjoy the beautiful landscape.",
-      "options": ["She will enjoy the beautiful landscape.", "She will cook in the kitchen.", "She will play at a party."],
-      "hint": "La niña disfrutará del hermoso paisaje.",
-      "image": "imagenes/questions/Paisaje.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-12",
-      "scene": "pescar",
-      "question": "What will the boy do?",
-      "answer": "He will catch fish.",
-      "options": ["He will catch fish.", "He will sing songs.", "He will build houses."],
-      "hint": "El niño pescará.",
-      "image": "imagenes/questions/Pescar.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-13",
-      "scene": "pintar",
-      "question": "What will the children do?",
-      "answer": "They will paint a picture.",
-      "options": ["They will paint a picture.", "They will play soccer.", "They will go fishing."],
-      "hint": "Los niños pintarán un cuadro.",
-      "image": "imagenes/questions/Pintar.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-14",
-      "scene": "playa",
-      "question": "What will the girl do at the beach?",
-      "answer": "She will enjoy the beach.",
-      "options": ["She will enjoy the beach.", "She will study at school.", "She will build a house."],
-      "hint": "La niña disfrutará de la playa.",
-      "image": "imagenes/questions/Playa.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-    {
-      "id": "future_simple-15",
-      "scene": "reposteria",
-      "question": "What will the girl do?",
-      "answer": "She will bake cookies.",
-      "options": ["She will bake cookies.", "She will catch fish.", "She will play soccer."],
-      "hint": "La niña preparará galletas.",
-      "image": "imagenes/questions/Reposteria.png",
-      "audio": "",
-      "tense": "future_simple"
-    },
-
     {
       "id": "present_continuous-01",
       "scene": "cantar",
       "question": "What is the girl doing?",
       "answer": "She is singing a song.",
-      "options": ["She is singing a song.", "She is cooking dinner.", "She is playing soccer."],
+      "options": [
+        "She is singing a song.",
+        "She is cooking dinner.",
+        "She is playing soccer."
+      ],
       "hint": "La niña está cantando una canción.",
       "image": "imagenes/questions/Cantar.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_singing_a_song_3e395a7077.mp3",
       "tense": "present_continuous"
     },
     {
@@ -481,10 +230,14 @@
       "scene": "cocina",
       "question": "What is the chef doing?",
       "answer": "He is cooking food.",
-      "options": ["He is cooking food.", "He is painting a picture.", "He is catching fish."],
+      "options": [
+        "He is cooking food.",
+        "He is painting a picture.",
+        "He is catching fish."
+      ],
       "hint": "El chef está cocinando comida.",
       "image": "imagenes/questions/Cocina.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_cooking_food_0dae675008.mp3",
       "tense": "present_continuous"
     },
     {
@@ -492,10 +245,14 @@
       "scene": "construccion",
       "question": "What is the boy doing?",
       "answer": "He is building a house.",
-      "options": ["He is building a house.", "He is treating a patient.", "He is watering flowers."],
+      "options": [
+        "He is building a house.",
+        "He is treating a patient.",
+        "He is watering flowers."
+      ],
       "hint": "El niño está construyendo una casa.",
       "image": "imagenes/questions/Construccion.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_building_a_house_eeeb30fded.mp3",
       "tense": "present_continuous"
     },
     {
@@ -503,10 +260,14 @@
       "scene": "doctora",
       "question": "What is the doctor doing?",
       "answer": "She is helping a patient.",
-      "options": ["She is helping a patient.", "She is baking a cake.", "She is playing soccer."],
+      "options": [
+        "She is helping a patient.",
+        "She is baking a cake.",
+        "She is playing soccer."
+      ],
       "hint": "La doctora está ayudando a un paciente.",
       "image": "imagenes/questions/Doctora.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_helping_a_patient_dfbaa6804e.mp3",
       "tense": "present_continuous"
     },
     {
@@ -514,10 +275,14 @@
       "scene": "estudiar",
       "question": "What is the girl doing?",
       "answer": "She is studying at her desk.",
-      "options": ["She is studying at her desk.", "She is fishing in a lake.", "She is singing on a stage."],
+      "options": [
+        "She is studying at her desk.",
+        "She is fishing in a lake.",
+        "She is singing on a stage."
+      ],
       "hint": "La niña está estudiando en su escritorio.",
       "image": "imagenes/questions/Estudiar.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_studying_at_her_desk_b500f8f7ce.mp3",
       "tense": "present_continuous"
     },
     {
@@ -525,10 +290,14 @@
       "scene": "fiesta",
       "question": "What is the boy doing at the party?",
       "answer": "He is celebrating his birthday.",
-      "options": ["He is celebrating his birthday.", "He is building a house.", "He is planting flowers."],
+      "options": [
+        "He is celebrating his birthday.",
+        "He is building a house.",
+        "He is planting flowers."
+      ],
       "hint": "El niño está celebrando su cumpleaños.",
       "image": "imagenes/questions/Fiesta.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_celebrating_his_birthday_b45d96e304.mp3",
       "tense": "present_continuous"
     },
     {
@@ -536,10 +305,14 @@
       "scene": "futbol",
       "question": "What is the boy doing?",
       "answer": "He is playing soccer.",
-      "options": ["He is playing soccer.", "He is painting pictures.", "He is cooking food."],
+      "options": [
+        "He is playing soccer.",
+        "He is painting pictures.",
+        "He is cooking food."
+      ],
       "hint": "El niño está jugando fútbol.",
       "image": "imagenes/questions/Futbol.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_playing_soccer_8859021a9c.mp3",
       "tense": "present_continuous"
     },
     {
@@ -547,10 +320,14 @@
       "scene": "jardin",
       "question": "What is the child doing in the garden?",
       "answer": "The child is taking care of the flowers.",
-      "options": ["The child is taking care of the flowers.", "The child is catching fish.", "The child is studying English."],
+      "options": [
+        "The child is taking care of the flowers.",
+        "The child is catching fish.",
+        "The child is studying English."
+      ],
       "hint": "El niño está cuidando las flores.",
       "image": "imagenes/questions/Jardin.png",
-      "audio": "",
+      "audio": "audio/questions/the_child_is_taking_care_of_the_flowers_deeb459ebc.mp3",
       "tense": "present_continuous"
     },
     {
@@ -558,10 +335,14 @@
       "scene": "niño",
       "question": "What is the boy doing outside?",
       "answer": "He is walking in the park.",
-      "options": ["He is walking in the park.", "He is baking cookies.", "He is visiting a doctor."],
+      "options": [
+        "He is walking in the park.",
+        "He is baking cookies.",
+        "He is visiting a doctor."
+      ],
       "hint": "El niño está caminando por el parque.",
       "image": "imagenes/questions/Niño.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_walking_in_the_park_e6c8ea876b.mp3",
       "tense": "present_continuous"
     },
     {
@@ -569,10 +350,14 @@
       "scene": "paisaje",
       "question": "What is the girl doing in nature?",
       "answer": "She is enjoying the beautiful landscape.",
-      "options": ["She is enjoying the beautiful landscape.", "She is cooking in the kitchen.", "She is playing at a party."],
+      "options": [
+        "She is enjoying the beautiful landscape.",
+        "She is cooking in the kitchen.",
+        "She is playing at a party."
+      ],
       "hint": "La niña está disfrutando del hermoso paisaje.",
       "image": "imagenes/questions/Paisaje.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_enjoying_the_beautiful_landscape_39aa7db857.mp3",
       "tense": "present_continuous"
     },
     {
@@ -580,10 +365,14 @@
       "scene": "pescar",
       "question": "What is the boy doing?",
       "answer": "He is catching fish.",
-      "options": ["He is catching fish.", "He is singing songs.", "He is building houses."],
+      "options": [
+        "He is catching fish.",
+        "He is singing songs.",
+        "He is building houses."
+      ],
       "hint": "El niño está pescando.",
       "image": "imagenes/questions/Pescar.png",
-      "audio": "",
+      "audio": "audio/questions/he_is_catching_fish_a7eec530d5.mp3",
       "tense": "present_continuous"
     },
     {
@@ -591,10 +380,14 @@
       "scene": "pintar",
       "question": "What are the children doing?",
       "answer": "They are painting a picture.",
-      "options": ["They are painting a picture.", "They are playing soccer.", "They are going fishing."],
+      "options": [
+        "They are painting a picture.",
+        "They are playing soccer.",
+        "They are going fishing."
+      ],
       "hint": "Los niños están pintando un cuadro.",
       "image": "imagenes/questions/Pintar.png",
-      "audio": "",
+      "audio": "audio/questions/they_are_painting_a_picture_1ef73d92be.mp3",
       "tense": "present_continuous"
     },
     {
@@ -602,10 +395,14 @@
       "scene": "playa",
       "question": "What is the girl doing at the beach?",
       "answer": "She is enjoying the beach.",
-      "options": ["She is enjoying the beach.", "She is studying at school.", "She is building a house."],
+      "options": [
+        "She is enjoying the beach.",
+        "She is studying at school.",
+        "She is building a house."
+      ],
       "hint": "La niña está disfrutando de la playa.",
       "image": "imagenes/questions/Playa.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_enjoying_the_beach_2e5a6bd363.mp3",
       "tense": "present_continuous"
     },
     {
@@ -613,11 +410,435 @@
       "scene": "reposteria",
       "question": "What is the girl doing?",
       "answer": "She is baking cookies.",
-      "options": ["She is baking cookies.", "She is catching fish.", "She is playing soccer."],
+      "options": [
+        "She is baking cookies.",
+        "She is catching fish.",
+        "She is playing soccer."
+      ],
       "hint": "La niña está preparando galletas.",
       "image": "imagenes/questions/Reposteria.png",
-      "audio": "",
+      "audio": "audio/questions/she_is_baking_cookies_0c717862c5.mp3",
       "tense": "present_continuous"
+    },
+    {
+      "id": "past_simple-01",
+      "scene": "cantar",
+      "question": "What did the girl do?",
+      "answer": "She sang a song.",
+      "options": [
+        "She sang a song.",
+        "She cooked dinner.",
+        "She played soccer."
+      ],
+      "hint": "La niña cantó una canción.",
+      "image": "imagenes/questions/Cantar.png",
+      "audio": "audio/questions/she_sang_a_song_f0b46e64de.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-02",
+      "scene": "cocina",
+      "question": "What did the chef do?",
+      "answer": "He cooked food.",
+      "options": [
+        "He cooked food.",
+        "He painted a picture.",
+        "He caught fish."
+      ],
+      "hint": "El chef cocinó comida.",
+      "image": "imagenes/questions/Cocina.png",
+      "audio": "audio/questions/he_cooked_food_dcb70d67ca.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-03",
+      "scene": "construccion",
+      "question": "What did the boy do?",
+      "answer": "He built a house.",
+      "options": [
+        "He built a house.",
+        "He treated a patient.",
+        "He watered flowers."
+      ],
+      "hint": "El niño construyó una casa.",
+      "image": "imagenes/questions/Construccion.png",
+      "audio": "audio/questions/he_built_a_house_56ee8c0c43.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-04",
+      "scene": "doctora",
+      "question": "What did the doctor do?",
+      "answer": "She helped a patient.",
+      "options": [
+        "She helped a patient.",
+        "She baked a cake.",
+        "She played soccer."
+      ],
+      "hint": "La doctora ayudó a un paciente.",
+      "image": "imagenes/questions/Doctora.png",
+      "audio": "audio/questions/she_helped_a_patient_3d7d3aad75.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-05",
+      "scene": "estudiar",
+      "question": "What did the girl do?",
+      "answer": "She studied at her desk.",
+      "options": [
+        "She studied at her desk.",
+        "She fished in a lake.",
+        "She sang on a stage."
+      ],
+      "hint": "La niña estudió en su escritorio.",
+      "image": "imagenes/questions/Estudiar.png",
+      "audio": "audio/questions/she_studied_at_her_desk_bf03cfb758.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-06",
+      "scene": "fiesta",
+      "question": "What did the boy do at the party?",
+      "answer": "He celebrated his birthday.",
+      "options": [
+        "He celebrated his birthday.",
+        "He built a house.",
+        "He planted flowers."
+      ],
+      "hint": "El niño celebró su cumpleaños.",
+      "image": "imagenes/questions/Fiesta.png",
+      "audio": "audio/questions/he_celebrated_his_birthday_3089b96f1b.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-07",
+      "scene": "futbol",
+      "question": "What did the boy do?",
+      "answer": "He played soccer.",
+      "options": [
+        "He played soccer.",
+        "He painted pictures.",
+        "He cooked food."
+      ],
+      "hint": "El niño jugó fútbol.",
+      "image": "imagenes/questions/Futbol.png",
+      "audio": "audio/questions/he_played_soccer_e64992ea58.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-08",
+      "scene": "jardin",
+      "question": "What did the child do in the garden?",
+      "answer": "The child took care of the flowers.",
+      "options": [
+        "The child took care of the flowers.",
+        "The child caught fish.",
+        "The child studied English."
+      ],
+      "hint": "El niño cuidó las flores.",
+      "image": "imagenes/questions/Jardin.png",
+      "audio": "audio/questions/the_child_took_care_of_the_flowers_2d73a9917b.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-09",
+      "scene": "niño",
+      "question": "What did the boy do outside?",
+      "answer": "He walked in the park.",
+      "options": [
+        "He walked in the park.",
+        "He baked cookies.",
+        "He visited a doctor."
+      ],
+      "hint": "El niño caminó por el parque.",
+      "image": "imagenes/questions/Niño.png",
+      "audio": "audio/questions/he_walked_in_the_park_267717e547.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-10",
+      "scene": "paisaje",
+      "question": "What did the girl do in nature?",
+      "answer": "She enjoyed the beautiful landscape.",
+      "options": [
+        "She enjoyed the beautiful landscape.",
+        "She cooked in the kitchen.",
+        "She played at a party."
+      ],
+      "hint": "La niña disfrutó del hermoso paisaje.",
+      "image": "imagenes/questions/Paisaje.png",
+      "audio": "audio/questions/she_enjoyed_the_beautiful_landscape_5acc7714ca.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-12",
+      "scene": "pescar",
+      "question": "What did the boy do?",
+      "answer": "He caught fish.",
+      "options": [
+        "He caught fish.",
+        "He sang songs.",
+        "He built houses."
+      ],
+      "hint": "El niño pescó.",
+      "image": "imagenes/questions/Pescar.png",
+      "audio": "audio/questions/he_caught_fish_2336debc0b.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-13",
+      "scene": "pintar",
+      "question": "What did the children do?",
+      "answer": "They painted a picture.",
+      "options": [
+        "They painted a picture.",
+        "They played soccer.",
+        "They went fishing."
+      ],
+      "hint": "Los niños pintaron un cuadro.",
+      "image": "imagenes/questions/Pintar.png",
+      "audio": "audio/questions/they_painted_a_picture_3220a0c5a0.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-14",
+      "scene": "playa",
+      "question": "What did the girl do at the beach?",
+      "answer": "She enjoyed the beach.",
+      "options": [
+        "She enjoyed the beach.",
+        "She studied at school.",
+        "She built a house."
+      ],
+      "hint": "La niña disfrutó de la playa.",
+      "image": "imagenes/questions/Playa.png",
+      "audio": "audio/questions/she_enjoyed_the_beach_1490d0d0b2.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "past_simple-15",
+      "scene": "reposteria",
+      "question": "What did the girl do?",
+      "answer": "She baked cookies.",
+      "options": [
+        "She baked cookies.",
+        "She caught fish.",
+        "She played soccer."
+      ],
+      "hint": "La niña preparó galletas.",
+      "image": "imagenes/questions/Reposteria.png",
+      "audio": "audio/questions/she_baked_cookies_e610bf544a.mp3",
+      "tense": "past_simple"
+    },
+    {
+      "id": "future_simple-01",
+      "scene": "cantar",
+      "question": "What will the girl do?",
+      "answer": "She will sing a song.",
+      "options": [
+        "She will sing a song.",
+        "She will cook dinner.",
+        "She will play soccer."
+      ],
+      "hint": "La niña cantará una canción.",
+      "image": "imagenes/questions/Cantar.png",
+      "audio": "audio/questions/she_will_sing_a_song_bea323ee32.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-02",
+      "scene": "cocina",
+      "question": "What will the chef do?",
+      "answer": "He will cook food.",
+      "options": [
+        "He will cook food.",
+        "He will paint a picture.",
+        "He will catch fish."
+      ],
+      "hint": "El chef cocinará comida.",
+      "image": "imagenes/questions/Cocina.png",
+      "audio": "audio/questions/he_will_cook_food_a29edf573a.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-03",
+      "scene": "construccion",
+      "question": "What will the boy do?",
+      "answer": "He will build a house.",
+      "options": [
+        "He will build a house.",
+        "He will treat a patient.",
+        "He will water flowers."
+      ],
+      "hint": "El niño construirá una casa.",
+      "image": "imagenes/questions/Construccion.png",
+      "audio": "audio/questions/he_will_build_a_house_f9ebe6243c.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-04",
+      "scene": "doctora",
+      "question": "What will the doctor do?",
+      "answer": "She will help a patient.",
+      "options": [
+        "She will help a patient.",
+        "She will bake a cake.",
+        "She will play soccer."
+      ],
+      "hint": "La doctora ayudará a un paciente.",
+      "image": "imagenes/questions/Doctora.png",
+      "audio": "audio/questions/she_will_help_a_patient_549c06a1cf.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-05",
+      "scene": "estudiar",
+      "question": "What will the girl do?",
+      "answer": "She will study at her desk.",
+      "options": [
+        "She will study at her desk.",
+        "She will fish in a lake.",
+        "She will sing on a stage."
+      ],
+      "hint": "La niña estudiará en su escritorio.",
+      "image": "imagenes/questions/Estudiar.png",
+      "audio": "audio/questions/she_will_study_at_her_desk_c012933cb9.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-06",
+      "scene": "fiesta",
+      "question": "What will the boy do at the party?",
+      "answer": "He will celebrate his birthday.",
+      "options": [
+        "He will celebrate his birthday.",
+        "He will build a house.",
+        "He will plant flowers."
+      ],
+      "hint": "El niño celebrará su cumpleaños.",
+      "image": "imagenes/questions/Fiesta.png",
+      "audio": "audio/questions/he_will_celebrate_his_birthday_a0e3e190e1.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-07",
+      "scene": "futbol",
+      "question": "What will the boy do?",
+      "answer": "He will play soccer.",
+      "options": [
+        "He will play soccer.",
+        "He will paint pictures.",
+        "He will cook food."
+      ],
+      "hint": "El niño jugará fútbol.",
+      "image": "imagenes/questions/Futbol.png",
+      "audio": "audio/questions/he_will_play_soccer_1e45260b6a.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-08",
+      "scene": "jardin",
+      "question": "What will the child do in the garden?",
+      "answer": "The child will take care of the flowers.",
+      "options": [
+        "The child will take care of the flowers.",
+        "The child will catch fish.",
+        "The child will study English."
+      ],
+      "hint": "El niño cuidará las flores.",
+      "image": "imagenes/questions/Jardin.png",
+      "audio": "audio/questions/the_child_will_take_care_of_the_flowers_f7fcc5d2ce.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-09",
+      "scene": "niño",
+      "question": "What will the boy do outside?",
+      "answer": "He will walk in the park.",
+      "options": [
+        "He will walk in the park.",
+        "He will bake cookies.",
+        "He will visit a doctor."
+      ],
+      "hint": "El niño caminará por el parque.",
+      "image": "imagenes/questions/Niño.png",
+      "audio": "audio/questions/he_will_walk_in_the_park_990db951a5.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-10",
+      "scene": "paisaje",
+      "question": "What will the girl do in nature?",
+      "answer": "She will enjoy the beautiful landscape.",
+      "options": [
+        "She will enjoy the beautiful landscape.",
+        "She will cook in the kitchen.",
+        "She will play at a party."
+      ],
+      "hint": "La niña disfrutará del hermoso paisaje.",
+      "image": "imagenes/questions/Paisaje.png",
+      "audio": "audio/questions/she_will_enjoy_the_beautiful_landscape_91afbc8de3.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-12",
+      "scene": "pescar",
+      "question": "What will the boy do?",
+      "answer": "He will catch fish.",
+      "options": [
+        "He will catch fish.",
+        "He will sing songs.",
+        "He will build houses."
+      ],
+      "hint": "El niño pescará.",
+      "image": "imagenes/questions/Pescar.png",
+      "audio": "audio/questions/he_will_catch_fish_b361095431.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-13",
+      "scene": "pintar",
+      "question": "What will the children do?",
+      "answer": "They will paint a picture.",
+      "options": [
+        "They will paint a picture.",
+        "They will play soccer.",
+        "They will go fishing."
+      ],
+      "hint": "Los niños pintarán un cuadro.",
+      "image": "imagenes/questions/Pintar.png",
+      "audio": "audio/questions/they_will_paint_a_picture_6ea993df46.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-14",
+      "scene": "playa",
+      "question": "What will the girl do at the beach?",
+      "answer": "She will enjoy the beach.",
+      "options": [
+        "She will enjoy the beach.",
+        "She will study at school.",
+        "She will build a house."
+      ],
+      "hint": "La niña disfrutará de la playa.",
+      "image": "imagenes/questions/Playa.png",
+      "audio": "audio/questions/she_will_enjoy_the_beach_f6f97b6e08.mp3",
+      "tense": "future_simple"
+    },
+    {
+      "id": "future_simple-15",
+      "scene": "reposteria",
+      "question": "What will the girl do?",
+      "answer": "She will bake cookies.",
+      "options": [
+        "She will bake cookies.",
+        "She will catch fish.",
+        "She will play soccer."
+      ],
+      "hint": "La niña preparará galletas.",
+      "image": "imagenes/questions/Reposteria.png",
+      "audio": "audio/questions/she_will_bake_cookies_febb5cc9b8.mp3",
+      "tense": "future_simple"
     }
   ]
 }

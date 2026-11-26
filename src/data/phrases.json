@@ -6,8 +6,12 @@
       "prompt": "Greeting someone at school",
       "image": "imagenes/phrases/Escuela.png",
       "answer": "Good morning! How are you?",
-      "options": ["Good morning! How are you?", "Good night! See you tomorrow.", "I went to school yesterday."],
-      "audio": ""
+      "options": [
+        "Good morning! How are you?",
+        "Good night! See you tomorrow.",
+        "I went to school yesterday."
+      ],
+      "audio": "audio/phrases/good_morning_how_are_you_9ec8c3e9e3.mp3"
     },
     {
       "id": "present_simple-02",
@@ -15,8 +19,12 @@
       "prompt": "Talking about music",
       "image": "imagenes/phrases/Cancion.png",
       "answer": "I love singing songs.",
-      "options": ["I love singing songs.", "I sang a song yesterday.", "I will sing tomorrow."],
-      "audio": ""
+      "options": [
+        "I love singing songs.",
+        "I sang a song yesterday.",
+        "I will sing tomorrow."
+      ],
+      "audio": "audio/phrases/i_love_singing_songs_3eb4a0ede4.mp3"
     },
     {
       "id": "present_simple-03",
@@ -24,8 +32,12 @@
       "prompt": "Ordering food",
       "image": "imagenes/phrases/Chef.png",
       "answer": "I'd like a delicious meal, please.",
-      "options": ["I'd like a delicious meal, please.", "I ordered food yesterday.", "I will cook tomorrow."],
-      "audio": ""
+      "options": [
+        "I'd like a delicious meal, please.",
+        "I ordered food yesterday.",
+        "I will cook tomorrow."
+      ],
+      "audio": "audio/phrases/i_d_like_a_delicious_meal_please_8c7596728d.mp3"
     },
     {
       "id": "present_simple-04",
@@ -33,8 +45,12 @@
       "prompt": "Inviting someone to eat",
       "image": "imagenes/phrases/Comer.png",
       "answer": "Would you like to eat with me?",
-      "options": ["Would you like to eat with me?", "I ate with my family yesterday.", "I will eat later."],
-      "audio": ""
+      "options": [
+        "Would you like to eat with me?",
+        "I ate with my family yesterday.",
+        "I will eat later."
+      ],
+      "audio": "audio/phrases/would_you_like_to_eat_with_me_98e32dbe8e.mp3"
     },
     {
       "id": "present_simple-05",
@@ -42,8 +58,12 @@
       "prompt": "Talking about a construction job",
       "image": "imagenes/phrases/Construccion.png",
       "answer": "I build houses for a living.",
-      "options": ["I build houses for a living.", "I built a house last year.", "I will build a house tomorrow."],
-      "audio": ""
+      "options": [
+        "I build houses for a living.",
+        "I built a house last year.",
+        "I will build a house tomorrow."
+      ],
+      "audio": "audio/phrases/i_build_houses_for_a_living_f7e4ea41aa.mp3"
     },
     {
       "id": "present_simple-06",
@@ -51,8 +71,12 @@
       "prompt": "Talking about school",
       "image": "imagenes/phrases/Escuela.png",
       "answer": "I study English every day.",
-      "options": ["I study English every day.", "I studied English yesterday.", "I will study English tomorrow."],
-      "audio": ""
+      "options": [
+        "I study English every day.",
+        "I studied English yesterday.",
+        "I will study English tomorrow."
+      ],
+      "audio": "audio/phrases/i_study_english_every_day_4cfb0e0bc3.mp3"
     },
     {
       "id": "present_simple-07",
@@ -60,8 +84,12 @@
       "prompt": "Complimenting a garden",
       "image": "imagenes/phrases/Flores.png",
       "answer": "These flowers are beautiful!",
-      "options": ["These flowers are beautiful!", "The flowers were beautiful yesterday.", "The flowers will be beautiful."],
-      "audio": ""
+      "options": [
+        "These flowers are beautiful!",
+        "The flowers were beautiful yesterday.",
+        "The flowers will be beautiful."
+      ],
+      "audio": "audio/phrases/these_flowers_are_beautiful_7fe657f891.mp3"
     },
     {
       "id": "present_simple-08",
@@ -69,8 +97,12 @@
       "prompt": "Talking to a doctor",
       "image": "imagenes/phrases/Hospital.png",
       "answer": "I need to see a doctor.",
-      "options": ["I need to see a doctor.", "I saw a doctor yesterday.", "I will see a doctor tomorrow."],
-      "audio": ""
+      "options": [
+        "I need to see a doctor.",
+        "I saw a doctor yesterday.",
+        "I will see a doctor tomorrow."
+      ],
+      "audio": "audio/phrases/i_need_to_see_a_doctor_0d2795ac70.mp3"
     },
     {
       "id": "present_simple-09",
@@ -78,8 +110,12 @@
       "prompt": "Talking about an experiment",
       "image": "imagenes/phrases/Laboratorio.png",
       "answer": "We work in the laboratory.",
-      "options": ["We work in the laboratory.", "We worked in the laboratory yesterday.", "We will work in the laboratory tomorrow."],
-      "audio": ""
+      "options": [
+        "We work in the laboratory.",
+        "We worked in the laboratory yesterday.",
+        "We will work in the laboratory tomorrow."
+      ],
+      "audio": "audio/phrases/we_work_in_the_laboratory_861854eb64.mp3"
     },
     {
       "id": "present_simple-10",
@@ -87,8 +123,12 @@
       "prompt": "Talking about reading",
       "image": "imagenes/phrases/Leer.png",
       "answer": "I enjoy reading books.",
-      "options": ["I enjoy reading books.", "I enjoyed reading yesterday.", "I will read a book tomorrow."],
-      "audio": ""
+      "options": [
+        "I enjoy reading books.",
+        "I enjoyed reading yesterday.",
+        "I will read a book tomorrow."
+      ],
+      "audio": "audio/phrases/i_enjoy_reading_books_48dccb2b57.mp3"
     },
     {
       "id": "present_simple-11",
@@ -96,8 +136,12 @@
       "prompt": "Talking about the weather",
       "image": "imagenes/phrases/Lluvia.png",
       "answer": "It rains a lot in winter.",
-      "options": ["It rains a lot in winter.", "It rained yesterday.", "It will rain tomorrow."],
-      "audio": ""
+      "options": [
+        "It rains a lot in winter.",
+        "It rained yesterday.",
+        "It will rain tomorrow."
+      ],
+      "audio": "audio/phrases/it_rains_a_lot_in_winter_04e4edeb00.mp3"
     },
     {
       "id": "present_simple-12",
@@ -105,8 +149,12 @@
       "prompt": "Buying groceries",
       "image": "imagenes/phrases/Mercado.png",
       "answer": "I buy fresh fruit at the market.",
-      "options": ["I buy fresh fruit at the market.", "I bought fruit yesterday.", "I will buy fruit tomorrow."],
-      "audio": ""
+      "options": [
+        "I buy fresh fruit at the market.",
+        "I bought fruit yesterday.",
+        "I will buy fruit tomorrow."
+      ],
+      "audio": "audio/phrases/i_buy_fresh_fruit_at_the_market_e7ace3fafe.mp3"
     },
     {
       "id": "present_simple-13",
@@ -114,8 +162,12 @@
       "prompt": "Talking about music preferences",
       "image": "imagenes/phrases/Musica.png",
       "answer": "I listen to music every day.",
-      "options": ["I listen to music every day.", "I listened to music yesterday.", "I will listen to music later."],
-      "audio": ""
+      "options": [
+        "I listen to music every day.",
+        "I listened to music yesterday.",
+        "I will listen to music later."
+      ],
+      "audio": "audio/phrases/i_listen_to_music_every_day_727db10073.mp3"
     },
     {
       "id": "present_simple-14",
@@ -123,8 +175,12 @@
       "prompt": "Inviting someone for a walk",
       "image": "imagenes/phrases/Paseo.png",
       "answer": "I usually go for a walk in the park.",
-      "options": ["I usually go for a walk in the park.", "I went for a walk yesterday.", "I will go for a walk tomorrow."],
-      "audio": ""
+      "options": [
+        "I usually go for a walk in the park.",
+        "I went for a walk yesterday.",
+        "I will go for a walk tomorrow."
+      ],
+      "audio": "audio/phrases/i_usually_go_for_a_walk_in_the_park_4d07b3fcab.mp3"
     },
     {
       "id": "present_simple-15",
@@ -132,290 +188,25 @@
       "prompt": "Talking about the beach",
       "image": "imagenes/phrases/Playa.png",
       "answer": "I love going to the beach.",
-      "options": ["I love going to the beach.", "I went to the beach yesterday.", "I will go to the beach tomorrow."],
-      "audio": ""
+      "options": [
+        "I love going to the beach.",
+        "I went to the beach yesterday.",
+        "I will go to the beach tomorrow."
+      ],
+      "audio": "audio/phrases/i_love_going_to_the_beach_c3dc29ab41.mp3"
     },
-
-    {
-      "id": "past_simple-01",
-      "tense": "past_simple",
-      "prompt": "Greeting someone after school",
-      "image": "imagenes/phrases/Escuela.png",
-      "answer": "I met my friends at school yesterday.",
-      "options": ["I met my friends at school yesterday.", "I meet my friends every day.", "I will meet my friends tomorrow."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-02",
-      "tense": "past_simple",
-      "prompt": "Talking about a song",
-      "image": "imagenes/phrases/Cancion.png",
-      "answer": "I sang my favorite song.",
-      "options": ["I sang my favorite song.", "I sing my favorite song.", "I will sing my favorite song."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-03",
-      "tense": "past_simple",
-      "prompt": "Complimenting a chef",
-      "image": "imagenes/phrases/Chef.png",
-      "answer": "The chef prepared a delicious meal.",
-      "options": ["The chef prepared a delicious meal.", "The chef prepares a delicious meal.", "The chef will prepare a delicious meal."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-04",
-      "tense": "past_simple",
-      "prompt": "Talking about dinner",
-      "image": "imagenes/phrases/Comer.png",
-      "answer": "I ate dinner with my family.",
-      "options": ["I ate dinner with my family.", "I eat dinner with my family.", "I will eat dinner with my family."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-05",
-      "tense": "past_simple",
-      "prompt": "Talking about construction",
-      "image": "imagenes/phrases/Construccion.png",
-      "answer": "They built a new house last year.",
-      "options": ["They built a new house last year.", "They build a new house every year.", "They will build a new house next year."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-06",
-      "tense": "past_simple",
-      "prompt": "Talking about a school day",
-      "image": "imagenes/phrases/Escuela.png",
-      "answer": "I studied English yesterday.",
-      "options": ["I studied English yesterday.", "I study English every day.", "I will study English tomorrow."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-07",
-      "tense": "past_simple",
-      "prompt": "Talking about flowers",
-      "image": "imagenes/phrases/Flores.png",
-      "answer": "I bought beautiful flowers.",
-      "options": ["I bought beautiful flowers.", "I buy beautiful flowers.", "I will buy beautiful flowers."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-08",
-      "tense": "past_simple",
-      "prompt": "Talking about a hospital visit",
-      "image": "imagenes/phrases/Hospital.png",
-      "answer": "I visited my friend at the hospital.",
-      "options": ["I visited my friend at the hospital.", "I visit my friend at the hospital.", "I will visit my friend at the hospital."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-09",
-      "tense": "past_simple",
-      "prompt": "Talking about a laboratory",
-      "image": "imagenes/phrases/Laboratorio.png",
-      "answer": "We did an experiment yesterday.",
-      "options": ["We did an experiment yesterday.", "We do an experiment every week.", "We will do an experiment tomorrow."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-10",
-      "tense": "past_simple",
-      "prompt": "Talking about a book",
-      "image": "imagenes/phrases/Leer.png",
-      "answer": "I read an interesting book last night.",
-      "options": ["I read an interesting book last night.", "I read interesting books every day.", "I will read an interesting book tonight."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-11",
-      "tense": "past_simple",
-      "prompt": "Talking about rainy weather",
-      "image": "imagenes/phrases/Lluvia.png",
-      "answer": "It rained all afternoon.",
-      "options": ["It rained all afternoon.", "It rains every afternoon.", "It will rain tomorrow afternoon."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-12",
-      "tense": "past_simple",
-      "prompt": "Talking about shopping",
-      "image": "imagenes/phrases/Mercado.png",
-      "answer": "I bought vegetables at the market.",
-      "options": ["I bought vegetables at the market.", "I buy vegetables at the market.", "I will buy vegetables at the market."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-13",
-      "tense": "past_simple",
-      "prompt": "Talking about a concert",
-      "image": "imagenes/phrases/Musica.png",
-      "answer": "I listened to music with my friends.",
-      "options": ["I listened to music with my friends.", "I listen to music with my friends.", "I will listen to music with my friends."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-14",
-      "tense": "past_simple",
-      "prompt": "Talking about a trip",
-      "image": "imagenes/phrases/Paseo.png",
-      "answer": "We went for a walk in the park.",
-      "options": ["We went for a walk in the park.", "We go for a walk in the park.", "We will go for a walk in the park."],
-      "audio": ""
-    },
-    {
-      "id": "past_simple-15",
-      "tense": "past_simple",
-      "prompt": "Talking about a beach trip",
-      "image": "imagenes/phrases/Playa.png",
-      "answer": "I swam in the sea last summer.",
-      "options": ["I swam in the sea last summer.", "I swim in the sea every summer.", "I will swim in the sea next summer."],
-      "audio": ""
-    },
-
-    {
-      "id": "future_simple-01",
-      "tense": "future_simple",
-      "prompt": "Planning to meet at school",
-      "image": "imagenes/phrases/Escuela.png",
-      "answer": "I will meet you at school tomorrow.",
-      "options": ["I will meet you at school tomorrow.", "I met you at school yesterday.", "I meet you at school every day."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-02",
-      "tense": "future_simple",
-      "prompt": "Talking about singing",
-      "image": "imagenes/phrases/Cancion.png",
-      "answer": "I will sing a song at the party.",
-      "options": ["I will sing a song at the party.", "I sang a song yesterday.", "I sing songs every day."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-03",
-      "tense": "future_simple",
-      "prompt": "Ordering a meal",
-      "image": "imagenes/phrases/Chef.png",
-      "answer": "I will order the chicken, please.",
-      "options": ["I will order the chicken, please.", "I ordered the chicken yesterday.", "I order chicken every Friday."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-04",
-      "tense": "future_simple",
-      "prompt": "Planning a meal",
-      "image": "imagenes/phrases/Comer.png",
-      "answer": "We will have dinner together tonight.",
-      "options": ["We will have dinner together tonight.", "We had dinner together last night.", "We have dinner together every day."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-05",
-      "tense": "future_simple",
-      "prompt": "Talking about a new building",
-      "image": "imagenes/phrases/Construccion.png",
-      "answer": "They will build a new school.",
-      "options": ["They will build a new school.", "They built a new school.", "They build new schools."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-06",
-      "tense": "future_simple",
-      "prompt": "Talking about tomorrow's classes",
-      "image": "imagenes/phrases/Escuela.png",
-      "answer": "I will study for the exam tomorrow.",
-      "options": ["I will study for the exam tomorrow.", "I studied for the exam yesterday.", "I study for exams every week."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-07",
-      "tense": "future_simple",
-      "prompt": "Giving someone flowers",
-      "image": "imagenes/phrases/Flores.png",
-      "answer": "I will give you these flowers.",
-      "options": ["I will give you these flowers.", "I gave you flowers yesterday.", "I give you flowers every year."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-08",
-      "tense": "future_simple",
-      "prompt": "Talking about a hospital appointment",
-      "image": "imagenes/phrases/Hospital.png",
-      "answer": "I will visit the doctor tomorrow.",
-      "options": ["I will visit the doctor tomorrow.", "I visited the doctor yesterday.", "I visit the doctor every month."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-09",
-      "tense": "future_simple",
-      "prompt": "Planning a science experiment",
-      "image": "imagenes/phrases/Laboratorio.png",
-      "answer": "We will do an experiment tomorrow.",
-      "options": ["We will do an experiment tomorrow.", "We did an experiment yesterday.", "We do experiments every week."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-10",
-      "tense": "future_simple",
-      "prompt": "Talking about reading",
-      "image": "imagenes/phrases/Leer.png",
-      "answer": "I will read this book tonight.",
-      "options": ["I will read this book tonight.", "I read this book last night.", "I read books every day."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-11",
-      "tense": "future_simple",
-      "prompt": "Talking about the weather",
-      "image": "imagenes/phrases/Lluvia.png",
-      "answer": "It will rain tomorrow.",
-      "options": ["It will rain tomorrow.", "It rained yesterday.", "It rains every week."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-12",
-      "tense": "future_simple",
-      "prompt": "Planning to buy food",
-      "image": "imagenes/phrases/Mercado.png",
-      "answer": "I will buy some fruit at the market.",
-      "options": ["I will buy some fruit at the market.", "I bought fruit yesterday.", "I buy fruit every Saturday."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-13",
-      "tense": "future_simple",
-      "prompt": "Planning a music activity",
-      "image": "imagenes/phrases/Musica.png",
-      "answer": "We will listen to music tonight.",
-      "options": ["We will listen to music tonight.", "We listened to music last night.", "We listen to music every day."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-14",
-      "tense": "future_simple",
-      "prompt": "Making plans for the weekend",
-      "image": "imagenes/phrases/Paseo.png",
-      "answer": "We will go for a walk this weekend.",
-      "options": ["We will go for a walk this weekend.", "We went for a walk last weekend.", "We go for a walk every weekend."],
-      "audio": ""
-    },
-    {
-      "id": "future_simple-15",
-      "tense": "future_simple",
-      "prompt": "Planning a beach vacation",
-      "image": "imagenes/phrases/Playa.png",
-      "answer": "I will visit the beach next summer.",
-      "options": ["I will visit the beach next summer.", "I visited the beach last summer.", "I visit the beach every summer."],
-      "audio": ""
-    },
-
     {
       "id": "present_continuous-01",
       "tense": "present_continuous",
       "prompt": "Greeting a friend at school",
       "image": "imagenes/phrases/Escuela.png",
       "answer": "I am meeting my friends at school.",
-      "options": ["I am meeting my friends at school.", "I met my friends at school yesterday.", "I will meet my friends tomorrow."],
-      "audio": ""
+      "options": [
+        "I am meeting my friends at school.",
+        "I met my friends at school yesterday.",
+        "I will meet my friends tomorrow."
+      ],
+      "audio": "audio/phrases/i_am_meeting_my_friends_at_school_6a46ba5311.mp3"
     },
     {
       "id": "present_continuous-02",
@@ -423,8 +214,12 @@
       "prompt": "Talking about singing",
       "image": "imagenes/phrases/Cancion.png",
       "answer": "I am singing my favorite song.",
-      "options": ["I am singing my favorite song.", "I sang my favorite song yesterday.", "I will sing my favorite song tomorrow."],
-      "audio": ""
+      "options": [
+        "I am singing my favorite song.",
+        "I sang my favorite song yesterday.",
+        "I will sing my favorite song tomorrow."
+      ],
+      "audio": "audio/phrases/i_am_singing_my_favorite_song_e542b31be9.mp3"
     },
     {
       "id": "present_continuous-03",
@@ -432,8 +227,12 @@
       "prompt": "Talking to a chef",
       "image": "imagenes/phrases/Chef.png",
       "answer": "The chef is preparing our food.",
-      "options": ["The chef is preparing our food.", "The chef prepared our food yesterday.", "The chef will prepare our food tomorrow."],
-      "audio": ""
+      "options": [
+        "The chef is preparing our food.",
+        "The chef prepared our food yesterday.",
+        "The chef will prepare our food tomorrow."
+      ],
+      "audio": "audio/phrases/the_chef_is_preparing_our_food_a0413ffe4d.mp3"
     },
     {
       "id": "present_continuous-04",
@@ -441,8 +240,12 @@
       "prompt": "Inviting someone to eat",
       "image": "imagenes/phrases/Comer.png",
       "answer": "We are having lunch together.",
-      "options": ["We are having lunch together.", "We had lunch together yesterday.", "We will have lunch together tomorrow."],
-      "audio": ""
+      "options": [
+        "We are having lunch together.",
+        "We had lunch together yesterday.",
+        "We will have lunch together tomorrow."
+      ],
+      "audio": "audio/phrases/we_are_having_lunch_together_628e60e473.mp3"
     },
     {
       "id": "present_continuous-05",
@@ -450,8 +253,12 @@
       "prompt": "Talking about construction",
       "image": "imagenes/phrases/Construccion.png",
       "answer": "They are building a new house.",
-      "options": ["They are building a new house.", "They built a new house last year.", "They will build a new house next year."],
-      "audio": ""
+      "options": [
+        "They are building a new house.",
+        "They built a new house last year.",
+        "They will build a new house next year."
+      ],
+      "audio": "audio/phrases/they_are_building_a_new_house_001711543e.mp3"
     },
     {
       "id": "present_continuous-06",
@@ -459,8 +266,12 @@
       "prompt": "Talking about a school activity",
       "image": "imagenes/phrases/Escuela.png",
       "answer": "The students are learning English.",
-      "options": ["The students are learning English.", "The students learned English yesterday.", "The students will learn English tomorrow."],
-      "audio": ""
+      "options": [
+        "The students are learning English.",
+        "The students learned English yesterday.",
+        "The students will learn English tomorrow."
+      ],
+      "audio": "audio/phrases/the_students_are_learning_english_c4acf052e8.mp3"
     },
     {
       "id": "present_continuous-07",
@@ -468,8 +279,12 @@
       "prompt": "Talking about gardening",
       "image": "imagenes/phrases/Flores.png",
       "answer": "She is watering the flowers.",
-      "options": ["She is watering the flowers.", "She watered the flowers yesterday.", "She will water the flowers tomorrow."],
-      "audio": ""
+      "options": [
+        "She is watering the flowers.",
+        "She watered the flowers yesterday.",
+        "She will water the flowers tomorrow."
+      ],
+      "audio": "audio/phrases/she_is_watering_the_flowers_9e17f934e9.mp3"
     },
     {
       "id": "present_continuous-08",
@@ -477,8 +292,12 @@
       "prompt": "Talking about a hospital visit",
       "image": "imagenes/phrases/Hospital.png",
       "answer": "The doctor is helping the patient.",
-      "options": ["The doctor is helping the patient.", "The doctor helped the patient yesterday.", "The doctor will help the patient tomorrow."],
-      "audio": ""
+      "options": [
+        "The doctor is helping the patient.",
+        "The doctor helped the patient yesterday.",
+        "The doctor will help the patient tomorrow."
+      ],
+      "audio": "audio/phrases/the_doctor_is_helping_the_patient_c253c115b2.mp3"
     },
     {
       "id": "present_continuous-09",
@@ -486,8 +305,12 @@
       "prompt": "Talking about a laboratory",
       "image": "imagenes/phrases/Laboratorio.png",
       "answer": "The students are doing an experiment.",
-      "options": ["The students are doing an experiment.", "The students did an experiment yesterday.", "The students will do an experiment tomorrow."],
-      "audio": ""
+      "options": [
+        "The students are doing an experiment.",
+        "The students did an experiment yesterday.",
+        "The students will do an experiment tomorrow."
+      ],
+      "audio": "audio/phrases/the_students_are_doing_an_experiment_0e472e6759.mp3"
     },
     {
       "id": "present_continuous-10",
@@ -495,8 +318,12 @@
       "prompt": "Talking about reading",
       "image": "imagenes/phrases/Leer.png",
       "answer": "I am reading an interesting book.",
-      "options": ["I am reading an interesting book.", "I read an interesting book yesterday.", "I will read an interesting book tomorrow."],
-      "audio": ""
+      "options": [
+        "I am reading an interesting book.",
+        "I read an interesting book yesterday.",
+        "I will read an interesting book tomorrow."
+      ],
+      "audio": "audio/phrases/i_am_reading_an_interesting_book_12669f0b5e.mp3"
     },
     {
       "id": "present_continuous-11",
@@ -504,8 +331,12 @@
       "prompt": "Talking about rainy weather",
       "image": "imagenes/phrases/Lluvia.png",
       "answer": "It is raining outside.",
-      "options": ["It is raining outside.", "It rained yesterday.", "It will rain tomorrow."],
-      "audio": ""
+      "options": [
+        "It is raining outside.",
+        "It rained yesterday.",
+        "It will rain tomorrow."
+      ],
+      "audio": "audio/phrases/it_is_raining_outside_4f6ee9e0a1.mp3"
     },
     {
       "id": "present_continuous-12",
@@ -513,8 +344,12 @@
       "prompt": "Talking about shopping",
       "image": "imagenes/phrases/Mercado.png",
       "answer": "We are buying fresh vegetables.",
-      "options": ["We are buying fresh vegetables.", "We bought fresh vegetables yesterday.", "We will buy fresh vegetables tomorrow."],
-      "audio": ""
+      "options": [
+        "We are buying fresh vegetables.",
+        "We bought fresh vegetables yesterday.",
+        "We will buy fresh vegetables tomorrow."
+      ],
+      "audio": "audio/phrases/we_are_buying_fresh_vegetables_f101ee56bb.mp3"
     },
     {
       "id": "present_continuous-13",
@@ -522,8 +357,12 @@
       "prompt": "Talking about music",
       "image": "imagenes/phrases/Musica.png",
       "answer": "They are listening to music.",
-      "options": ["They are listening to music.", "They listened to music yesterday.", "They will listen to music tomorrow."],
-      "audio": ""
+      "options": [
+        "They are listening to music.",
+        "They listened to music yesterday.",
+        "They will listen to music tomorrow."
+      ],
+      "audio": "audio/phrases/they_are_listening_to_music_189ef951cb.mp3"
     },
     {
       "id": "present_continuous-14",
@@ -531,8 +370,12 @@
       "prompt": "Talking about a walk",
       "image": "imagenes/phrases/Paseo.png",
       "answer": "We are riding our bikes in the park.",
-      "options": ["We are riding our bikes in the park.", "We rode our bikes yesterday.", "We will ride our bikes tomorrow."],
-      "audio": ""
+      "options": [
+        "We are riding our bikes in the park.",
+        "We rode our bikes yesterday.",
+        "We will ride our bikes tomorrow."
+      ],
+      "audio": "audio/phrases/we_are_riding_our_bikes_in_the_park_52e74f7c30.mp3"
     },
     {
       "id": "present_continuous-15",
@@ -540,8 +383,402 @@
       "prompt": "Talking about the beach",
       "image": "imagenes/phrases/Playa.png",
       "answer": "The children are playing on the beach.",
-      "options": ["The children are playing on the beach.", "The children played on the beach yesterday.", "The children will play on the beach tomorrow."],
-      "audio": ""
+      "options": [
+        "The children are playing on the beach.",
+        "The children played on the beach yesterday.",
+        "The children will play on the beach tomorrow."
+      ],
+      "audio": "audio/phrases/the_children_are_playing_on_the_beach_cf5683da81.mp3"
+    },
+    {
+      "id": "past_simple-01",
+      "tense": "past_simple",
+      "prompt": "Greeting someone after school",
+      "image": "imagenes/phrases/Escuela.png",
+      "answer": "I met my friends at school yesterday.",
+      "options": [
+        "I met my friends at school yesterday.",
+        "I meet my friends every day.",
+        "I will meet my friends tomorrow."
+      ],
+      "audio": "audio/phrases/i_met_my_friends_at_school_yesterday_b5234ab1d7.mp3"
+    },
+    {
+      "id": "past_simple-02",
+      "tense": "past_simple",
+      "prompt": "Talking about a song",
+      "image": "imagenes/phrases/Cancion.png",
+      "answer": "I sang my favorite song.",
+      "options": [
+        "I sang my favorite song.",
+        "I sing my favorite song.",
+        "I will sing my favorite song."
+      ],
+      "audio": "audio/phrases/i_sang_my_favorite_song_ec6bf07ae0.mp3"
+    },
+    {
+      "id": "past_simple-03",
+      "tense": "past_simple",
+      "prompt": "Complimenting a chef",
+      "image": "imagenes/phrases/Chef.png",
+      "answer": "The chef prepared a delicious meal.",
+      "options": [
+        "The chef prepared a delicious meal.",
+        "The chef prepares a delicious meal.",
+        "The chef will prepare a delicious meal."
+      ],
+      "audio": "audio/phrases/the_chef_prepared_a_delicious_meal_b12c1b5c22.mp3"
+    },
+    {
+      "id": "past_simple-04",
+      "tense": "past_simple",
+      "prompt": "Talking about dinner",
+      "image": "imagenes/phrases/Comer.png",
+      "answer": "I ate dinner with my family.",
+      "options": [
+        "I ate dinner with my family.",
+        "I eat dinner with my family.",
+        "I will eat dinner with my family."
+      ],
+      "audio": "audio/phrases/i_ate_dinner_with_my_family_ee2f86eb66.mp3"
+    },
+    {
+      "id": "past_simple-05",
+      "tense": "past_simple",
+      "prompt": "Talking about construction",
+      "image": "imagenes/phrases/Construccion.png",
+      "answer": "They built a new house last year.",
+      "options": [
+        "They built a new house last year.",
+        "They build a new house every year.",
+        "They will build a new house next year."
+      ],
+      "audio": "audio/phrases/they_built_a_new_house_last_year_a3500b4733.mp3"
+    },
+    {
+      "id": "past_simple-06",
+      "tense": "past_simple",
+      "prompt": "Talking about a school day",
+      "image": "imagenes/phrases/Escuela.png",
+      "answer": "I studied English yesterday.",
+      "options": [
+        "I studied English yesterday.",
+        "I study English every day.",
+        "I will study English tomorrow."
+      ],
+      "audio": "audio/phrases/i_studied_english_yesterday_f840a8e549.mp3"
+    },
+    {
+      "id": "past_simple-07",
+      "tense": "past_simple",
+      "prompt": "Talking about flowers",
+      "image": "imagenes/phrases/Flores.png",
+      "answer": "I bought beautiful flowers.",
+      "options": [
+        "I bought beautiful flowers.",
+        "I buy beautiful flowers.",
+        "I will buy beautiful flowers."
+      ],
+      "audio": "audio/phrases/i_bought_beautiful_flowers_a8375a10c1.mp3"
+    },
+    {
+      "id": "past_simple-08",
+      "tense": "past_simple",
+      "prompt": "Talking about a hospital visit",
+      "image": "imagenes/phrases/Hospital.png",
+      "answer": "I visited my friend at the hospital.",
+      "options": [
+        "I visited my friend at the hospital.",
+        "I visit my friend at the hospital.",
+        "I will visit my friend at the hospital."
+      ],
+      "audio": "audio/phrases/i_visited_my_friend_at_the_hospital_9c9c91d974.mp3"
+    },
+    {
+      "id": "past_simple-09",
+      "tense": "past_simple",
+      "prompt": "Talking about a laboratory",
+      "image": "imagenes/phrases/Laboratorio.png",
+      "answer": "We did an experiment yesterday.",
+      "options": [
+        "We did an experiment yesterday.",
+        "We do an experiment every week.",
+        "We will do an experiment tomorrow."
+      ],
+      "audio": "audio/phrases/we_did_an_experiment_yesterday_d24058eaf1.mp3"
+    },
+    {
+      "id": "past_simple-10",
+      "tense": "past_simple",
+      "prompt": "Talking about a book",
+      "image": "imagenes/phrases/Leer.png",
+      "answer": "I read an interesting book last night.",
+      "options": [
+        "I read an interesting book last night.",
+        "I read interesting books every day.",
+        "I will read an interesting book tonight."
+      ],
+      "audio": "audio/phrases/i_read_an_interesting_book_last_night_6d7e543aab.mp3"
+    },
+    {
+      "id": "past_simple-11",
+      "tense": "past_simple",
+      "prompt": "Talking about rainy weather",
+      "image": "imagenes/phrases/Lluvia.png",
+      "answer": "It rained all afternoon.",
+      "options": [
+        "It rained all afternoon.",
+        "It rains every afternoon.",
+        "It will rain tomorrow afternoon."
+      ],
+      "audio": "audio/phrases/it_rained_all_afternoon_aea87b45ce.mp3"
+    },
+    {
+      "id": "past_simple-12",
+      "tense": "past_simple",
+      "prompt": "Talking about shopping",
+      "image": "imagenes/phrases/Mercado.png",
+      "answer": "I bought vegetables at the market.",
+      "options": [
+        "I bought vegetables at the market.",
+        "I buy vegetables at the market.",
+        "I will buy vegetables at the market."
+      ],
+      "audio": "audio/phrases/i_bought_vegetables_at_the_market_bf4a2736ea.mp3"
+    },
+    {
+      "id": "past_simple-13",
+      "tense": "past_simple",
+      "prompt": "Talking about a concert",
+      "image": "imagenes/phrases/Musica.png",
+      "answer": "I listened to music with my friends.",
+      "options": [
+        "I listened to music with my friends.",
+        "I listen to music with my friends.",
+        "I will listen to music with my friends."
+      ],
+      "audio": "audio/phrases/i_listened_to_music_with_my_friends_c2d97273e7.mp3"
+    },
+    {
+      "id": "past_simple-14",
+      "tense": "past_simple",
+      "prompt": "Talking about a trip",
+      "image": "imagenes/phrases/Paseo.png",
+      "answer": "We went for a walk in the park.",
+      "options": [
+        "We went for a walk in the park.",
+        "We go for a walk in the park.",
+        "We will go for a walk in the park."
+      ],
+      "audio": "audio/phrases/we_went_for_a_walk_in_the_park_103b9fd2cf.mp3"
+    },
+    {
+      "id": "past_simple-15",
+      "tense": "past_simple",
+      "prompt": "Talking about a beach trip",
+      "image": "imagenes/phrases/Playa.png",
+      "answer": "I swam in the sea last summer.",
+      "options": [
+        "I swam in the sea last summer.",
+        "I swim in the sea every summer.",
+        "I will swim in the sea next summer."
+      ],
+      "audio": "audio/phrases/i_swam_in_the_sea_last_summer_9ed9e661dc.mp3"
+    },
+    {
+      "id": "future_simple-01",
+      "tense": "future_simple",
+      "prompt": "Planning to meet at school",
+      "image": "imagenes/phrases/Escuela.png",
+      "answer": "I will meet you at school tomorrow.",
+      "options": [
+        "I will meet you at school tomorrow.",
+        "I met you at school yesterday.",
+        "I meet you at school every day."
+      ],
+      "audio": "audio/phrases/i_will_meet_you_at_school_tomorrow_a7f6b72aa2.mp3"
+    },
+    {
+      "id": "future_simple-02",
+      "tense": "future_simple",
+      "prompt": "Talking about singing",
+      "image": "imagenes/phrases/Cancion.png",
+      "answer": "I will sing a song at the party.",
+      "options": [
+        "I will sing a song at the party.",
+        "I sang a song yesterday.",
+        "I sing songs every day."
+      ],
+      "audio": "audio/phrases/i_will_sing_a_song_at_the_party_f9ed7d41eb.mp3"
+    },
+    {
+      "id": "future_simple-03",
+      "tense": "future_simple",
+      "prompt": "Ordering a meal",
+      "image": "imagenes/phrases/Chef.png",
+      "answer": "I will order the chicken, please.",
+      "options": [
+        "I will order the chicken, please.",
+        "I ordered the chicken yesterday.",
+        "I order chicken every Friday."
+      ],
+      "audio": "audio/phrases/i_will_order_the_chicken_please_2d28957739.mp3"
+    },
+    {
+      "id": "future_simple-04",
+      "tense": "future_simple",
+      "prompt": "Planning a meal",
+      "image": "imagenes/phrases/Comer.png",
+      "answer": "We will have dinner together tonight.",
+      "options": [
+        "We will have dinner together tonight.",
+        "We had dinner together last night.",
+        "We have dinner together every day."
+      ],
+      "audio": "audio/phrases/we_will_have_dinner_together_tonight_a0ff4e8ee8.mp3"
+    },
+    {
+      "id": "future_simple-05",
+      "tense": "future_simple",
+      "prompt": "Talking about a new building",
+      "image": "imagenes/phrases/Construccion.png",
+      "answer": "They will build a new school.",
+      "options": [
+        "They will build a new school.",
+        "They built a new school.",
+        "They build new schools."
+      ],
+      "audio": "audio/phrases/they_will_build_a_new_school_1430ca4db4.mp3"
+    },
+    {
+      "id": "future_simple-06",
+      "tense": "future_simple",
+      "prompt": "Talking about tomorrow's classes",
+      "image": "imagenes/phrases/Escuela.png",
+      "answer": "I will study for the exam tomorrow.",
+      "options": [
+        "I will study for the exam tomorrow.",
+        "I studied for the exam yesterday.",
+        "I study for exams every week."
+      ],
+      "audio": "audio/phrases/i_will_study_for_the_exam_tomorrow_f177ecf0c1.mp3"
+    },
+    {
+      "id": "future_simple-07",
+      "tense": "future_simple",
+      "prompt": "Giving someone flowers",
+      "image": "imagenes/phrases/Flores.png",
+      "answer": "I will give you these flowers.",
+      "options": [
+        "I will give you these flowers.",
+        "I gave you flowers yesterday.",
+        "I give you flowers every year."
+      ],
+      "audio": "audio/phrases/i_will_give_you_these_flowers_e8d192f3ec.mp3"
+    },
+    {
+      "id": "future_simple-08",
+      "tense": "future_simple",
+      "prompt": "Talking about a hospital appointment",
+      "image": "imagenes/phrases/Hospital.png",
+      "answer": "I will visit the doctor tomorrow.",
+      "options": [
+        "I will visit the doctor tomorrow.",
+        "I visited the doctor yesterday.",
+        "I visit the doctor every month."
+      ],
+      "audio": "audio/phrases/i_will_visit_the_doctor_tomorrow_cadcffe55d.mp3"
+    },
+    {
+      "id": "future_simple-09",
+      "tense": "future_simple",
+      "prompt": "Planning a science experiment",
+      "image": "imagenes/phrases/Laboratorio.png",
+      "answer": "We will do an experiment tomorrow.",
+      "options": [
+        "We will do an experiment tomorrow.",
+        "We did an experiment yesterday.",
+        "We do experiments every week."
+      ],
+      "audio": "audio/phrases/we_will_do_an_experiment_tomorrow_96138969ee.mp3"
+    },
+    {
+      "id": "future_simple-10",
+      "tense": "future_simple",
+      "prompt": "Talking about reading",
+      "image": "imagenes/phrases/Leer.png",
+      "answer": "I will read this book tonight.",
+      "options": [
+        "I will read this book tonight.",
+        "I read this book last night.",
+        "I read books every day."
+      ],
+      "audio": "audio/phrases/i_will_read_this_book_tonight_844cb4df7e.mp3"
+    },
+    {
+      "id": "future_simple-11",
+      "tense": "future_simple",
+      "prompt": "Talking about the weather",
+      "image": "imagenes/phrases/Lluvia.png",
+      "answer": "It will rain tomorrow.",
+      "options": [
+        "It will rain tomorrow.",
+        "It rained yesterday.",
+        "It rains every week."
+      ],
+      "audio": "audio/phrases/it_will_rain_tomorrow_a326da7ea9.mp3"
+    },
+    {
+      "id": "future_simple-12",
+      "tense": "future_simple",
+      "prompt": "Planning to buy food",
+      "image": "imagenes/phrases/Mercado.png",
+      "answer": "I will buy some fruit at the market.",
+      "options": [
+        "I will buy some fruit at the market.",
+        "I bought fruit yesterday.",
+        "I buy fruit every Saturday."
+      ],
+      "audio": "audio/phrases/i_will_buy_some_fruit_at_the_market_0da64a17de.mp3"
+    },
+    {
+      "id": "future_simple-13",
+      "tense": "future_simple",
+      "prompt": "Planning a music activity",
+      "image": "imagenes/phrases/Musica.png",
+      "answer": "We will listen to music tonight.",
+      "options": [
+        "We will listen to music tonight.",
+        "We listened to music last night.",
+        "We listen to music every day."
+      ],
+      "audio": "audio/phrases/we_will_listen_to_music_tonight_1cd5d79ca3.mp3"
+    },
+    {
+      "id": "future_simple-14",
+      "tense": "future_simple",
+      "prompt": "Making plans for the weekend",
+      "image": "imagenes/phrases/Paseo.png",
+      "answer": "We will go for a walk this weekend.",
+      "options": [
+        "We will go for a walk this weekend.",
+        "We went for a walk last weekend.",
+        "We go for a walk every weekend."
+      ],
+      "audio": "audio/phrases/we_will_go_for_a_walk_this_weekend_18f2fe3fa0.mp3"
+    },
+    {
+      "id": "future_simple-15",
+      "tense": "future_simple",
+      "prompt": "Planning a beach vacation",
+      "image": "imagenes/phrases/Playa.png",
+      "answer": "I will visit the beach next summer.",
+      "options": [
+        "I will visit the beach next summer.",
+        "I visited the beach last summer.",
+        "I visit the beach every summer."
+      ],
+      "audio": "audio/phrases/i_will_visit_the_beach_next_summer_072f5ec6a6.mp3"
     }
   ]
 }
