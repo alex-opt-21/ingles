@@ -18,6 +18,8 @@ dependencies = [
     "python-dotenv>=1.2.3",
     "sounddevice>=0.5.6",
     "speechrecognition>=3.17.0",
+    "stable-ts>=2.19.1",
+    "static-ffmpeg>=3.0",
 ]
 
 [dependency-groups]

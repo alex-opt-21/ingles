@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import json
+import threading
+import time
 from pathlib import Path
 
 import flet as ft
 
 from services.songs.songs_pronunciacion_service import (
-    RECORD_SECONDS as SONG_RECORD_SECONDS,
+    MAX_RECORD_SECONDS,
     listen_and_check,
     preload as preload_songs_model,
 )
@@ -15,6 +17,7 @@ from services.songs.songs_pronunciacion_service import (
 # AJUSTA esta ruta a donde pusiste la carpeta `exercises` (ej. ui/exercises).
 from ui.exercises.core.exercise_screen import ExerciseScreen
 from ui.exercises.components.exercise_microphone import exercise_microphone
+from ui.exercises.overlays.pause_overlay import pause_overlay
 from ui.exercises.overlays.results_overlay import results_screen
 from ui.theme import (
     EXERCISE_BLUE as BLUE,
@@ -36,6 +39,18 @@ PALE_BLUE = "#ECF7FF"
 PALE_YELLOW = "#FFF7DC"
 MUTED = "#8194AE"
 
+# Margen al reproducir una línea para no comerse el inicio/final de la frase.
+LINE_PAD_BEFORE_MS = 150
+LINE_PAD_AFTER_MS = 350
+
+# Tiempo para que el control de audio exista en el cliente antes del primer play().
+PLAYER_MOUNT_DELAY = 0.3
+PLAY_RETRIES = 3
+
+# Alto (sin escalar) de cada fila de la hoja de letra.
+LYRIC_ROW_HEIGHT = 47
+LYRIC_MAX_VISIBLE_ROWS = 5
+
 
 def load_songs(path: Path = CATALOG_PATH) -> list[dict]:
     try:
@@ -51,18 +66,100 @@ def load_songs(path: Path = CATALOG_PATH) -> list[dict]:
         return []
 
 
+# ---------- Pasos de práctica: líneas + párrafos + canción completa ----------
+
+def _merged_step(kind: str, raw_lines: list[dict], indices: list[int], label: str) -> dict:
+    """Crea un paso que une varias líneas (párrafo o canción completa)."""
+    first, last = raw_lines[indices[0]], raw_lines[indices[-1]]
+    start, end = first.get("start_ms"), last.get("end_ms")
+    seconds = (end - start) / 1000 if start is not None and end is not None else 60
+    return {
+        "kind": kind,
+        "label": label,
+        "text": " ".join(raw_lines[i].get("text", "") for i in indices),
+        "start_ms": start,
+        "end_ms": end,
+        "line_indices": list(indices),
+        "max_seconds": max(15, min(seconds + 10, 300)),  # margen extra
+    }
+
+
+def build_steps(song: dict) -> list[dict]:
+    """Líneas + párrafo al terminar cada grupo + canción completa al final.
+
+    Agrupa líneas consecutivas con el mismo campo "group". Si un grupo tiene
+    una sola línea no se crea paso de párrafo.
+    """
+    raw = [
+        l if isinstance(l, dict) else {"text": str(l)}
+        for l in song.get("lines", [])
+    ]
+
+    blocks: list[dict] = []
+    for i, line in enumerate(raw):
+        g = line.get("group")
+        if blocks and g and blocks[-1]["group"] == g:
+            blocks[-1]["indices"].append(i)
+        else:
+            blocks.append({"group": g, "indices": [i]})
+
+    steps: list[dict] = []
+    for block in blocks:
+        for i in block["indices"]:
+            steps.append({
+                **raw[i],
+                "kind": "line",
+                "label": block["group"] or "Line",
+                "line_indices": [i],
+            })
+        if block["group"] and len(block["indices"]) > 1:
+            steps.append(_merged_step("group", raw, block["indices"], block["group"]))
+
+    if len(raw) > 1:
+        steps.append(_merged_step("song", raw, list(range(len(raw))), "Full song"))
+    return steps
+
+
+# Archivo donde se guarda el avance de cada canción (junto a songs.json).
+PROGRESS_PATH = CATALOG_PATH.with_name("songs_progress.json")
+
+
+def load_progress(path: Path = PROGRESS_PATH) -> dict:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def write_progress(progress: dict, path: Path = PROGRESS_PATH) -> None:
+    try:
+        path.write_text(
+            json.dumps(progress, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        print(f"No se pudo guardar el progreso de Songs: {exc}")
+
+
 class SongsView:
     def __init__(self, page: ft.Page, on_home, songs=None, achievements=None):
         self.page = page
         self.on_home = on_home
         self.songs = songs if songs is not None else load_songs()
         self.song = None
-        self.index = 0
-        self.completed: set[int] = set()
-        self.skipped: set[int] = set()
-        self.recognizing = False
+        self.steps: list[dict] = []
+        self.line_step_of: dict[int, int] = {}  # índice de línea -> índice de paso
+        self.index = 0  # índice del PASO actual
+        self.completed: set[int] = set()  # índices de pasos
+        self.skipped: set[int] = set()    # índices de pasos
+        self.rec_state = "idle"  # idle | recording | processing
+        self._stop_event = threading.Event()
+        self._elapsed = 0.0
+        self._t0: float | None = None
         self.feedback: tuple[str, str] | None = None
-        self.stage = "catalog"  # catalog | practice | finished | closed
+        # catalog | practice | paused | finished | closed
+        self.stage = "catalog"
         self._width = 440
         self._height = 844
         self.shell = ft.Container()
@@ -72,15 +169,77 @@ class SongsView:
         self.audio_end_ms = None
         self._audio_token = 0
         self.achievements = achievements
+        self.progress: dict = load_progress()
+
+    # ---------- Progreso guardado ----------
+
+    @staticmethod
+    def _song_id(song) -> str:
+        return str(song.get("id") or song.get("title") or "song")
+
+    def _saved_for(self, song):
+        """Devuelve el avance guardado de la canción, o None si no hay uno válido."""
+        saved = self.progress.get(self._song_id(song))
+        if not isinstance(saved, dict):
+            return None
+        total = len(build_steps(song))
+        # Un avance guardado con otra cantidad de pasos (formato viejo) se ignora.
+        if saved.get("total") != total:
+            return None
+        try:
+            index = int(saved.get("index", 0))
+        except (TypeError, ValueError):
+            return None
+        if not 0 <= index < total:
+            return None
+        return {
+            "index": index,
+            "completed": {i for i in saved.get("completed", []) if 0 <= i < total},
+            "skipped": {i for i in saved.get("skipped", []) if 0 <= i < total},
+            "elapsed": float(saved.get("elapsed", 0.0) or 0.0),
+        }
+
+    def _save_progress(self):
+        if not self.song:
+            return
+        self.progress[self._song_id(self.song)] = {
+            "total": len(self.steps),
+            "index": self.index,
+            "completed": sorted(self.completed),
+            "skipped": sorted(self.skipped),
+            "elapsed": round(self._time_now(), 1),
+        }
+        write_progress(self.progress)
+
+    def _clear_progress(self, song):
+        if self.progress.pop(self._song_id(song), None) is not None:
+            write_progress(self.progress)
+
+    # ---------- Estado auxiliar ----------
+
+    @property
+    def recognizing(self) -> bool:
+        return self.rec_state != "idle"
+
+    def _time_now(self) -> float:
+        return self._elapsed + (time.monotonic() - self._t0 if self._t0 else 0.0)
+
+    @staticmethod
+    def _fmt_time(seconds: float) -> str:
+        s = int(seconds)
+        return f"{s // 60:02d}:{s % 60:02d}"
+
+    # ---------- Ciclo de vida ----------
 
     def close(self):
         """Ciclo de vida compatible con close_current() de src/main.py.
 
-        Detiene el audio y desconecta el listener de resize al salir.
+        Detiene el audio y el micrófono, y desconecta el listener de resize.
         """
         if self.stage == "closed":
             return
         self.stage = "closed"
+        self._stop_event.set()  # no dejar el micrófono abierto
         self.page.on_resize = None
         self.page.run_task(self._dispose_player)
 
@@ -109,6 +268,8 @@ class SongsView:
     @property
     def scale(self):
         return max(0.58, min(1.0, self._width / 440, self._height / 844))
+
+    # ---------- Componentes visuales ----------
 
     def _txt(self, value, size=16, bold=False, color=NAVY, centered=False,
              max_lines=None):
@@ -154,7 +315,19 @@ class SongsView:
             ),
         )
 
-    def _header(self, title, subtitle=None):
+    def _header(self, title, subtitle=None, on_pause=None):
+        right = (
+            ft.Container(
+                width=43 * self.scale, height=43 * self.scale,
+                bgcolor=WHITE, border_radius=14 * self.scale,
+                alignment=ft.Alignment.CENTER, ink=True, on_click=on_pause,
+                content=ft.Icon(ft.Icons.PAUSE_ROUNDED, color=BLUE,
+                                size=22 * self.scale),
+            )
+            if on_pause else
+            ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED, color=BLUE,
+                    size=31 * self.scale)
+        )
         return ft.Row(
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10 * self.scale,
@@ -175,19 +348,23 @@ class SongsView:
                         if subtitle else ft.Container(height=1),
                     ],
                 ),
-                ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED, color=BLUE,
-                        size=31 * self.scale),
+                right,
             ],
         )
+
+    # ---------- Navegación ----------
 
     def _back(self, e=None):
         self.page.run_task(self._navigate_back)
 
     async def _navigate_back(self):
+        self._stop_event.set()  # corta cualquier grabación en curso
         await self._dispose_player()
-        if self.stage == "practice" or self.stage == "finished":
+        if self.stage in ("practice", "paused", "finished"):
             self.stage = "catalog"
             self.song = None
+            self.steps = []
+            self.line_step_of = {}
             self.render()
         elif self.stage == "catalog":
             self.close()
@@ -199,7 +376,7 @@ class SongsView:
         except Exception:
             print(message)
 
-    def _select_song(self, song):
+    def _select_song(self, song, resume=False):
         # Al entrar a la práctica se detiene la vista previa completa.
         self.page.run_task(self._pause_audio)
         lines = song.get("lines", [])
@@ -210,14 +387,35 @@ class SongsView:
         ):
             self._toast("Add the song lyrics and line timings in src/data/songs.json to practice speaking.")
             return
+        saved = self._saved_for(song) if resume else None
         self.song = song
-        self.index = 0
+        # Construir los pasos: líneas, párrafos y canción completa.
+        self.steps = build_steps(song)
+        self.line_step_of = {
+            s["line_indices"][0]: n
+            for n, s in enumerate(self.steps) if s["kind"] == "line"
+        }
         self.completed.clear()
         self.skipped.clear()
+        if saved:
+            self.index = saved["index"]
+            self.completed.update(saved["completed"])
+            self.skipped.update(saved["skipped"])
+            self._elapsed = saved["elapsed"]
+        else:
+            self.index = 0
+            self._elapsed = 0.0
+            self._clear_progress(song)  # empezar de cero borra el avance anterior
         self.feedback = None
-        self.recognizing = False
+        self.rec_state = "idle"
+        self._t0 = time.monotonic()
         self.stage = "practice"
         self.render()
+        # Reproduce automáticamente el primer paso al entrar a la práctica.
+        # (Si no lo quieres, borra la siguiente línea.)
+        self.page.run_task(self._on_listen_line)
+
+    # ---------- Pantallas ----------
 
     def _catalog(self):
         song_cards = []
@@ -243,13 +441,22 @@ class SongsView:
                 "Pause", ft.Icons.PAUSE_CIRCLE_ROUNDED,
                 self._pause_audio, enabled=has_audio,
             )
+            saved = self._saved_for(item) if has_lines else None
+            if saved:
+                practice_label = f"Resume (step {saved['index'] + 1})"
+            else:
+                practice_label = "Practice lines" if has_lines else "Lyrics pending"
             practice_button = self._button(
-                "Practice lines" if has_lines else "Lyrics pending",
+                practice_label,
                 ft.Icons.MIC_ROUNDED if has_lines else ft.Icons.LOCK_OUTLINE,
-                lambda e, s=item: self._select_song(s),
+                lambda e, s=item: self._select_song(s, resume=True),
                 primary=has_lines,
                 enabled=has_lines,
             )
+            restart_button = self._button(
+                "Restart", ft.Icons.REPLAY_ROUNDED,
+                lambda e, s=item: self._select_song(s),
+            ) if saved else None
 
             song_cards.append(
                 self._surface(
@@ -284,7 +491,11 @@ class SongsView:
                             ft.Row(spacing=7 * self.scale, controls=[
                                 preview_button, pause_button,
                             ]),
-                            ft.Row(controls=[practice_button]),
+                            ft.Row(
+                                spacing=7 * self.scale,
+                                controls=[practice_button, restart_button]
+                                if restart_button else [practice_button],
+                            ),
                         ],
                     ),
                 )
@@ -314,19 +525,30 @@ class SongsView:
 
     def _visible_lines(self):
         lines = self.song["lines"]
-        # Un fragmento de hasta cinco líneas, manteniendo visible la actual.
-        start = min(max(0, self.index - 2), max(0, len(lines) - 5))
+        step = self.line
+        if step["kind"] == "song":
+            return list(enumerate(lines))  # todas (con scroll)
+        if step["kind"] == "group":
+            return [(i, lines[i]) for i in step["line_indices"]]
+        # Una línea: un fragmento de hasta cinco, manteniendo visible la actual.
+        cur = step["line_indices"][0]
+        start = min(max(0, cur - 2), max(0, len(lines) - 5))
         return list(enumerate(lines[start:start + 5], start=start))
 
     def _lyric_sheet(self):
+        step = self.line
+        kind = step["kind"]
+        visible = self._visible_lines()
         pieces = []
-        for idx, raw in self._visible_lines():
+        for idx, raw in visible:
             text = raw.get("text", "") if isinstance(raw, dict) else str(raw)
-            is_active = idx == self.index
-            done = idx in self.completed
-            skipped = idx in self.skipped
+            # En la canción completa no se resalta ninguna línea en particular.
+            is_active = kind != "song" and idx in step["line_indices"]
+            sidx = self.line_step_of.get(idx)
+            done = sidx in self.completed
+            skipped = sidx in self.skipped
             pieces.append(ft.Container(
-                height=47 * self.scale,
+                height=LYRIC_ROW_HEIGHT * self.scale,
                 bgcolor="#DBF0FF" if is_active else "#FFFFFF00",
                 border_radius=13 * self.scale,
                 padding=ft.Padding.symmetric(horizontal=10 * self.scale),
@@ -352,15 +574,21 @@ class SongsView:
                     ],
                 ),
             ))
-        return self._surface(
-            ft.Column(spacing=1 * self.scale, controls=pieces),
-            color="#FCFEFF", padding=10,
-        )
+
+        column = ft.Column(spacing=1 * self.scale, controls=pieces)
+        if kind != "line":
+            # Párrafo / canción: alto fijo y scroll si hay más de 5 líneas.
+            column.scroll = ft.ScrollMode.AUTO
+            rows = min(len(pieces), LYRIC_MAX_VISIBLE_ROWS)
+            column.height = rows * (LYRIC_ROW_HEIGHT + 1) * self.scale
+        return self._surface(column, color="#FCFEFF", padding=10)
 
     @property
     def line(self):
-        raw = self.song["lines"][self.index]
-        return raw if isinstance(raw, dict) else {"text": str(raw)}
+        """Paso actual (línea, párrafo o canción completa)."""
+        return self.steps[self.index]
+
+    # ---------- Audio ----------
 
     async def _dispose_player(self):
         self._audio_token += 1  # cancela cualquier vigilante de segmento
@@ -391,6 +619,7 @@ class SongsView:
         if not src:
             self._toast("Add your song audio path to songs.json first.")
             return
+
         if self.player is None or src != self.player_src:
             await self._dispose_player()
             self.player = fta.Audio(
@@ -402,22 +631,41 @@ class SongsView:
             self.player_src = src
             self.page.services.append(self.player)
             self.page.update()
+            # El control debe existir en el cliente antes del primer play().
+            # Sin esta espera el primer click no suena y hay que pulsar dos veces.
+            await asyncio.sleep(PLAYER_MOUNT_DELAY)
+
+        player = self.player
+        if player is None or self.stage == "closed":
+            return
+
         self._audio_token += 1
         play_token = self._audio_token
         self.audio_end_ms = end_ms
         self.playing = True
         self.render()
-        try:
-            await self.player.play(position=ft.Duration(milliseconds=int(start_ms)))
-            if end_ms is not None:
-                # on_position_change se dispara cada ~1s. Este vigilante consulta
-                # la posición cada 0.15s para detener la frase con más precisión.
-                self.page.run_task(self._watch_segment, play_token, self.player, int(end_ms))
-        except Exception as exc:
+
+        last_exc = None
+        for _ in range(PLAY_RETRIES):  # reintenta por si el control aún no está listo
+            try:
+                await player.play(position=ft.Duration(milliseconds=int(start_ms)))
+                last_exc = None
+                break
+            except Exception as exc:
+                last_exc = exc
+                await asyncio.sleep(0.25)
+
+        if last_exc is not None:
             self.playing = False
             self.render()
-            print(f"Could not play {src}: {exc}")
+            print(f"Could not play {src}: {last_exc}")
             self._toast("Could not play this audio file. Check its path.")
+            return
+
+        if end_ms is not None:
+            # on_position_change se dispara cada ~1s. Este vigilante consulta
+            # la posición cada 0.15s para detener la frase con más precisión.
+            self.page.run_task(self._watch_segment, play_token, player, int(end_ms))
 
     async def _watch_segment(self, token, player, end_ms):
         while token == self._audio_token and self.playing and self.player is player:
@@ -464,15 +712,22 @@ class SongsView:
                 self.render()
 
     async def _on_listen_line(self, e=None):
-        line = self.line
-        clip = line.get("clip", "")
+        if self.song is None or self.stage not in ("practice", "paused"):
+            return
+        step = self.line
+        # Las líneas pueden tener un clip propio; párrafos y canción no.
+        clip = step.get("clip", "")
         if clip:
             await self._play(clip)
             return
         song_audio = self.song.get("audio", "")
-        start, end = line.get("start_ms"), line.get("end_ms")
+        start, end = step.get("start_ms"), step.get("end_ms")
         if song_audio and start is not None and end is not None and end > start:
-            await self._play(song_audio, start, end)
+            await self._play(
+                song_audio,
+                max(0, start - LINE_PAD_BEFORE_MS),
+                end + LINE_PAD_AFTER_MS,
+            )
         else:
             self._toast("Configure a line clip or start_ms/end_ms in songs.json.")
 
@@ -489,73 +744,152 @@ class SongsView:
                 pass
             self.render()
 
+    # ---------- Micrófono ----------
+
     async def _on_mic(self, e=None):
-        if self.recognizing or self.index in self.completed or self.index in self.skipped:
+        if self.index in self.completed or self.index in self.skipped:
             return
+
+        # Segundo toque: detener la grabación y procesar.
+        if self.rec_state == "recording":
+            self._stop_event.set()
+            self.rec_state = "processing"
+            self.feedback = ("busy", "Checking your pronunciation...")
+            self.render()
+            return
+
+        # Ignorar toques mientras procesa.
+        if self.rec_state != "idle":
+            return
+
         # No grabar mientras la canción suena: evita que el reconocimiento
         # transcriba la música en lugar de la voz del estudiante.
         await self._pause_audio()
         recorded_index = self.index
         recorded_song = self.song
-        self.recognizing = True
-        self.feedback = ("busy", f"Listening to your voice... ({SONG_RECORD_SECONDS} s)")
+        step = self.line
+
+        self._stop_event = threading.Event()
+        self.rec_state = "recording"
+        self.feedback = ("busy", "Recording... tap the microphone again when you finish.")
         self.render()
         try:
-            result = await asyncio.to_thread(listen_and_check, self.line["text"])
-            success, recognized = result
-            if self.stage != "practice" or self.song is not recorded_song or self.index != recorded_index:
+            success, recognized = await asyncio.to_thread(
+                listen_and_check, step["text"], self._stop_event,
+                step.get("max_seconds", MAX_RECORD_SECONDS), step["kind"],
+            )
+            if (self.stage not in ("practice", "paused")
+                    or self.song is not recorded_song
+                    or self.index != recorded_index):
                 return
             if success:
                 self.completed.add(self.index)
                 self.feedback = ("ok", "Great pronunciation! You can continue.")
             else:
                 heard = recognized or "nothing clearly"
+                if len(heard) > 90:  # en párrafos/canción el texto puede ser largo
+                    heard = heard[:90] + "..."
                 self.feedback = ("error", f'I heard: "{heard}". Try again!')
         except Exception as exc:
             print(f"Song microphone error: {exc}")
             if self.stage == "practice" and self.song is recorded_song:
                 self.feedback = ("error", "Microphone unavailable. Check permissions.")
         finally:
-            self.recognizing = False
+            self.rec_state = "idle"
             if self.stage == "practice" and self.song is recorded_song:
                 self.render()
+
+    # ---------- Acciones de práctica ----------
 
     async def _skip_line(self, e=None):
         if self.recognizing:
             return
         await self._pause_audio()
         self.skipped.add(self.index)
-        self.feedback = ("skip", "Line skipped. It won't count as completed.")
+        self.feedback = ("skip", "Step skipped. It won't count as completed.")
+        self._save_progress()
         self.render()
 
     async def _continue(self, e=None):
         if self.recognizing or (self.index not in self.completed and
                                 self.index not in self.skipped):
-            self._toast("First practice this line using the microphone.")
+            self._toast("First practice this step using the microphone.")
             return
         await self._dispose_player()
         self.feedback = None
-        if self.index + 1 == len(self.song["lines"]):
+        if self.index + 1 == len(self.steps):
+            self._clear_progress(self.song)  # canción terminada: sin avance pendiente
             self.stage = "finished"
-        else:
-            self.index += 1
+            self.render()
+            return
+        self.index += 1
+        self._save_progress()
+        self.render()                 # muestra primero el nuevo paso
+        await self._on_listen_line()  # y reproduce su audio automáticamente
+
+    # ---------- Pausa ----------
+
+    async def _on_pause(self, e=None):
+        if self.stage != "practice" or self.rec_state != "idle":
+            return
+        await self._pause_audio()
+        self._elapsed = self._time_now()
+        self._t0 = None
+        self.stage = "paused"
         self.render()
 
+    def _on_resume(self, e=None):
+        self._t0 = time.monotonic()
+        self.stage = "practice"
+        self.render()
+
+    def _on_finish_now(self, e=None):
+        self._clear_progress(self.song)
+        self.stage = "finished"
+        self.render()
+
+    def _on_save_exit(self, e=None):
+        # Guarda el avance y vuelve al catálogo.
+        self._save_progress()
+        self._back()
+
+    # ---------- Pantalla de práctica ----------
+
     def _practice(self):
-        lines = self.song["lines"]
-        total = len(lines)
-        active = self.line["text"]
+        total = len(self.steps)
+        step = self.line
+        kind = step["kind"]
+
+        if kind == "line":
+            active, tag, size = step["text"], "YOUR LINE", 22
+            listen_label = "Listen line"
+        elif kind == "group":
+            active = f'{step["label"]} · {len(step["line_indices"])} lines'
+            tag, size, listen_label = "NOW THE WHOLE PARAGRAPH", 20, "Listen paragraph"
+        else:
+            active, tag, size = "Sing the full song!", "FINAL CHALLENGE", 20
+            listen_label = "Listen song"
+
         can_advance = self.index in self.completed or self.index in self.skipped
         status = self.feedback
         status_color = GREEN if status and status[0] == "ok" else (
             RED if status and status[0] == "error" else SOFT_BLUE)
-        status_text = status[1] if status else "Tap Listen, then repeat the line aloud."
+        if status:
+            status_text = status[1]
+        elif kind == "line":
+            status_text = "Tap Listen, then tap the microphone, repeat the line and tap again."
+        elif kind == "group":
+            status_text = "Now say the whole paragraph in one go. Tap the microphone to start and again to finish."
+        else:
+            status_text = "Last challenge: say or sing the whole song. Tap the microphone to start and again to finish."
+
         return ft.Column(
             expand=True,
             spacing=11 * self.scale,
             controls=[
                 self._header(self.song.get("title", "Songs"),
-                             f"Line {self.index + 1} of {total}  •  Speaking"),
+                             f"{step['label']}  •  Step {self.index + 1} of {total}",
+                             on_pause=self._on_pause),
                 ft.ProgressBar(
                     value=len(self.completed | self.skipped) / total,
                     color=BLUE, bgcolor="#D6EAF8",
@@ -574,15 +908,15 @@ class SongsView:
                     spacing=9 * self.scale,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        self._txt("YOUR LINE", 12, True, BLUE, centered=True),
+                        self._txt(tag, 12, True, BLUE, centered=True),
                         ft.Container(
                             height=72 * self.scale,
                             alignment=ft.Alignment.CENTER,
-                            content=self._txt(active, 22, True, NAVY,
+                            content=self._txt(active, size, True, NAVY,
                                               centered=True, max_lines=3),
                         ),
                         ft.Row(spacing=9 * self.scale, controls=[
-                            self._button("Listen line", ft.Icons.VOLUME_UP_ROUNDED,
+                            self._button(listen_label, ft.Icons.VOLUME_UP_ROUNDED,
                                          self._on_listen_line, enabled=not self.recognizing),
                             self._button("Play song" if not self.playing else "Pause",
                                          ft.Icons.PLAY_CIRCLE if not self.playing else
@@ -609,10 +943,10 @@ class SongsView:
                             ft.Container(
                                 height=67 * self.scale,
                                 alignment=ft.Alignment.CENTER,
-                                # Microfono compartido con los demas ejercicios.
+                                # Micrófono compartido con los demás ejercicios.
                                 content=exercise_microphone(
                                     None if can_advance else self._on_mic,
-                                    recording=self.recognizing,
+                                    recording=self.rec_state == "recording",
                                     scale=self.scale,
                                     size=67,
                                 ),
@@ -634,15 +968,33 @@ class SongsView:
         )
 
     def _finished(self):
-        """Pantalla final compartida (misma que los demas ejercicios)."""
-        total = len(self.song["lines"])
+        """Pantalla final compartida (misma que los demás ejercicios)."""
+        def indices(kind):
+            return [i for i, s in enumerate(self.steps) if s["kind"] == kind]
+
+        def done(kind):
+            return sum(1 for i in indices(kind) if i in self.completed)
+
+        lines_total = len(indices("line"))
+        groups_total = len(indices("group"))
+        song_idx = indices("song")
+        if not song_idx:
+            song_value = "—"
+        elif song_idx[0] in self.completed:
+            song_value = "Done"
+        else:
+            song_value = "Skipped"
+
         return results_screen(
             title="Song practice finished!",
             subtitle=self.song.get("title", "Song"),
             stats=[
                 (ft.Icons.CHECK_CIRCLE_OUTLINE, "Lines completed",
-                 f"{len(self.completed)} / {total}", GREEN),
-                (ft.Icons.SKIP_NEXT, "Skipped lines",
+                 f"{done('line')} / {lines_total}", GREEN),
+                (ft.Icons.LIBRARY_MUSIC, "Paragraphs completed",
+                 f"{done('group')} / {groups_total}", GREEN),
+                (ft.Icons.EMOJI_EVENTS, "Full song", song_value, SOFT_BLUE),
+                (ft.Icons.SKIP_NEXT, "Skipped steps",
                  str(len(self.skipped)), SOFT_BLUE),
             ],
             retry_label="Try again",
@@ -653,24 +1005,42 @@ class SongsView:
             height=self._height,
         )
 
+    # ---------- Render ----------
+
+    def _screen(self, content):
+        return ExerciseScreen(
+            content,
+            width=self._width,
+            height=self._height,
+            padding=ft.Padding.symmetric(horizontal=17 * self.scale,
+                                         vertical=15 * self.scale),
+        )
+
     def render(self):
         if self.stage == "closed":
             return
         self.shell.width = self._width
         self.shell.height = self._height
         if self.stage == "finished":
-            # results_screen ya trae fondo y area segura.
+            # results_screen ya trae fondo y área segura.
             self.shell.content = self._finished()
-        else:
-            content = {
-                "catalog": self._catalog,
-                "practice": self._practice,
-            }[self.stage]()
-            self.shell.content = ExerciseScreen(
-                content,
-                width=self._width,
-                height=self._height,
-                padding=ft.Padding.symmetric(horizontal=17 * self.scale,
-                                             vertical=15 * self.scale),
-            )
+        elif self.stage == "catalog":
+            self.shell.content = self._screen(self._catalog())
+        else:  # practice | paused
+            screen = self._screen(self._practice())
+            if self.stage == "paused":
+                screen = ft.Stack(
+                    width=self._width,
+                    height=self._height,
+                    controls=[screen, pause_overlay(
+                        question_text=f"Step {self.index + 1} / {len(self.steps)}",
+                        time_text=self._fmt_time(self._time_now()),
+                        on_resume=self._on_resume,
+                        on_finish=self._on_finish_now,
+                        on_save_exit=self._on_save_exit,
+                        width=self._width,
+                        height=self._height,
+                    )],
+                )
+            self.shell.content = screen
         self.page.update()

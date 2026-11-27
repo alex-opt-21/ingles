@@ -2,17 +2,29 @@ from __future__ import annotations
 
 import difflib
 import re
+import threading
 
 import numpy as np
 import sounddevice as sd
 
 from services.ejercicios import pronunciacion_service as base
 
-SAMPLE_RATE = base.SAMPLE_RATE  
-RECORD_SECONDS = 9             
+SAMPLE_RATE = base.SAMPLE_RATE
+MAX_RECORD_SECONDS = 15              # tope de seguridad si el usuario no vuelve a tocar
+RECORD_SECONDS = MAX_RECORD_SECONDS  # alias por compatibilidad
+HARD_MAX_SECONDS = 300               # tope absoluto (canción completa)
 MIN_VOLUME = base.MIN_VOLUME
-FUZZY_THRESHOLD = 0.80        
-MIN_WORD_COVERAGE = 0.65     
+
+# Umbrales (similitud, cobertura) según el tipo de paso.
+# Párrafos y canción completa son más permisivos: en textos largos
+# el reconocimiento se equivoca más.
+THRESHOLDS = {
+    "line":  (0.80, 0.65),
+    "group": (0.70, 0.55),
+    "song":  (0.55, 0.45),
+}
+FUZZY_THRESHOLD = THRESHOLDS["line"][0]      # compatibilidad
+MIN_WORD_COVERAGE = THRESHOLDS["line"][1]    # compatibilidad
 
 _CONTRACTIONS = {
     "i'm": "i am",
@@ -43,12 +55,14 @@ def normalize_phrase(text: str) -> str:
     return " ".join(value.split())
 
 
-def evaluate_phrase(heard: str, expected: str) -> tuple[bool, float]:
+def evaluate_phrase(heard: str, expected: str, kind: str = "line") -> tuple[bool, float]:
     """Compara TODA la frase, no una palabra aislada.
 
+    `kind` ("line" | "group" | "song") elige los umbrales.
     Devuelve (aprobado, similitud_de_0_a_1). Es una medida aproximada basada
     en las palabras reconocidas por Whisper, no una nota fonética.
     """
+    fuzzy, min_cov = THRESHOLDS.get(kind, THRESHOLDS["line"])
     target = normalize_phrase(expected)
     spoken = normalize_phrase(heard)
     if not target or not spoken:
@@ -63,18 +77,32 @@ def evaluate_phrase(heard: str, expected: str) -> tuple[bool, float]:
     word_similarity = matcher.ratio()
     char_similarity = difflib.SequenceMatcher(None, target, spoken, autojunk=False).ratio()
     similarity = 0.6 * word_similarity + 0.4 * char_similarity
-    return similarity >= FUZZY_THRESHOLD and coverage >= MIN_WORD_COVERAGE, round(similarity, 3)
+    return similarity >= fuzzy and coverage >= min_cov, round(similarity, 3)
 
 
-def listen_and_check(expected: str, seconds: float = RECORD_SECONDS) -> tuple[bool, str]:
-    seconds = max(1.0, min(float(seconds), 20.0))
-    audio = sd.rec(
-        int(seconds * SAMPLE_RATE),
-        samplerate=SAMPLE_RATE,
-        channels=1,
-        dtype="int16",
-    )
-    sd.wait()
+def listen_and_check(
+    expected: str,
+    stop_event: threading.Event | None = None,
+    max_seconds: float = MAX_RECORD_SECONDS,
+    kind: str = "line",
+) -> tuple[bool, str]:
+    """Graba hasta que stop_event se active (o se llegue a max_seconds)."""
+    max_seconds = max(1.0, min(float(max_seconds), float(HARD_MAX_SECONDS)))
+    stop_event = stop_event or threading.Event()
+
+    total_frames = int(max_seconds * SAMPLE_RATE)
+    chunks: list[np.ndarray] = []
+    recorded = 0
+    with sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype="int16") as stream:
+        while recorded < total_frames and not stop_event.is_set():
+            frames = min(1024, total_frames - recorded)
+            data, _overflow = stream.read(frames)
+            chunks.append(data.copy())
+            recorded += len(data)
+
+    if not chunks:
+        return False, ""
+    audio = np.concatenate(chunks)
     if audio.size == 0 or np.max(np.abs(audio.astype(np.float32))) < MIN_VOLUME:
         return False, ""
 
@@ -90,7 +118,7 @@ def listen_and_check(expected: str, seconds: float = RECORD_SECONDS) -> tuple[bo
         condition_on_previous_text=False,
     )
     heard = " ".join(segment.text for segment in segments).strip()
-    ok, _score = evaluate_phrase(heard, expected)
+    ok, _score = evaluate_phrase(heard, expected, kind)
     return ok, heard
 
 
