@@ -36,5 +36,14 @@
       10
     ],
     "elapsed": 805.8
+  },
+  "we_will_rock_you": {
+    "total": 32,
+    "index": 1,
+    "completed": [],
+    "skipped": [
+      0
+    ],
+    "elapsed": 4.3
   }
 }

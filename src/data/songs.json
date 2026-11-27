@@ -613,6 +613,209 @@
         }
       ],
       "duration_ms": 152120
+    },
+    {
+      "id": "we_will_rock_you",
+      "title": "We Will Rock You",
+      "artist": "Queen",
+      "audio": "audio/music/We-Will-Rock-You-Queen.mp3",
+      "image": "imagenes/music/we_will_rock_you.jpg",
+      "duration_ms": 98560,
+      "cue_accuracy": null,
+      "lines": [
+        {
+          "text": "Buddy, you're a boy, make a big noise",
+          "start_ms": 18680,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 20480,
+          "clip": "audio/music/clips/we_will_rock_you/001.mp3"
+        },
+        {
+          "text": "Playing in the street, gonna be a big man someday",
+          "start_ms": 20580,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 23460,
+          "clip": "audio/music/clips/we_will_rock_you/002.mp3"
+        },
+        {
+          "text": "You got mud on your face, you big disgrace",
+          "start_ms": 23740,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 26600,
+          "clip": "audio/music/clips/we_will_rock_you/003.mp3"
+        },
+        {
+          "text": "Kicking your can all over the place",
+          "start_ms": 27240,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 29500,
+          "clip": "audio/music/clips/we_will_rock_you/004.mp3"
+        },
+        {
+          "text": "Singing",
+          "start_ms": 29780,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 30020,
+          "clip": "audio/music/clips/we_will_rock_you/005.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 30180,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 33800,
+          "clip": "audio/music/clips/we_will_rock_you/006.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 35280,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 39740,
+          "clip": "audio/music/clips/we_will_rock_you/007.mp3"
+        },
+        {
+          "text": "Buddy, you're a young man, hard man",
+          "start_ms": 40840,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 43960,
+          "clip": "audio/music/clips/we_will_rock_you/008.mp3"
+        },
+        {
+          "text": "Shouting in the street, gonna take on the world someday",
+          "start_ms": 44280,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 47040,
+          "clip": "audio/music/clips/we_will_rock_you/009.mp3"
+        },
+        {
+          "text": "You got blood on your face, you big disgrace",
+          "start_ms": 47300,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 50140,
+          "clip": "audio/music/clips/we_will_rock_you/010.mp3"
+        },
+        {
+          "text": "Waving your banner all over the place",
+          "start_ms": 50800,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 53320,
+          "clip": "audio/music/clips/we_will_rock_you/011.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 53680,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 57420,
+          "clip": "audio/music/clips/we_will_rock_you/012.mp3"
+        },
+        {
+          "text": "Sing it!",
+          "start_ms": 58180,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 59440,
+          "clip": "audio/music/clips/we_will_rock_you/013.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 59540,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 63340,
+          "clip": "audio/music/clips/we_will_rock_you/014.mp3"
+        },
+        {
+          "text": "Buddy, you're an old man, poor man",
+          "start_ms": 65440,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 67600,
+          "clip": "audio/music/clips/we_will_rock_you/015.mp3"
+        },
+        {
+          "text": "Pleading with your eyes, gonna make you some peace someday",
+          "start_ms": 67760,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 70760,
+          "clip": "audio/music/clips/we_will_rock_you/016.mp3"
+        },
+        {
+          "text": "You got mud on your face, you big disgrace",
+          "start_ms": 70900,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 73600,
+          "clip": "audio/music/clips/we_will_rock_you/017.mp3"
+        },
+        {
+          "text": "Somebody better put you back into your place",
+          "start_ms": 73940,
+          "group": "Verse 3",
+          "timing_reviewed": false,
+          "end_ms": 76720,
+          "clip": "audio/music/clips/we_will_rock_you/018.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 77260,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 80920,
+          "clip": "audio/music/clips/we_will_rock_you/019.mp3"
+        },
+        {
+          "text": "Sing it!",
+          "start_ms": 81580,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 82380,
+          "clip": "audio/music/clips/we_will_rock_you/020.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 82380,
+          "group": "Chorus 3",
+          "timing_reviewed": false,
+          "end_ms": 86820,
+          "clip": "audio/music/clips/we_will_rock_you/021.mp3"
+        },
+        {
+          "text": "Everybody",
+          "start_ms": 88280,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 88860,
+          "clip": "audio/music/clips/we_will_rock_you/022.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 89040,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 92740,
+          "clip": "audio/music/clips/we_will_rock_you/023.mp3"
+        },
+        {
+          "text": "We will, we will rock you",
+          "start_ms": 93820,
+          "group": "Outro",
+          "timing_reviewed": false,
+          "end_ms": 98560,
+          "clip": "audio/music/clips/we_will_rock_you/024.mp3"
+        }
+      ]
     }
   ]
 }
