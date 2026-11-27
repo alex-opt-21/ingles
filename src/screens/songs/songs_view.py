@@ -291,6 +291,39 @@ class SongsView:
             content=content,
         )
 
+    def _song_image(self, song, size=64):
+        """Muestra la portada definida en songs.json o el icono por defecto."""
+        image_path = song.get("image")
+
+        if image_path:
+            cover = ft.Image(
+                src=image_path,
+                width=size * self.scale,
+                height=size * self.scale,
+                fit=ft.BoxFit.COVER,
+                error_content=ft.Icon(
+                    ft.Icons.HEADPHONES,
+                    color=BLUE,
+                    size=31 * self.scale,
+                ),
+            )
+        else:
+            cover = ft.Icon(
+                ft.Icons.HEADPHONES,
+                color=BLUE,
+                size=31 * self.scale,
+            )
+
+        return ft.Container(
+            width=size * self.scale,
+            height=size * self.scale,
+            border_radius=18 * self.scale,
+            bgcolor=PALE_YELLOW,
+            alignment=ft.Alignment.CENTER,
+            clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
+            content=cover,
+        )
+
     def _button(self, label, icon, callback, primary=False, enabled=True,
                 color=None):
         active_bg = color or (BLUE if primary else WHITE)
@@ -466,17 +499,7 @@ class SongsView:
                             ft.Row(
                                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
-                                    ft.Container(
-                                        width=64 * self.scale,
-                                        height=64 * self.scale,
-                                        border_radius=18 * self.scale,
-                                        bgcolor=PALE_YELLOW,
-                                        alignment=ft.Alignment.CENTER,
-                                        content=ft.Icon(
-                                            ft.Icons.HEADPHONES,
-                                            color=BLUE, size=31 * self.scale,
-                                        ),
-                                    ),
+                                    self._song_image(item, size=64),
                                     ft.Column(
                                         expand=True, spacing=4,
                                         controls=[

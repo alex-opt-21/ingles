@@ -5,6 +5,7 @@
       "title": "History",
       "artist": "One Direction",
       "audio": "audio/music/One-Direction-History.mp3",
+      "image": "imagenes/music/history.jpg",
       "duration_ms": 195264,
       "cue_accuracy": "forced alignment (stable-ts)",
       "lines": [
@@ -329,6 +330,289 @@
           "clip": "audio/music/clips/one_direction_history/040.mp3"
         }
       ]
+    },
+    {
+      "id": "sia_snowman",
+      "title": "Snowman",
+      "artist": "Sia",
+      "audio": "audio/music/Sia-Snowman.mp3",
+      "image": "imagenes/music/snowman.jpg",
+      "cue_accuracy": "forced alignment (stable-ts)",
+      "lines": [
+        {
+          "text": "Don't cry, snowman, not in front of me",
+          "start_ms": 7840,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 11340,
+          "clip": "audio/music/clips/sia_snowman/001.mp3"
+        },
+        {
+          "text": "Who'll catch your tears if you can't catch me, darling?",
+          "start_ms": 11580,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 16740,
+          "clip": "audio/music/clips/sia_snowman/002.mp3"
+        },
+        {
+          "text": "If you can't catch me, darling",
+          "start_ms": 16740,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 19080,
+          "clip": "audio/music/clips/sia_snowman/003.mp3"
+        },
+        {
+          "text": "Don't cry, snowman, don't leave me this way",
+          "start_ms": 20960,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 24680,
+          "clip": "audio/music/clips/sia_snowman/004.mp3"
+        },
+        {
+          "text": "A puddle of water can't hold me close, baby",
+          "start_ms": 25480,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 29060,
+          "clip": "audio/music/clips/sia_snowman/005.mp3"
+        },
+        {
+          "text": "Can't hold me close, baby",
+          "start_ms": 30360,
+          "group": "Verse 1",
+          "timing_reviewed": false,
+          "end_ms": 32460,
+          "clip": "audio/music/clips/sia_snowman/006.mp3"
+        },
+        {
+          "text": "I want you to know that I'm never leaving",
+          "start_ms": 34140,
+          "group": "Pre-Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 38720,
+          "clip": "audio/music/clips/sia_snowman/007.mp3"
+        },
+        {
+          "text": "'Cause I'm Missus Snow till death we'll be freezing yeah",
+          "start_ms": 38980,
+          "group": "Pre-Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 42620,
+          "clip": "audio/music/clips/sia_snowman/008.mp3"
+        },
+        {
+          "text": "You are my home, my home for all seasons",
+          "start_ms": 42780,
+          "group": "Pre-Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 45560,
+          "clip": "audio/music/clips/sia_snowman/009.mp3"
+        },
+        {
+          "text": "So come on, let's go",
+          "start_ms": 46000,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 48900,
+          "clip": "audio/music/clips/sia_snowman/010.mp3"
+        },
+        {
+          "text": "Let's go below zero, and hide from the sun",
+          "start_ms": 49300,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 52460,
+          "clip": "audio/music/clips/sia_snowman/011.mp3"
+        },
+        {
+          "text": "I'll love you forever, where we'll have some fun",
+          "start_ms": 52700,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 55820,
+          "clip": "audio/music/clips/sia_snowman/012.mp3"
+        },
+        {
+          "text": "Yes, let's hit the North Pole and live happily",
+          "start_ms": 56060,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 59000,
+          "clip": "audio/music/clips/sia_snowman/013.mp3"
+        },
+        {
+          "text": "Please don't cry no tears now, it's Christmas, baby",
+          "start_ms": 59520,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 62440,
+          "clip": "audio/music/clips/sia_snowman/014.mp3"
+        },
+        {
+          "text": "My snowman and me, eh",
+          "start_ms": 62980,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 66640,
+          "clip": "audio/music/clips/sia_snowman/015.mp3"
+        },
+        {
+          "text": "My snowman and me",
+          "start_ms": 67840,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 72520,
+          "clip": "audio/music/clips/sia_snowman/016.mp3"
+        },
+        {
+          "text": "Baby",
+          "start_ms": 75240,
+          "group": "Chorus 1",
+          "timing_reviewed": false,
+          "end_ms": 76680,
+          "clip": "audio/music/clips/sia_snowman/017.mp3"
+        },
+        {
+          "text": "Don't cry, snowman, don't you fear the sun",
+          "start_ms": 80660,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 86740,
+          "clip": "audio/music/clips/sia_snowman/018.mp3"
+        },
+        {
+          "text": "Who'll carry me without legs to run, honey?",
+          "start_ms": 87020,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 91900,
+          "clip": "audio/music/clips/sia_snowman/019.mp3"
+        },
+        {
+          "text": "Without legs to run, honey",
+          "start_ms": 91940,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 94640,
+          "clip": "audio/music/clips/sia_snowman/020.mp3"
+        },
+        {
+          "text": "Don't cry, snowman, don't you shed a tear",
+          "start_ms": 96480,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 100220,
+          "clip": "audio/music/clips/sia_snowman/021.mp3"
+        },
+        {
+          "text": "Who'll hear my secrets if you don't have ears, baby?",
+          "start_ms": 101080,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 105820,
+          "clip": "audio/music/clips/sia_snowman/022.mp3"
+        },
+        {
+          "text": "If you don't have ears, baby",
+          "start_ms": 105820,
+          "group": "Verse 2",
+          "timing_reviewed": false,
+          "end_ms": 107940,
+          "clip": "audio/music/clips/sia_snowman/023.mp3"
+        },
+        {
+          "text": "I want you to know that I'm never leaving",
+          "start_ms": 109500,
+          "group": "Pre-Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 114080,
+          "clip": "audio/music/clips/sia_snowman/024.mp3"
+        },
+        {
+          "text": "'Cause I'm Missus Snow till death we'll be freezing yeah",
+          "start_ms": 114480,
+          "group": "Pre-Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 118060,
+          "clip": "audio/music/clips/sia_snowman/025.mp3"
+        },
+        {
+          "text": "You are my home, my home for all seasons",
+          "start_ms": 118200,
+          "group": "Pre-Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 120940,
+          "clip": "audio/music/clips/sia_snowman/026.mp3"
+        },
+        {
+          "text": "So come on, let's go",
+          "start_ms": 121380,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 124520,
+          "clip": "audio/music/clips/sia_snowman/027.mp3"
+        },
+        {
+          "text": "Let's go below zero, and hide from the sun",
+          "start_ms": 124720,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 127920,
+          "clip": "audio/music/clips/sia_snowman/028.mp3"
+        },
+        {
+          "text": "I'll love you forever, where we'll have some fun",
+          "start_ms": 128360,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 131280,
+          "clip": "audio/music/clips/sia_snowman/029.mp3"
+        },
+        {
+          "text": "Yes, let's hit the North Pole and live happily",
+          "start_ms": 131500,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 134440,
+          "clip": "audio/music/clips/sia_snowman/030.mp3"
+        },
+        {
+          "text": "Please don't cry no tears now, it's Christmas, baby",
+          "start_ms": 135000,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 137900,
+          "clip": "audio/music/clips/sia_snowman/031.mp3"
+        },
+        {
+          "text": "My snowman and me, eh",
+          "start_ms": 138420,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 142080,
+          "clip": "audio/music/clips/sia_snowman/032.mp3"
+        },
+        {
+          "text": "My snowman and me",
+          "start_ms": 143800,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 148140,
+          "clip": "audio/music/clips/sia_snowman/033.mp3"
+        },
+        {
+          "text": "Baby",
+          "start_ms": 150080,
+          "group": "Chorus 2",
+          "timing_reviewed": false,
+          "end_ms": 152120,
+          "clip": "audio/music/clips/sia_snowman/034.mp3"
+        }
+      ],
+      "duration_ms": 152120
     }
   ]
 }

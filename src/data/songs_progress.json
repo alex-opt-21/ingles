@@ -1,1 +1,40 @@
-{}
+{
+  "one_direction_history": {
+    "total": 51,
+    "index": 1,
+    "completed": [
+      0
+    ],
+    "skipped": [],
+    "elapsed": 7.3
+  },
+  "sia_snowman": {
+    "total": 41,
+    "index": 20,
+    "completed": [
+      7,
+      9,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "skipped": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      10
+    ],
+    "elapsed": 805.8
+  }
+}
